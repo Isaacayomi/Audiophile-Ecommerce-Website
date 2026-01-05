@@ -36,7 +36,7 @@ function Header() {
       {/* Tablet Navbar */}
       <div className="hidden lg:hidden md:flex items-center gap-116.25 justify-between py-8 mx-9.75 border-b border-[#979797] ">
         <div className="flex items-center gap-10.5">
-          <div>
+          <div onClick={() => setIsOpen(!isOpen)}>
             <Image
               src="/hamburger.svg"
               alt="Hamburger"
@@ -45,13 +45,7 @@ function Header() {
             />
           </div>
           <div>
-            <Image
-              src="/logo.png"
-              alt="Logo"
-              height={25}
-              width={143}
-              onClick={() => setIsOpen(!isOpen)}
-            />
+            <Image src="/logo.png" alt="Logo" height={25} width={143} />
           </div>
         </div>
         <div>
