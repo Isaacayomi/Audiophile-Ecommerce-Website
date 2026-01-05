@@ -2,17 +2,20 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { use, useState } from "react";
 import NavMenu from "./ui/navMenu";
 import { FaTimes } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store/store";
+import { toggleNav } from "../store/uiSlice";
 function Header() {
-  const [isOpen, setIsOpen] = useState(false);
+  const isOpen = useSelector((state: RootState) => state.ui.value);
+  const dispatch = useDispatch();
   return (
     <nav>
       {/* Mobile Navbar */}
       <div className="flex items-center justify-between py-8 mx-6 border-b border-[#979797] md:hidden">
         <div
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => dispatch(toggleNav())}
           className="w-4 h-4 flex items-center justify-center"
         >
           {!isOpen ? (
@@ -43,7 +46,7 @@ function Header() {
       <div className="hidden lg:hidden md:flex items-center gap-116.25 justify-between py-8 mx-9.75 border-b border-[#979797] ">
         <div className="flex items-center gap-10.5">
           <div
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={() => dispatch(toggleNav())}
             className="w-4 h-4 flex items-center justify-center"
           >
             {!isOpen ? (
