@@ -11,7 +11,10 @@ function Header() {
     <nav>
       {/* Mobile Navbar */}
       <div className="flex items-center justify-between py-8 mx-6 border-b border-[#979797] md:hidden">
-        <div onClick={() => setIsOpen(!isOpen)} className="w-4 h-4 flex items-center justify-center">
+        <div
+          onClick={() => setIsOpen(!isOpen)}
+          className="w-4 h-4 flex items-center justify-center"
+        >
           {!isOpen ? (
             <Image
               src="/hamburger.svg"
@@ -39,16 +42,19 @@ function Header() {
       {/* Tablet Navbar */}
       <div className="hidden lg:hidden md:flex items-center gap-116.25 justify-between py-8 mx-9.75 border-b border-[#979797] ">
         <div className="flex items-center gap-10.5">
-          <div onClick={() => setIsOpen(!isOpen)}>
+          <div
+            onClick={() => setIsOpen(!isOpen)}
+            className="w-4 h-4 flex items-center justify-center"
+          >
             {!isOpen ? (
               <Image
                 src="/hamburger.svg"
                 alt="Hamburger"
-                height={15}
+                height={16}
                 width={16}
               />
             ) : (
-              <FaTimes size={20} />
+              <FaTimes size={16} />
             )}
           </div>
           <div>
