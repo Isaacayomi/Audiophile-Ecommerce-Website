@@ -1,10 +1,11 @@
 import Image from "next/image";
+import Link from "next/link";
 
 function Header() {
   return (
     <nav>
       {/* Mobile Navbar */}
-      <div className="flex items-center justify-between py-8 px-6 border-b border-[#979797] md:hidden">
+      <div className="flex items-center justify-between py-8 mx-6 border-b border-[#979797] md:hidden">
         <div>
           <Image src="/hamburger.svg" alt="Hamburger" height={15} width={16} />
         </div>
@@ -14,7 +15,7 @@ function Header() {
         <div>
           <Image
             src="/assets/cart-icon.svg"
-            alt="Logo"
+            alt="cart-icon"
             height={20}
             width={23}
           />
@@ -22,8 +23,8 @@ function Header() {
       </div>
 
       {/* Tablet Navbar */}
-      <div className="hidden md:flex items-center gap-116.25 justify-center py-8 mx-[39px] border-b border-[#979797] ">
-        <div className="flex items-center gap-[42px]">
+      <div className="hidden lg:hidden md:flex items-center gap-116.25 justify-between py-8 mx-9.75 border-b border-[#979797] ">
+        <div className="flex items-center gap-10.5">
           <div>
             <Image
               src="/hamburger.svg"
@@ -39,9 +40,41 @@ function Header() {
         <div>
           <Image
             src="/assets/cart-icon.svg"
-            alt="Logo"
+            alt="cart-icon"
             height={20}
             width={23}
+          />
+        </div>
+      </div>
+
+      {/* Desktop Navbar */}
+      <div className="hidden lg:flex items-center justify-between py-[35px] mx-[165px] border-b border-[#979797] ">
+        <div>
+          <Image
+            src="/logo.png"
+            alt="Logo"
+            height={25}
+            width={143}
+            className="cursor-pointer"
+          />
+        </div>
+        <div className="flex items-center justify-center text-[13px] gap-[34px] font-bold leading-[25px] tracking-[2px] text-white">
+          {["home", "headphones", "speakers", "earphones"].map((item, i) => {
+            return (
+              <Link key={i} className="hover:text-[#D87D4A]" href={`/${item}`}>
+                {item.toUpperCase()}
+              </Link>
+            );
+          })}
+        </div>
+
+        <div>
+          <Image
+            src="/assets/cart-icon.svg"
+            alt="cart icon"
+            height={20}
+            width={23}
+            className="cursor-pointer"
           />
         </div>
       </div>
