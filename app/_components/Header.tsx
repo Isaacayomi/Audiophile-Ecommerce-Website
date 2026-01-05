@@ -1,13 +1,24 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { use, useState } from "react";
+import NavMenu from "./ui/navMenu";
 
 function Header() {
+  const [isOpen, setIsOpen] = useState(false);
   return (
     <nav>
       {/* Mobile Navbar */}
       <div className="flex items-center justify-between py-8 mx-6 border-b border-[#979797] md:hidden">
         <div>
-          <Image src="/hamburger.svg" alt="Hamburger" height={15} width={16} />
+          <Image
+            src="/hamburger.svg"
+            alt="Hamburger"
+            height={15}
+            width={16}
+            onClick={() => setIsOpen(!isOpen)}
+          />
         </div>
         <div>
           <Image src="/logo.png" alt="Logo" height={25} width={143} />
@@ -34,7 +45,13 @@ function Header() {
             />
           </div>
           <div>
-            <Image src="/logo.png" alt="Logo" height={25} width={143} />
+            <Image
+              src="/logo.png"
+              alt="Logo"
+              height={25}
+              width={143}
+              onClick={() => setIsOpen(!isOpen)}
+            />
           </div>
         </div>
         <div>
@@ -78,6 +95,9 @@ function Header() {
           />
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      {isOpen && <NavMenu />}
     </nav>
   );
 }
