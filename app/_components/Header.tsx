@@ -6,7 +6,7 @@ import NavMenu from "./ui/navMenu";
 import { FaTimes } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
-import { toggleNav } from "../store/uiSlice";
+import { toggleNav } from "../store/uiState/uiSlice";
 function Header() {
   const isOpen = useSelector((state: RootState) => state.ui.value);
   const dispatch = useDispatch();

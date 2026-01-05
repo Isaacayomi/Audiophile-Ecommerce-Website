@@ -1,11 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { OpenNavState } from "../type";
+import { toggleNavState } from "../../type";
 
-const initialState: OpenNavState = {
+const initialState: toggleNavState = {
   value: false,
 };
 
-export const openNavSlice = createSlice({
+export const toggleNavSlice = createSlice({
   name: "toggleNav",
   initialState,
   reducers: {
@@ -16,6 +16,6 @@ export const openNavSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { toggleNav } = openNavSlice.actions;
+export const { toggleNav } = toggleNavSlice.actions;
 
-export default openNavSlice.reducer;
+export default toggleNavSlice.reducer;

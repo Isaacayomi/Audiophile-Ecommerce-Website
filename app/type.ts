@@ -1,3 +1,3 @@
-export interface OpenNavState {
+export interface toggleNavState {
   value: boolean;
 }
