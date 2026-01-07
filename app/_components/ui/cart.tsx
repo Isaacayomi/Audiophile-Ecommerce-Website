@@ -1,4 +1,4 @@
 function cart() {
-  return <p className="text-white absolute bg-green-500">cart component</p>;
+  return <div className="">cart component</div>;
 }
 export default cart;
