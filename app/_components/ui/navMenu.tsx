@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 
 function NavMenu() {
@@ -6,24 +7,27 @@ function NavMenu() {
     {
       image: "/assets/headphone.png",
       name: "HEADPHONES",
+      link: "/headphones",
     },
     {
       image: "/assets/speaker.png",
       name: "SPEAKERS",
+      link: "/speakers",
     },
     {
       image: "/assets/earphone.png",
       name: "EARPHONES",
+      link: "/earphones",
     },
   ];
   return (
-    <div className="absolute z-99 max-w-[327px] w-full h-[683px] mx-auto pg-[32px] px-[24px] bg-white">
+    <div className="absolute z-99  w-full h-screen mx-auto pg-[32px] px-[24px] bg-white">
       {/* Head phones menu */}
       {products.map((product) => {
         return (
           <div
             key={product.name}
-            className="relative bg-[#F1F1F1] max-w-[327px] w-full h-[165px] flex flex-col items-center justify-center gap-4 mb-6 rounded-2xl mt-[64px] mb-[68px]"
+            className="relative bg-[#F1F1F1] max-w-[327px] w-full h-[165px] mx-auto flex flex-col items-center justify-center gap-4 mb-6 rounded-2xl mt-[64px] mb-[68px]"
           >
             <div>
               <Image
@@ -31,20 +35,25 @@ function NavMenu() {
                 alt="Product image"
                 width={94.89}
                 height={108}
-                className="absolute -top-[20px]"
+                className="absolute left-1/2 -top-[20px] -translate-x-1/2"
               />
 
-              <p className=" text-center text-[#000000] font-bold text-[15px] pt-[20px] tracking-[1.07px]">
-                {product.name}
-              </p>
-              <p className="flex items-center justify-center  text-center">
-                <span className=" tracking-normal text-[13px] font-bold text-[rgba(0,0,0,0.5)] ">
-                  SHOP
-                </span>
-                <span>
-                  <MdOutlineKeyboardArrowRight className="text-[#FBAF85]" />
-                </span>
-              </p>
+              <div className="absolute bottom-6 left-0 right-0 ">
+                <p className=" text-center text-[#000000] font-bold text-[15px] pt-[20px] pb-[17px] tracking-[1.07px] ">
+                  {product.name}
+                </p>
+                <p className="flex items-center justify-center  text-center">
+                  <Link
+                    href={product.link}
+                    className=" tracking-normal text-[13px] font-bold text-[rgba(0,0,0,0.5)] "
+                  >
+                    SHOP
+                  </Link>
+                  <span>
+                    <MdOutlineKeyboardArrowRight className="text-[#FBAF85]" />
+                  </span>
+                </p>
+              </div>
             </div>
           </div>
         );

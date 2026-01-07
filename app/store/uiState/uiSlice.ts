@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { toggleNavState } from "../../type";
 
 const initialState: toggleNavState = {
-  value: true,
+  value: false,
 };
 
 export const toggleNavSlice = createSlice({
