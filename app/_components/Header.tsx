@@ -7,9 +7,13 @@ import { FaTimes } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { toggleNav } from "../store/uiState/uiSlice";
+import cart from "./ui/cart";
+import Cart from "./ui/cart";
+import { toggleCart } from "../store/uiState/cartSlice";
 function Header() {
   const items = ["home", "headphones", "speakers", "earphones"];
   const isOpen = useSelector((state: RootState) => state.ui.value);
+  const isCartOpen = useSelector((state: RootState) => state.cart.value);
   const dispatch = useDispatch();
   return (
     <nav>
@@ -33,7 +37,7 @@ function Header() {
         <div>
           <Image src="/logo.png" alt="Logo" height={25} width={143} />
         </div>
-        <div>
+        <div onClick={() => dispatch(toggleCart())}>
           <Image
             src="/assets/cart-icon.svg"
             alt="cart-icon"
@@ -61,7 +65,7 @@ function Header() {
               <FaTimes size={16} />
             )}
           </div>
-          <div>
+          <div onClick={() => dispatch(toggleCart())}>
             <Image src="/logo.png" alt="Logo" height={25} width={143} />
           </div>
         </div>
@@ -109,6 +113,9 @@ function Header() {
 
       {/* Mobile Menu */}
       {isOpen && <NavMenu />}
+
+      {/* Cart menu */}
+      {isCartOpen && <Cart />}
     </nav>
   );
 }

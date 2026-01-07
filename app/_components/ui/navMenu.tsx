@@ -21,7 +21,7 @@ function NavMenu() {
     },
   ];
   return (
-    <div className="absolute z-99  w-full h-screen mx-auto pg-[32px] px-6 bg-white">
+    <div className="absolute z-99  w-full h-187.5 mx-auto pg-[32px] px-6 bg-white">
       {products.map((product) => {
         return (
           <div
