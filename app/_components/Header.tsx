@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { toggleNav } from "../store/uiState/uiSlice";
 function Header() {
+  const items = ["home", "headphones", "speakers", "earphones"];
   const isOpen = useSelector((state: RootState) => state.ui.value);
   const dispatch = useDispatch();
   return (
@@ -75,7 +76,7 @@ function Header() {
       </div>
 
       {/* Desktop Navbar */}
-      <div className="hidden lg:flex items-center justify-between py-[35px] mx-[165px] border-b border-[#979797] ">
+      <div className="hidden lg:flex items-center justify-between py-8.75 mx-41.25 border-b border-[#979797] ">
         <div>
           <Image
             src="/logo.png"
@@ -85,8 +86,8 @@ function Header() {
             className="cursor-pointer"
           />
         </div>
-        <div className="flex items-center justify-center text-[13px] gap-[34px] font-bold leading-[25px] tracking-[2px] text-white">
-          {["home", "headphones", "speakers", "earphones"].map((item, i) => {
+        <div className="flex items-center justify-center text-[13px] gap-8.5 font-bold leading-6.25 tracking-[2px] text-white">
+          {items.map((item, i) => {
             return (
               <Link key={i} className="hover:text-[#D87D4A]" href={`/${item}`}>
                 {item.toUpperCase()}

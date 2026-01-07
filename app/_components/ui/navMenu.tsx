@@ -21,13 +21,12 @@ function NavMenu() {
     },
   ];
   return (
-    <div className="absolute z-99  w-full h-screen mx-auto pg-[32px] px-[24px] bg-white">
-      {/* Head phones menu */}
+    <div className="absolute z-99  w-full h-screen mx-auto pg-[32px] px-6 bg-white">
       {products.map((product) => {
         return (
           <div
             key={product.name}
-            className="relative bg-[#F1F1F1] max-w-[327px] w-full h-[165px] mx-auto flex flex-col items-center justify-center gap-4 mb-6 rounded-2xl mt-[64px] mb-[68px]"
+            className="relative bg-[#F1F1F1] max-w-81.75 w-full h-41.25 mx-auto flex flex-col items-center justify-center gap-4 mb-6 rounded-2xl mt-16 "
           >
             <div>
               <Image
@@ -35,11 +34,11 @@ function NavMenu() {
                 alt="Product image"
                 width={94.89}
                 height={108}
-                className="absolute left-1/2 -top-[20px] -translate-x-1/2"
+                className="absolute left-1/2 -top-5 -translate-x-1/2"
               />
 
               <div className="absolute bottom-6 left-0 right-0 ">
-                <p className=" text-center text-[#000000] font-bold text-[15px] pt-[20px] pb-[17px] tracking-[1.07px] ">
+                <p className=" text-center text-[#000000] font-bold text-[15px] pt-5 pb-4.25 tracking-[1.07px] ">
                   {product.name}
                 </p>
                 <p className="flex items-center justify-center  text-center">
