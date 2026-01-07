@@ -10,6 +10,7 @@ import { toggleNav } from "../store/uiState/uiSlice";
 import cart from "./ui/cart";
 import Cart from "./ui/cart";
 import { toggleCart } from "../store/uiState/cartSlice";
+import CheckoutModal from "./ui/checkoutModal";
 function Header() {
   const items = ["home", "headphones", "speakers", "earphones"];
   const isOpen = useSelector((state: RootState) => state.ui.value);
@@ -115,7 +116,11 @@ function Header() {
       {isOpen && <NavMenu />}
 
       {/* Cart menu */}
-      {isCartOpen && <Cart />}
+      {/* {isCartOpen && <Cart />} */}
+
+      {/* Cart checkout */}
+
+      {isCartOpen && <CheckoutModal />}
     </nav>
   );
 }
