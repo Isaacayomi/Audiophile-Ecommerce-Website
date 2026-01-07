@@ -21,7 +21,7 @@ function NavMenu() {
     },
   ];
   return (
-    <div className="absolute z-99  w-full h-187.5 mx-auto pg-[32px] px-6 bg-white md:h-[340px] md:flex md:flex-row gap-[10px]">
+    <div className="absolute z-99  w-full h-187.5 mx-auto pg-[32px] px-6 bg-white md:h-85 md:flex md:flex-row gap-2.5">
       {products.map((product) => {
         return (
           <div
@@ -34,7 +34,7 @@ function NavMenu() {
                 alt="Product image"
                 width={100}
                 height={100}
-                className="absolute left-1/2 -top-5 -translate-x-1/2 w-[94.89px] md:w-[140px] md:-top-9 "
+                className="absolute left-1/2 -top-5 -translate-x-1/2 w-[94.89px] md:w-35 md:-top-9 "
               />
 
               <div className="absolute bottom-6 left-0 right-0 ">

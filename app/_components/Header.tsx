@@ -69,7 +69,7 @@ function Header() {
             <Image src="/logo.png" alt="Logo" height={25} width={143} />
           </div>
         </div>
-        <div>
+        <div onClick={() => dispatch(toggleCart())}>
           <Image
             src="/assets/cart-icon.svg"
             alt="cart-icon"
@@ -100,7 +100,7 @@ function Header() {
           })}
         </div>
 
-        <div>
+        <div onClick={() => dispatch(toggleCart())}>
           <Image
             src="/assets/cart-icon.svg"
             alt="cart icon"
