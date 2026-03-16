@@ -10,10 +10,14 @@ import { toggleNav } from "../store/uiState/uiSlice";
 import cart from "./ui/cart";
 import { toggleCart } from "../store/uiState/cartSlice";
 import CheckoutModal from "./ui/checkoutModal";
+import Cart from "./ui/cart";
 const Header = () => {
   const items = ["home", "headphones", "speakers", "earphones"];
   const isOpen = useSelector((state: RootState) => state.ui.value);
   const isCartOpen = useSelector((state: RootState) => state.cart.value);
+  const isCheckoutOpen = useSelector(
+    (state: RootState) => state.checkout.value,
+  );
   const dispatch = useDispatch();
   return (
     <nav>
@@ -119,7 +123,8 @@ const Header = () => {
 
       {/* Cart checkout */}
 
-      {isCartOpen && <CheckoutModal />}
+      {isCartOpen && <Cart />}
+      {isCheckoutOpen && <CheckoutModal />}
     </nav>
   );
 };

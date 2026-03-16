@@ -4,6 +4,7 @@ import Image from "next/image";
 import ModalButton from "./modalButton";
 import { useDispatch } from "react-redux";
 import { toggleCart } from "../../store/uiState/cartSlice";
+import { toggleCheckout } from "../../store/uiState/checkoutSlice";
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -61,7 +62,14 @@ const Cart = () => {
           <p className="text-[#00000082] font-medium text-[15px]">TOTAL</p>
           <p className="font-bold text-black text-[18px]">$ 5,396</p>
         </div>
-        <ModalButton>CHECKOUT</ModalButton>
+        <ModalButton
+          onClick={() => {
+            dispatch(toggleCheckout());
+            dispatch(toggleCart());
+          }}
+        >
+          CHECKOUT
+        </ModalButton>
       </div>
     </div>
   );

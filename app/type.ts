@@ -8,6 +8,11 @@ export interface toggleCartState {
   value: boolean;
 }
 
+export interface toggleCheckoutState {
+  value: boolean;
+}
+
 export interface ModalButtonProps {
   children: ReactNode;
+  onClick?: () => void;
 }
