@@ -3,10 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
 import ModalButton from "./modalButton";
-import {
-  closeCheckout,
-  toggleCheckout,
-} from "@/app/store/uiState/checkoutSlice";
 import { closeOrderCompletion } from "@/app/store/uiState/orderCompletionSlice";
 
 const OrderedItem = () => {
@@ -17,7 +13,7 @@ const OrderedItem = () => {
       <div className="bg-[#F1F1F1] flex flex-col rounded-lg ">
         <div className="md:flex md:flex-row">
           <div className="md:w-1/2">
-            <div className="flex items-center justify-between p-[35px] ">
+            <div className="flex items-center justify-between p-8.75 ">
               {/* Product Image */}
               <div>
                 <Image
@@ -26,7 +22,7 @@ const OrderedItem = () => {
                   height={32}
                   quality={100}
                   alt="Item Ordered"
-                  className="h-[32px] w-[28px]"
+                  className="h-8 w-7"
                 />
               </div>
 
@@ -43,21 +39,21 @@ const OrderedItem = () => {
                 X1
               </p>
             </div>
-            <p className="text-[rgba(0,0,0,0.45)] font-bold text-[12px] pt-[12px] border-t-2 border-[#d8d8d8] w-[215px] mx-auto text-center pb-[25px] tracking-[-0.21px] md:border-t-1">
+            <p className="text-[rgba(0,0,0,0.45)] font-bold text-[12px] pt-3 border-t-2 border-[#d8d8d8] w-53.75 mx-auto text-center pb-6 tracking-[-0.21px] md:border-t">
               and two other item(s)
             </p>
           </div>
 
           {/* Grand Total */}
-          <div className="md:w-1/2 bg-black py-[15px] px-[24px] rounded-b-lg flex flex-col justify-center">
-            <p className="font-medium text-[15px] leading-[25px] pb-[8px] text-[rgba(255,255,255,0.5)]">
+          <div className="md:w-1/2 bg-black py-3.75 px-6 rounded-b-lg flex flex-col justify-center">
+            <p className="font-medium text-[15px] leading-6.25 pb-2 text-[rgba(255,255,255,0.5)]">
               GRAND TOTAL
             </p>
             <p className="font-bold text-white text-[18px]">$ 5,446</p>
           </div>
         </div>
       </div>
-      <div className="mt-[23px] md:mt-[46px] w-full mx-auto md:cursor-pointer ">
+      <div className="mt-5.75 md:mt-11.5 w-full mx-auto md:cursor-pointer ">
         {/* Close checkout modal before navigating to Home */}
         <ModalButton
           onClick={() => {
