@@ -7,6 +7,7 @@ import {
   closeCheckout,
   toggleCheckout,
 } from "@/app/store/uiState/checkoutSlice";
+import { closeOrderCompletion } from "@/app/store/uiState/orderCompletionSlice";
 
 const OrderedItem = () => {
   const dispatch = useDispatch();
@@ -60,8 +61,7 @@ const OrderedItem = () => {
         {/* Close checkout modal before navigating to Home */}
         <ModalButton
           onClick={() => {
-            dispatch(closeCheckout());
-            // dispatch(toggleCart());
+            dispatch(closeOrderCompletion());
           }}
         >
           <Link href="/">BACK TO HOME</Link>
