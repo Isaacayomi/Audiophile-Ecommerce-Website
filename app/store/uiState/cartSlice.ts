@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { toggleCartState } from "../../type";
 
 const initialState: toggleCartState = {
-  value: false,
+  value: true,
 };
 
 export const toggleCartSlice = createSlice({

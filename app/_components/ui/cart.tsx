@@ -5,18 +5,19 @@ import ModalButton from "./modalButton";
 import { useDispatch } from "react-redux";
 import { toggleCart } from "../../store/uiState/cartSlice";
 
-function Cart() {
+const Cart = () => {
   const dispatch = useDispatch();
   return (
-    <div className="fixed top-[96px] md:top-[64px] md:mt-[40px] mr-3 inset-x-0 bottom-0 z-50 flex items-start justify-center md:items-start md:justify-end">
-      <div className="relative max-w-[327px] w-full bg-white py-[32px] px-[28px] rounded-2xl">
+    <div className="fixed top-24 md:top-16 md:mt-10 mr-3 inset-x-0 bottom-0 z-50 flex items-start justify-center md:items-start md:justify-end">
+      <div className="relative max-w-81.75 w-full bg-white py-8 px-7 rounded-2xl">
         <button
           onClick={() => dispatch(toggleCart())}
-          className="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-black text-lg font-bold cursor-pointer hover:bg-gray-300 transition-colors"
+          aria-label="Close cart"
+          className="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-black text-lg font-bold cursor-pointer hover:bg-gray-300 transition-colors z-10"
         >
-          ×
+          <span className="leading-none">&times;</span>
         </button>
-        <p className="flex items-center justify-between pb-[31px] pt-3">
+        <p className="flex items-center justify-between pb-7.75 pt-3">
           <span className="font-bold text-[18px] tracking-[1.29px] text-black">
             CART (3)
           </span>
@@ -25,8 +26,8 @@ function Cart() {
           </span>
         </p>
 
-        <div className="mb-[24px] bg-white flex items-center justify-between">
-          <div className="bg-[#F1F1F1] w-[64px] h-[64px] flex justify-center items-center rounded-lg">
+        <div className="mb-6 bg-white flex items-center justify-between">
+          <div className="bg-[#F1F1F1] w-16 h-16 flex justify-center items-center rounded-lg">
             <Image
               src="/assets/headphone-removed.png"
               alt="Product image"
@@ -45,7 +46,7 @@ function Cart() {
             </p>
           </div>
 
-          <div className="w-[96px] py-[7px] px-[11.5px] flex items-center justify-between gap-[12px] text-[13px] bg-[#F1F1F1]">
+          <div className="w-24 py-1.75 px-[11.5px] flex items-center justify-between gap-3 text-[13px] bg-[#F1F1F1]">
             <button className="cursor-pointer font-bold text-[#00000082]">
               -
             </button>
@@ -56,7 +57,7 @@ function Cart() {
           </div>
         </div>
 
-        <div className="pb-[24px] flex items-center justify-between pt-[32px]">
+        <div className="pb-6 flex items-center justify-between pt-8">
           <p className="text-[#00000082] font-medium text-[15px]">TOTAL</p>
           <p className="font-bold text-black text-[18px]">$ 5,396</p>
         </div>
@@ -64,5 +65,5 @@ function Cart() {
       </div>
     </div>
   );
-}
+};
 export default Cart;

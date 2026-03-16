@@ -1,5 +1,7 @@
 import HeroSection from "./_components/HeroSection";
 
-export default function Home() {
+const Home = () => {
   return <HeroSection />;
-}
+};
+
+export default Home;

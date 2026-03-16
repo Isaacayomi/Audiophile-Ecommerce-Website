@@ -1,0 +1,85 @@
+Frontend Testing Checklist for Your E-Commerce App
+1️⃣ Product Listing / Product Cards
+
+ Renders product image, name, price, and stock correctly
+
+ “Add to Cart” button exists and clickable
+
+ Product card shows “Out of Stock” if stock === 0
+
+ Clicking product navigates to product details page
+
+2️⃣ Product Details Page
+
+ Shows product name, image, price, description
+
+ Quantity selector works (increase/decrease)
+
+ “Add to Cart” updates cart correctly
+
+ If stock is 0, “Add to Cart” is disabled
+
+3️⃣ Cart Component
+
+ Cart icon updates number of items when products are added
+
+ Cart page lists all selected items with correct quantity and price
+
+ “Remove Item” button removes item from cart
+
+ Total price updates when items are added/removed
+
+ Checkout button is visible and clickable
+
+4️⃣ Checkout / Order Form
+
+ Form renders correctly (name, address, email, payment option)
+
+ Form validation works (required fields, email format, etc.)
+
+ Submitting form calls checkout function
+
+ Confirmation message appears after successful checkout
+
+5️⃣ Authentication (Clerk)
+
+ Login / Sign up forms render correctly
+
+ Clicking login/signup buttons triggers authentication
+
+ User info is displayed after login (e.g., “Hello, Ayomide”)
+
+ Logout works and redirects to homepage
+
+6️⃣ Navigation & Layout
+
+ Navbar links navigate correctly (Home, Cart, Products)
+
+ Mobile menu (hamburger) opens and closes properly
+
+ Footer links render correctly
+
+7️⃣ Conditional Rendering / Edge Cases
+
+ “Empty Cart” message shows when cart is empty
+
+ “No products found” shows if API returns empty array
+
+ Buttons are disabled when actions are not allowed (e.g., out-of-stock products)
+
+8️⃣ API Interactions (Mocked)
+
+ Product API fetch works (mocked in tests)
+
+ Cart and checkout API calls work correctly (mocked)
+
+ Error handling: show error message if API fails
+
+Github branching workflow
+Create a feature branch (git checkout -b feature/AmazingFeature)
+
+Commit changes (git commit -m 'Add AmazingFeature')
+
+Push to branch (git push origin feature/AmazingFeature)
+
+Open a Pull Request

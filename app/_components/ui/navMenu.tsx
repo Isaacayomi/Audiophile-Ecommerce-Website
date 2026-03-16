@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 
-function NavMenu() {
+const NavMenu = () => {
   const products = [
     {
       image: "/assets/headphone.png",
@@ -59,6 +59,6 @@ function NavMenu() {
       })}
     </div>
   );
-}
+};
 
 export default NavMenu;
