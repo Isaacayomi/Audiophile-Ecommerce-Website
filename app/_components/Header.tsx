@@ -7,16 +7,19 @@ import { FaTimes } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { toggleNav } from "../store/uiState/uiSlice";
-import cart from "./ui/cart";
 import { toggleCart } from "../store/uiState/cartSlice";
-import CheckoutModal from "./ui/checkoutModal";
+import OrderCompletionModal from "./ui/orderCompletionModal";
 import Cart from "./ui/cart";
+import CheckoutModal from "./ui/checkoutModal";
 const Header = () => {
   const items = ["home", "headphones", "speakers", "earphones"];
   const isOpen = useSelector((state: RootState) => state.ui.value);
   const isCartOpen = useSelector((state: RootState) => state.cart.value);
   const isCheckoutOpen = useSelector(
     (state: RootState) => state.checkout.value,
+  );
+  const isOrderComplete = useSelector(
+    (state: RootState) => state.orderCompletion.value,
   );
   const dispatch = useDispatch();
   return (
@@ -118,13 +121,10 @@ const Header = () => {
       {/* Mobile Menu */}
       {isOpen && <NavMenu />}
 
-      {/* Cart menu */}
-      {/* {isCartOpen && <Cart />} */}
-
       {/* Cart checkout */}
-
       {isCartOpen && <Cart />}
       {isCheckoutOpen && <CheckoutModal />}
+      {isOrderComplete && <OrderCompletionModal />}
     </nav>
   );
 };

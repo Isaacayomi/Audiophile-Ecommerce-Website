@@ -3,7 +3,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
 import ModalButton from "./modalButton";
-import { closeCheckout } from "@/app/store/uiState/checkoutSlice";
+import {
+  closeCheckout,
+  toggleCheckout,
+} from "@/app/store/uiState/checkoutSlice";
 
 const OrderedItem = () => {
   const dispatch = useDispatch();
@@ -54,7 +57,13 @@ const OrderedItem = () => {
         </div>
       </div>
       <div className="mt-[23px] md:mt-[46px] w-full mx-auto md:cursor-pointer ">
-        <ModalButton onClick={() => dispatch(closeCheckout())}>
+        {/* Close checkout modal before navigating to Home */}
+        <ModalButton
+          onClick={() => {
+            dispatch(closeCheckout());
+            // dispatch(toggleCart());
+          }}
+        >
           <Link href="/">BACK TO HOME</Link>
         </ModalButton>
       </div>
