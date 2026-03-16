@@ -1,3 +1,5 @@
+// OrderCompletionModal: final success overlay after payment completion.
+// Shows order summary and allows user to close confirmation.
 import Image from "next/image";
 import OrderedItem from "./orderedItem";
 import { useDispatch } from "react-redux";
@@ -6,6 +8,7 @@ import { closeOrderCompletion } from "../../store/uiState/orderCompletionSlice";
 const OrderCompletionModal = () => {
   const dispatch = useDispatch();
 
+  // Close order completion modal and return to main app view.
   const handleClose = () => {
     dispatch(closeOrderCompletion());
   };

@@ -1,5 +1,7 @@
 "use client";
 
+// Cart component displays current cart items and the checkout action.
+// Clicking the cart close button hides cart overlay via Redux toggle.
 import Image from "next/image";
 import ModalButton from "./modalButton";
 import { useDispatch } from "react-redux";
@@ -18,6 +20,7 @@ const Cart = () => {
         >
           <span className="leading-none">&times;</span>
         </button>
+        {/* Close button toggles cart overlay state to hidden */}
         <p className="flex items-center justify-between pb-7.75 pt-3">
           <span className="font-bold text-[18px] tracking-[1.29px] text-black">
             CART (3)
@@ -62,6 +65,7 @@ const Cart = () => {
           <p className="text-[#00000082] font-medium text-[15px]">TOTAL</p>
           <p className="font-bold text-black text-[18px]">$ 5,396</p>
         </div>
+        {/* Checkout button closes cart, opens checkout modal */}
         <ModalButton
           onClick={() => {
             dispatch(toggleCheckout());

@@ -1,3 +1,5 @@
+// OrderedItem: order detail card shown in checkout and order completion modals.
+// Includes product row, grand total, and home navigation action.
 import { toggleCart } from "@/app/store/uiState/cartSlice";
 import Image from "next/image";
 import Link from "next/link";

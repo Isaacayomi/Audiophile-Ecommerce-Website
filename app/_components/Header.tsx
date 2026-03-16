@@ -1,5 +1,7 @@
 "use client";
 
+// Header component: renders navigation and toggles UI overlays (cart, checkout, order completion).
+// Uses redux state to show/hide menus and modals.
 import Image from "next/image";
 import Link from "next/link";
 import NavMenu from "./ui/navMenu";
@@ -11,8 +13,11 @@ import { toggleCart } from "../store/uiState/cartSlice";
 import OrderCompletionModal from "./ui/orderCompletionModal";
 import Cart from "./ui/cart";
 import CheckoutModal from "./ui/checkoutModal";
+
 const Header = () => {
   const items = ["home", "headphones", "speakers", "earphones"];
+
+  // Redux selectors for each overlay modal/menu state.
   const isOpen = useSelector((state: RootState) => state.ui.value);
   const isCartOpen = useSelector((state: RootState) => state.cart.value);
   const isCheckoutOpen = useSelector(
@@ -21,6 +26,7 @@ const Header = () => {
   const isOrderComplete = useSelector(
     (state: RootState) => state.orderCompletion.value,
   );
+
   const dispatch = useDispatch();
   return (
     <nav>
@@ -121,9 +127,13 @@ const Header = () => {
       {/* Mobile Menu */}
       {isOpen && <NavMenu />}
 
-      {/* Cart checkout */}
+      {/* Cart component is shown when cart is open */}
       {isCartOpen && <Cart />}
+
+      {/* Checkout modal is shown when user clicks CHECKOUT in cart */}
       {isCheckoutOpen && <CheckoutModal />}
+
+      {/* Order completion confirmation modal shown after payment */}
       {isOrderComplete && <OrderCompletionModal />}
     </nav>
   );
