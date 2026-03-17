@@ -21,7 +21,7 @@ export interface ModalButtonProps {
   onClick?: () => void;
   classname?: string;
   width?: string;
-  paddingY?: string;
+  paddingX?: string;
 }
 
 export interface NavMenuProps {
