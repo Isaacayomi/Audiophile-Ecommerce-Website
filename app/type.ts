@@ -20,3 +20,7 @@ export interface ModalButtonProps {
   children: ReactNode;
   onClick?: () => void;
 }
+
+export interface NavMenuProps {
+  absolute?: boolean;
+}

@@ -1,8 +1,9 @@
+import { NavMenuProps } from "@/app/type";
 import Image from "next/image";
 import Link from "next/link";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 
-const NavMenu = () => {
+const NavMenu = ({ absolute = true }: NavMenuProps) => {
   const products = [
     {
       image: "/assets/headphone.png",
@@ -21,7 +22,9 @@ const NavMenu = () => {
     },
   ];
   return (
-    <div className="absolute z-99  w-full h-187.5 mx-auto pg-[32px] px-6 bg-white md:h-85 md:flex md:flex-row gap-2.5">
+    <div
+      className={`${absolute ? "absolute z-99" : ""} w-full h-187.5 mx-auto pg-[32px] px-6 bg-white md:h-85 md:flex md:flex-row gap-2.5`}
+    >
       {products.map((product) => {
         return (
           <div

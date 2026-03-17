@@ -29,6 +29,7 @@ const Header = () => {
 
   const dispatch = useDispatch();
   return (
+    // <nav className="pb-[108px] md:pb-[126px] lg:pb-[128px]">
     <nav>
       {/* Mobile Navbar */}
       <div className="flex items-center justify-between py-8 mx-6 border-b border-[#979797] md:hidden">
