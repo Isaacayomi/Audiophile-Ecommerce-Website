@@ -6,9 +6,9 @@ import ModalButton from "./ui/modalButton";
 
 const HeroSection = () => {
   return (
-    <div className="pt-[108px] bg-[url('/assets/headphone-removed.png')] bg-no-repeat bg-center bg-contain">
-      <div className="w-[328px] mx-auto text-center">
-        <p className="pb-[16px] text-[14px] tracking-[10px] #FFFFFF7F">
+    <div className="h-screen bg-[url('/assets/hero-cover.png')] bg-no-repeat bg-[position:center_-98px] bg-cover overflow-hidden">
+      <div className="w-[328px] mx-auto text-center pt-[108px] pb-[112px]">
+        <p className="pb-[16px] text-[14px] tracking-[10px] text-[#FFFFFF7F]">
           NEW PRODUCT
         </p>
         <h1 className="pb-[24px] uppercase font-bold text-[36px] tracking-[1.29px] leading-[41px]">
@@ -19,7 +19,7 @@ const HeroSection = () => {
           for the passionate music enthusiast.
         </p>
 
-        <ModalButton>See Product</ModalButton>
+        <ModalButton classname="w-[50%] uppercase">See Product</ModalButton>
       </div>
 
       <NavMenu absolute={false} />

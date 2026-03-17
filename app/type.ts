@@ -19,6 +19,7 @@ export interface toggleOrderCompletionState {
 export interface ModalButtonProps {
   children: ReactNode;
   onClick?: () => void;
+  classname?: string;
 }
 
 export interface NavMenuProps {
