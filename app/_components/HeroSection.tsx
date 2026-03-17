@@ -3,8 +3,8 @@ import ModalButton from "./ui/modalButton";
 
 const HeroSection = () => {
   return (
-    <div className="h-screen bg-[url('/assets/hero-cover.png')] bg-no-repeat bg-[position:center_-98px] bg-cover overflow-hidden">
-      <div className="w-[328px] mx-auto text-center pt-[108px] pb-[112px]">
+    <div className="h-screen bg-[url('/assets/hero-cover.png')] bg-no-repeat bg-[position:center_-98px] md:bg-[position:center_-112px] md:bg-[url('/assets/tablet-hero.png')] bg-cover overflow-hidden mb-[40px]">
+      <div className="w-[328px] mx-auto text-center pt-[108px] pb-[112px] md:pt-[126px] md:pb-[167px] md:h-screen">
         <p className="pb-[16px] text-[14px] tracking-[10px] text-[#FFFFFF7F]">
           NEW PRODUCT
         </p>
@@ -16,11 +16,7 @@ const HeroSection = () => {
           for the passionate music enthusiast.
         </p>
 
-        <ModalButton
-          width="w-[160px]"
-          paddingY="py-0"
-          classname="uppercase font-bold text-[13px] tracking-[1px] px-0  "
-        >
+        <ModalButton width="w-[160px]" paddingX="px-0" classname="uppercase">
           See Product
         </ModalButton>
       </div>

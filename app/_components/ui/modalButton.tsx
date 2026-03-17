@@ -7,12 +7,12 @@ const ModalButton = ({
   onClick,
   classname,
   width = "w-full",
-  paddingY = "py-3.75 ",
+  paddingX = "px-14",
 }: ModalButtonProps) => {
   return (
     <button
       onClick={onClick}
-      className={`${width} ${classname} bg-[#D87D4A] text-white font-bold px-14 text-[13px] tracking-[1px] hover:bg-[#FBAF85] transition-colors cursor-pointer`}
+      className={`${width} ${paddingX} ${classname} bg-[#D87D4A] text-white font-bold py-3.75 text-[13px] tracking-[1px] hover:bg-[#FBAF85] transition-colors cursor-pointer`}
     >
       {children}
     </button>

@@ -32,7 +32,7 @@ const Header = () => {
     // <nav className="pb-[108px] md:pb-[126px] lg:pb-[128px]">
     <nav>
       {/* Mobile Navbar */}
-      <div className="flex items-center justify-between py-8 px-6 border-b border-[#ffffff22] md:hidden">
+      <div className="flex items-center justify-between py-8 mx-6 border-b border-[#ffffff22] md:hidden">
         <div
           onClick={() => dispatch(toggleNav())}
           className="w-4 h-4 flex items-center justify-center"
