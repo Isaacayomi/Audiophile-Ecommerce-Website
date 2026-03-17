@@ -20,6 +20,8 @@ export interface ModalButtonProps {
   children: ReactNode;
   onClick?: () => void;
   classname?: string;
+  width?: string;
+  paddingY?: string;
 }
 
 export interface NavMenuProps {

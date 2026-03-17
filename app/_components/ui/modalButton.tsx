@@ -1,12 +1,18 @@
 // ModalButton is a reusable button used in both checkout and order-complete modals.
-// It accepts children for text and onClick handler from parent component.
+// It accepts children for text, onClick handler, optional width, and custom classname.
 import { ModalButtonProps } from "@/app/type";
 
-const ModalButton = ({ children, onClick, classname }: ModalButtonProps) => {
+const ModalButton = ({
+  children,
+  onClick,
+  classname,
+  width = "w-full",
+  paddingY = "py-3.75 ",
+}: ModalButtonProps) => {
   return (
     <button
       onClick={onClick}
-      className={`${classname} bg-[#D87D4A] w-full text-white font-bold py-3.75 px-14 text-[13px] tracking-[1px] hover:bg-[#FBAF85] transition-colors cursor-pointer`}
+      className={`${width} ${classname} bg-[#D87D4A] text-white font-bold px-14 text-[13px] tracking-[1px] hover:bg-[#FBAF85] transition-colors cursor-pointer`}
     >
       {children}
     </button>

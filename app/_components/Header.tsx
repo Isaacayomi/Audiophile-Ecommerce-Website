@@ -32,7 +32,7 @@ const Header = () => {
     // <nav className="pb-[108px] md:pb-[126px] lg:pb-[128px]">
     <nav>
       {/* Mobile Navbar */}
-      <div className="flex items-center justify-between py-8 mx-6 border-b border-[#979797] md:hidden">
+      <div className="flex items-center justify-between py-8 px-6 border-b border-[#ffffff22] md:hidden">
         <div
           onClick={() => dispatch(toggleNav())}
           className="w-4 h-4 flex items-center justify-center"
@@ -62,7 +62,7 @@ const Header = () => {
       </div>
 
       {/* Tablet Navbar */}
-      <div className="hidden lg:hidden md:flex items-center gap-116.25 justify-between py-8 mx-9.75 border-b border-[#979797] ">
+      <div className="hidden lg:hidden md:flex items-center gap-116.25 justify-between py-8 mx-9.75 border-b border-[#ffffff22] ">
         <div className="flex items-center gap-10.5">
           <div
             onClick={() => dispatch(toggleNav())}
@@ -94,7 +94,7 @@ const Header = () => {
       </div>
 
       {/* Desktop Navbar */}
-      <div className="hidden lg:flex items-center justify-between py-8.75 mx-41.25 border-b border-[#979797] ">
+      <div className="hidden lg:flex items-center justify-between py-8.75 mx-41.25 border-b border-[#ffffff22] ">
         <div>
           <Image
             src="/logo.png"

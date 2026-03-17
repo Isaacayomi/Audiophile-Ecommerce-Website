@@ -1,7 +1,4 @@
 import NavMenu from "./ui/navMenu";
-import Image from "next/image";
-import Link from "next/link";
-import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import ModalButton from "./ui/modalButton";
 
 const HeroSection = () => {
@@ -19,7 +16,13 @@ const HeroSection = () => {
           for the passionate music enthusiast.
         </p>
 
-        <ModalButton classname="w-[50%] uppercase">See Product</ModalButton>
+        <ModalButton
+          width="w-[160px]"
+          paddingY="py-0"
+          classname="uppercase font-bold text-[13px] tracking-[1px] px-0  "
+        >
+          See Product
+        </ModalButton>
       </div>
 
       <NavMenu absolute={false} />
