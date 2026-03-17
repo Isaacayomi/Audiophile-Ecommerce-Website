@@ -12,19 +12,21 @@ const Footer = () => {
       <footer className="flex flex-col items-center md:items-start justify-center pb-[38px] ">
         {/* Logo and nav links for md -> lg layout */}
         <div className="w-full flex flex-col items-center md:items-start lg:flex-row lg:justify-between">
-          <Image
-            src="/logo.png"
-            width={100}
-            height={100}
-            alt="Footer Logo"
-            className="mt-[52px] mb-[48px] md:mb-0"
-          />
+          <Link href="/">
+            <Image
+              src="/logo.png"
+              width={100}
+              height={100}
+              alt="Footer Logo"
+              className="mt-[52px] mb-[48px] md:mb-0 cursor-pointer"
+            />
+          </Link>
 
           <ul className="flex flex-col justify-center pb-[48px] text-center md:flex-row md:gap-[34px] md:items-start md:text-left md:pt-[32px] lg:pb-0">
             {items.map((item) => (
               <li key={item} className="pb-[16px]">
                 <Link
-                  className="uppercase font-bold text-[13px] tracking-[2px] leading-[25px] text-white"
+                  className="uppercase font-bold text-[13px] tracking-[2px] leading-[25px] text-white cursor-pointer hover:text-[#D87D4A]"
                   href={`/${item}`}
                 >
                   {item}
@@ -37,7 +39,7 @@ const Footer = () => {
         {/* Summary + bottom row layout for lg screens */}
         <div className="w-full flex flex-col items-center md:items-start gap-8 lg:flex-row lg:justify-between lg:items-start">
           <div className="flex flex-col items-center md:items-start lg:max-w-[60%]">
-            <p className="text-[15px] leading-[25px] font-medium text-center md:text-left text-[rgba(255,255,255,0.5)] lg:pt-[36px] lg:pb-[56px] ">
+            <p className="text-[15px] leading-[25px] font-medium text-center md:text-left text-[rgba(255,255,255,0.5)] lg:pt-[36px] lg:pb-[56px] lg:max-w-[540px]">
               Audiophile is an all in one stop to fulfill your audio needs.
               We're a small team of music lovers and sound specialists who are
               devoted to helping you get the most out of personal audio. Come
@@ -51,9 +53,9 @@ const Footer = () => {
 
           {/* On large screens, social icons are on the right, vertically centered */}
           <div className="flex items-center justify-center gap-[16px] lg:pt-[105px]">
-            <IoLogoFacebook className="w-[24px] h-[24px]" />
-            <FaTwitter className="w-[24px] h-[24px]" />
-            <FaInstagram className="w-[24px] h-[24px]" />
+            <IoLogoFacebook className="w-[24px] h-[24px] cursor-pointer hover:text-[#D87D4A]" />
+            <FaTwitter className="w-[24px] h-[24px] cursor-pointer hover:text-[#D87D4A]" />
+            <FaInstagram className="w-[24px] h-[24px] cursor-pointer hover:text-[#D87D4A]" />
           </div>
         </div>
       </footer>
