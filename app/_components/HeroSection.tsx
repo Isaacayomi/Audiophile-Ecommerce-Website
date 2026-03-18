@@ -1,6 +1,7 @@
 import ResponsivePicture from "./ResponsivePicture";
 import Link from "next/link";
 import CategoryCards from "./CategoryCards";
+import { RhythmGroup, RhythmItem } from "./ui/Rhythm";
 
 const HeroSection = () => {
   return (
@@ -31,27 +32,35 @@ const HeroSection = () => {
 
         <div className="mx-auto w-82 pt-27 pb-28 text-center md:w-94.75 md:pt-31.5 md:pb-41.75 lg:w-full lg:max-w-277.5 lg:py-0 lg:text-left">
           <div className="relative z-10 lg:flex lg:min-h-158 lg:items-center">
-            <div className="lg:w-99.5 lg:pt-0.5">
-              <p className="pb-4 text-overline tracking-overline text-white/50 md:pb-6">
-                NEW PRODUCT
-              </p>
+            <RhythmGroup className="lg:w-99.5 lg:pt-0.5" inView={false}>
+              <RhythmItem variant="soft">
+                <p className="pb-4 text-overline tracking-overline text-white/50 md:pb-6">
+                  NEW PRODUCT
+                </p>
+              </RhythmItem>
 
-              <h1 className="pb-6 text-display font-bold uppercase tracking-heading text-white md:text-hero md:leading-14.5 md:tracking-banner">
-                XX99 Mark II Headphones
-              </h1>
+              <RhythmItem>
+                <h1 className="pb-6 text-display font-bold uppercase tracking-heading text-white md:text-hero md:leading-14.5 md:tracking-banner">
+                  XX99 Mark II Headphones
+                </h1>
+              </RhythmItem>
 
-              <p className="pb-7 text-copy leading-6.25 font-medium text-white/75 md:pb-10 lg:w-87.25">
-                Experience natural, lifelike audio and exceptional build quality
-                made for the passionate music enthusiast.
-              </p>
+              <RhythmItem>
+                <p className="pb-7 text-copy leading-6.25 font-medium text-white/75 md:pb-10 lg:w-87.25">
+                  Experience natural, lifelike audio and exceptional build quality
+                  made for the passionate music enthusiast.
+                </p>
+              </RhythmItem>
 
-              <Link
-                href="/headphones/xx99-mark-two-headphones"
-                className="inline-flex h-12 w-40 items-center justify-center bg-brand text-label font-bold uppercase tracking-copy text-white transition-colors hover:bg-brand-hover"
-              >
-                See Product
-              </Link>
-            </div>
+              <RhythmItem variant="pop">
+                <Link
+                  href="/headphones/xx99-mark-two-headphones"
+                  className="inline-flex h-12 w-40 items-center justify-center bg-brand text-label font-bold uppercase tracking-copy text-white transition-colors hover:bg-brand-hover"
+                >
+                  See Product
+                </Link>
+              </RhythmItem>
+            </RhythmGroup>
           </div>
         </div>
       </section>

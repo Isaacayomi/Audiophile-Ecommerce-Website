@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { closeCart } from "../../store/uiState/cartSlice";
 import { useRouter } from "next/navigation";
 import ModalBackdrop from "./ModalBackdrop";
+import { RhythmGroup, RhythmItem } from "./Rhythm";
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -15,6 +16,7 @@ const Cart = () => {
       wrapperClassName="items-start justify-center px-6 pt-28 md:justify-end md:px-10 md:pt-28 lg:px-41.25 lg:pt-32"
       panelClassName="relative w-full max-w-94.25 rounded-lg bg-white px-7 py-8 shadow-panel"
     >
+      <RhythmGroup inView={false}>
       <button
         onClick={() => dispatch(closeCart())}
         aria-label="Close cart"
@@ -59,16 +61,19 @@ const Cart = () => {
         <p className="text-copy font-medium text-black/50">TOTAL</p>
         <p className="text-title font-bold text-black">$ 2,999</p>
       </div>
-      <button
-        type="button"
-        onClick={() => {
-          dispatch(closeCart());
-          router.push("/checkout");
-        }}
-        className="inline-flex h-12 w-full items-center justify-center bg-brand text-label font-bold uppercase tracking-copy text-white transition-colors hover:bg-brand-hover"
-      >
-        CHECKOUT
-      </button>
+        <RhythmItem variant="pop">
+          <button
+            type="button"
+            onClick={() => {
+              dispatch(closeCart());
+              router.push("/checkout");
+            }}
+            className="inline-flex h-12 w-full items-center justify-center bg-brand text-label font-bold uppercase tracking-copy text-white transition-colors hover:bg-brand-hover"
+          >
+            CHECKOUT
+          </button>
+        </RhythmItem>
+      </RhythmGroup>
     </ModalBackdrop>
   );
 };

@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { categories } from "../lib/products";
 import { BestGearSectionProps } from "../type";
+import { RhythmGroup, RhythmItem } from "./ui/Rhythm";
 
 const thumbnails = {
   headphones: "/assets/shared/desktop/image-category-thumbnail-headphones.png",
@@ -12,11 +13,12 @@ const thumbnails = {
 const CategoryCards = ({ className = "" }: BestGearSectionProps) => {
   return (
     <section className={`mx-6 md:mx-10 lg:mx-auto lg:max-w-277.5 ${className}`}>
-      <div className="grid gap-17.5 md:grid-cols-3 md:gap-2.5 lg:gap-7.5">
+      <RhythmGroup className="grid gap-17.5 md:grid-cols-3 md:gap-2.5 lg:gap-7.5">
         {categories.map((category) => (
-          <div
+          <RhythmItem
             key={category.slug}
             className="relative rounded-lg bg-surface px-6 pb-5.5 pt-22 text-center"
+            variant="pop"
           >
             <Image
               src={thumbnails[category.slug]}
@@ -40,9 +42,9 @@ const CategoryCards = ({ className = "" }: BestGearSectionProps) => {
                 height={12}
               />
             </Link>
-          </div>
+          </RhythmItem>
         ))}
-      </div>
+      </RhythmGroup>
     </section>
   );
 };

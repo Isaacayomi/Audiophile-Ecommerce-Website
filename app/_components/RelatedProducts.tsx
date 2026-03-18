@@ -1,20 +1,25 @@
 import Link from "next/link";
 import { getProductBySlug, Product } from "../lib/products";
 import ResponsivePicture from "./ResponsivePicture";
+import { RhythmGroup, RhythmItem } from "./ui/Rhythm";
 
 const RelatedProducts = ({ product }: { product: Product }) => {
   return (
     <section className="mx-6 mt-30 text-center md:mx-10 lg:mx-auto lg:mt-40 lg:max-w-277.5">
-      <h2 className="mb-10 text-heading-sm font-bold uppercase tracking-heading text-black md:mb-14 md:text-4xl md:tracking-title">
-        You may also like
-      </h2>
-      <div className="grid gap-14 md:grid-cols-3 md:gap-2.75 lg:gap-7.5">
+      <RhythmGroup>
+        <RhythmItem variant="soft">
+          <h2 className="mb-10 text-heading-sm font-bold uppercase tracking-heading text-black md:mb-14 md:text-4xl md:tracking-title">
+            You may also like
+          </h2>
+        </RhythmItem>
+      </RhythmGroup>
+      <RhythmGroup className="grid gap-14 md:grid-cols-3 md:gap-2.75 lg:gap-7.5">
         {product.others.map((other) => {
           const item = getProductBySlug(other.slug);
           if (!item) return null;
 
           return (
-            <div key={other.slug}>
+            <RhythmItem key={other.slug} variant="pop">
               <ResponsivePicture
                 mobileSrc={other.image.mobile}
                 tabletSrc={other.image.tablet}
@@ -31,10 +36,10 @@ const RelatedProducts = ({ product }: { product: Product }) => {
               >
                 See Product
               </Link>
-            </div>
+            </RhythmItem>
           );
         })}
-      </div>
+      </RhythmGroup>
     </section>
   );
 };

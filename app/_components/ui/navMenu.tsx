@@ -1,6 +1,7 @@
 import { NavMenuProps } from "@/app/type";
 import Image from "next/image";
 import Link from "next/link";
+import { RhythmGroup, RhythmItem } from "./Rhythm";
 
 const NavMenu = ({ absolute = true }: NavMenuProps) => {
   const products = [
@@ -25,11 +26,12 @@ const NavMenu = ({ absolute = true }: NavMenuProps) => {
     <div
       className={`${absolute ? "absolute left-0 right-0 z-40" : ""} mx-auto w-full bg-white px-6 py-8 md:px-10 md:py-14 lg:hidden`}
     >
-      <div className="grid gap-17.5 md:grid-cols-3 md:gap-2.5">
+      <RhythmGroup className="grid gap-17.5 md:grid-cols-3 md:gap-2.5" inView={false}>
         {products.map((product) => (
-          <div
+          <RhythmItem
             key={product.name}
             className="relative mx-auto w-full rounded-lg bg-surface px-6 pb-5.5 pt-22 text-center"
+            variant="pop"
           >
             <Image
               src={product.image}
@@ -55,9 +57,9 @@ const NavMenu = ({ absolute = true }: NavMenuProps) => {
                 height={12}
               />
             </Link>
-          </div>
+          </RhythmItem>
         ))}
-      </div>
+      </RhythmGroup>
     </div>
   );
 };

@@ -1,18 +1,23 @@
 import Image from "next/image";
 import Link from "next/link";
+import { RhythmGroup, RhythmItem } from "../_components/ui/Rhythm";
 
 const CheckoutPage = () => {
   return (
     <div className="bg-neutral-100 px-6 py-4 md:px-10 md:py-12 lg:px-41.25 lg:py-19.75">
-      <Link
-        href="/"
-        className="mb-6 inline-block text-copy leading-copy font-medium text-black/50 transition-colors hover:text-brand md:mb-9.5"
-      >
-        Go Back
-      </Link>
+      <RhythmGroup inView={false}>
+        <RhythmItem variant="soft">
+          <Link
+            href="/"
+            className="mb-6 inline-block text-copy leading-copy font-medium text-black/50 transition-colors hover:text-brand md:mb-9.5"
+          >
+            Go Back
+          </Link>
+        </RhythmItem>
+      </RhythmGroup>
 
-      <div className="lg:grid lg:grid-cols-checkout lg:items-start lg:gap-7.5">
-        <section className="rounded-lg bg-white px-6 py-8 md:px-7 md:py-7.5 lg:px-12 lg:py-13.5">
+      <RhythmGroup className="lg:grid lg:grid-cols-checkout lg:items-start lg:gap-7.5">
+        <RhythmItem className="rounded-lg bg-white px-6 py-8 md:px-7 md:py-7.5 lg:px-12 lg:py-13.5">
           <h1 className="mb-8 text-heading-md font-bold uppercase tracking-copy text-black md:text-4xl md:tracking-title">
             Checkout
           </h1>
@@ -109,9 +114,9 @@ const CheckoutPage = () => {
               </div>
             </div>
           </div>
-        </section>
+        </RhythmItem>
 
-        <aside className="mt-8 rounded-lg bg-white px-6 py-8 md:px-8 lg:mt-0">
+        <RhythmItem className="mt-8 rounded-lg bg-white px-6 py-8 md:px-8 lg:mt-0" variant="pop">
           <h2 className="mb-7.75 text-title font-bold uppercase tracking-heading text-black">
             Summary
           </h2>
@@ -182,8 +187,8 @@ const CheckoutPage = () => {
           >
             Continue &amp; Pay
           </button>
-        </aside>
-      </div>
+        </RhythmItem>
+      </RhythmGroup>
     </div>
   );
 };

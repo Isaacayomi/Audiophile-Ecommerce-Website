@@ -11,6 +11,7 @@ import { toggleCart } from "../store/uiState/cartSlice";
 import OrderCompletionModal from "./ui/orderCompletionModal";
 import Cart from "./ui/cart";
 import CheckoutModal from "./ui/checkoutModal";
+import { RhythmGroup, RhythmItem } from "./ui/Rhythm";
 
 const Header = () => {
   const items = ["home", "headphones", "speakers", "earphones"];
@@ -28,7 +29,10 @@ const Header = () => {
 
   return (
     <nav className="relative z-20 bg-black">
-      <div className="mx-6 flex items-center justify-between border-b border-white/15 py-8 md:hidden">
+      <RhythmGroup
+        className="mx-6 flex items-center justify-between border-b border-white/15 py-8 md:hidden"
+        inView={false}
+      >
         <button
           onClick={() => dispatch(toggleNav())}
           className="flex h-4 w-4 items-center justify-center"
@@ -63,9 +67,12 @@ const Header = () => {
             width={23}
           />
         </button>
-      </div>
+      </RhythmGroup>
 
-      <div className="mx-10 hidden items-center justify-between border-b border-white/15 py-8 md:flex lg:hidden">
+      <RhythmGroup
+        className="mx-10 hidden items-center justify-between border-b border-white/15 py-8 md:flex lg:hidden"
+        inView={false}
+      >
         <div className="flex items-center gap-10.5">
           <button
             onClick={() => dispatch(toggleNav())}
@@ -102,17 +109,22 @@ const Header = () => {
             width={23}
           />
         </button>
-      </div>
+      </RhythmGroup>
 
-      <div className="mx-41.25 hidden items-center justify-between border-b border-white/15 py-9 lg:flex">
-        <Link href="/">
+      <RhythmGroup
+        className="mx-41.25 hidden items-center justify-between border-b border-white/15 py-9 lg:flex"
+        inView={false}
+      >
+        <RhythmItem variant="soft">
+          <Link href="/">
           <Image
             src="/assets/shared/desktop/logo.svg"
             alt="Audiophile"
             height={25}
             width={143}
           />
-        </Link>
+          </Link>
+        </RhythmItem>
 
         <div className="flex items-center justify-center gap-8.5 text-label font-bold leading-6.25 tracking-banner text-white">
           {items.map((item) => (
@@ -135,7 +147,7 @@ const Header = () => {
             className="cursor-pointer"
           />
         </button>
-      </div>
+      </RhythmGroup>
 
       {isOpen && <NavMenu />}
       {isCartOpen && <Cart />}

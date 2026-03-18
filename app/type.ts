@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { Product } from "./lib/products";
 
 export interface toggleNavState {
   value: boolean;
@@ -30,4 +31,19 @@ export interface NavMenuProps {
 
 export interface BestGearSectionProps {
   className?: string;
+  title?: string;
+}
+
+export interface ProductCategorySectionProps {
+  product: Product;
+  reverse?: boolean;
+}
+
+export interface ResponsivePictureProps {
+  alt: string;
+  mobileSrc: string;
+  tabletSrc: string;
+  desktopSrc: string;
+  className?: string;
+  imageClassName?: string;
 }
