@@ -8,8 +8,8 @@ const HeroSection = () => {
         bg-black
         bg-[url('/assets/mobile-hero.png')]
         bg-no-repeat
-        bg-[position:center_-120px]      /* tweak for mobile like desktop */
-        bg-[length:auto_100%]           /* mobile behaves like desktop */
+        bg-[position:center_-50px]
+        bg-[length:320px_auto]
         min-h-[600px]
         md:bg-[url('/assets/sample-tablet.png')]
         md:bg-[length:768px_auto]
@@ -18,8 +18,12 @@ const HeroSection = () => {
         relative
         overflow-hidden
         mb-[40px]
+        lg:bg-none
       "
     >
+      {/* Circular trim for mobile using radial gradient */}
+      <div className="md:hidden absolute inset-0 bg-[radial-gradient(circle,transparent_65%,black_100%)]"></div>
+
       {/* Overlay only for tablet and above */}
       <div className="hidden md:block absolute inset-0 bg-[radial-gradient(circle,transparent_60%,black_100%)]"></div>
 
