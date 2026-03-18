@@ -1,4 +1,3 @@
-import ResponsivePicture from "./ResponsivePicture";
 import Link from "next/link";
 import CategoryCards from "./CategoryCards";
 
@@ -9,7 +8,7 @@ const HeroSection = () => {
         className="
           relative
           overflow-hidden
-          bg-[#101010]
+          bg-[#141414]
           bg-[url('/assets/home/mobile/image-header.jpg')]
           bg-no-repeat
           bg-[length:375px_auto]
@@ -19,26 +18,19 @@ const HeroSection = () => {
           md:bg-[url('/assets/home/tablet/image-header.jpg')]
           md:bg-[length:768px_auto]
           md:bg-[position:center_top]
-          lg:min-h-[640px]
+          lg:min-h-[632px]
           lg:bg-none
         "
       >
-        {/* Desktop uses a dedicated art layer so the headphone product can sit lower and larger like the provided comp. */}
         <div className="pointer-events-none absolute inset-0 hidden lg:block">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_73%_42%,rgba(255,255,255,0.07),transparent_27%)]" />
-          <ResponsivePicture
-            mobileSrc="/assets/home/mobile/image-header.jpg"
-            tabletSrc="/assets/home/tablet/image-header.jpg"
-            desktopSrc="/assets/home/desktop/image-hero.jpg"
-            alt="XX99 Mark II headphones"
-            className="absolute inset-y-0 right-0 w-[820px] overflow-hidden"
-            imageClassName="h-full w-full object-cover object-[-68px_center]"
-          />
+          <div className="absolute inset-0 bg-[#141414]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_74%_50%,rgba(255,255,255,0.10),transparent_23%)]" />
+          <div className="mx-auto h-full max-w-[1440px] bg-[url('/assets/home/desktop/image-hero.jpg')] bg-[length:1440px_729px] bg-no-repeat lg:bg-[position:center_-96px]" />
         </div>
 
-        <div className="mx-auto w-[328px] pt-[108px] pb-[112px] text-center md:w-[379px] md:pt-[126px] md:pb-[167px] lg:max-w-[1110px] lg:py-0 lg:text-left">
-          <div className="relative z-10 lg:flex lg:min-h-[640px] lg:items-center">
-            <div className="lg:w-[398px] lg:pt-[6px]">
+        <div className="mx-auto w-[328px] pt-[108px] pb-[112px] text-center md:w-[379px] md:pt-[126px] md:pb-[167px] lg:w-full lg:max-w-[1110px] lg:py-0 lg:text-left">
+          <div className="relative z-10 lg:flex lg:min-h-[632px] lg:items-center">
+            <div className="lg:w-[398px] lg:pt-[2px]">
               <p className="pb-4 text-[14px] tracking-[10px] text-white/50 md:pb-6">
                 NEW PRODUCT
               </p>

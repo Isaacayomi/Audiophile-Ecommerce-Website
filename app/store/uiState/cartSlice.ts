@@ -12,10 +12,13 @@ export const toggleCartSlice = createSlice({
     toggleCart: (state) => {
       state.value === false ? (state.value = true) : (state.value = false);
     },
+    closeCart: (state) => {
+      state.value = false;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { toggleCart } = toggleCartSlice.actions;
+export const { toggleCart, closeCart } = toggleCartSlice.actions;
 
 export default toggleCartSlice.reducer;
