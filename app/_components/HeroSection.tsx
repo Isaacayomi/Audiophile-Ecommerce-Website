@@ -1,3 +1,4 @@
+import ResponsivePicture from "./ResponsivePicture";
 import Link from "next/link";
 import CategoryCards from "./CategoryCards";
 
@@ -9,23 +10,22 @@ const HeroSection = () => {
           relative
           overflow-hidden
           bg-[#141414]
-          bg-[url('/assets/home/mobile/image-header.jpg')]
-          bg-no-repeat
-          bg-[length:375px_auto]
-          bg-[position:center_top]
           min-h-[600px]
           md:min-h-[729px]
-          md:bg-[url('/assets/home/tablet/image-header.jpg')]
-          md:bg-[length:768px_auto]
-          md:bg-[position:center_top]
           lg:min-h-[632px]
-          lg:bg-none
         "
       >
-        <div className="pointer-events-none absolute inset-0 hidden lg:block">
+        <div className="pointer-events-none absolute inset-0">
           <div className="absolute inset-0 bg-[#141414]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_74%_50%,rgba(255,255,255,0.10),transparent_23%)]" />
-          <div className="mx-auto h-full max-w-[1440px] bg-[url('/assets/home/desktop/image-hero.jpg')] bg-[length:1440px_729px] bg-no-repeat lg:bg-[position:center_-96px]" />
+          <ResponsivePicture
+            mobileSrc="/assets/home/mobile/image-header.jpg"
+            tabletSrc="/assets/home/tablet/image-header.jpg"
+            desktopSrc="/assets/home/desktop/image-hero.jpg"
+            alt="XX99 Mark II headphones"
+            className="absolute inset-0"
+            imageClassName="h-full w-full object-cover object-center md:object-center lg:object-center"
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(20,20,20,0.18)_0%,rgba(20,20,20,0)_16%,rgba(20,20,20,0)_72%,rgba(20,20,20,0.18)_100%)] lg:bg-[radial-gradient(circle_at_74%_50%,rgba(255,255,255,0.10),transparent_23%)]" />
         </div>
 
         <div className="mx-auto w-[328px] pt-[108px] pb-[112px] text-center md:w-[379px] md:pt-[126px] md:pb-[167px] lg:w-full lg:max-w-[1110px] lg:py-0 lg:text-left">
