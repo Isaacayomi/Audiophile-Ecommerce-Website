@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { categories } from "../lib/products";
+import { BestGearSectionProps } from "../type";
 
 const thumbnails = {
   headphones: "/assets/shared/desktop/image-category-thumbnail-headphones.png",
@@ -8,28 +9,28 @@ const thumbnails = {
   earphones: "/assets/shared/desktop/image-category-thumbnail-earphones.png",
 };
 
-const CategoryCards = ({ className = "" }: { className?: string }) => {
+const CategoryCards = ({ className = "" }: BestGearSectionProps) => {
   return (
-    <section className={`mx-6 md:mx-10 lg:mx-auto lg:max-w-[1110px] ${className}`}>
-      <div className="grid gap-17.5 md:grid-cols-3 md:gap-2.5 lg:gap-[30px]">
+    <section className={`mx-6 md:mx-10 lg:mx-auto lg:max-w-277.5 ${className}`}>
+      <div className="grid gap-17.5 md:grid-cols-3 md:gap-2.5 lg:gap-7.5">
         {categories.map((category) => (
           <div
             key={category.slug}
-            className="relative rounded-lg bg-[#F1F1F1] px-6 pb-[22px] pt-[88px] text-center"
+            className="relative rounded-lg bg-surface px-6 pb-5.5 pt-22 text-center"
           >
             <Image
               src={thumbnails[category.slug]}
               alt={category.label}
               width={180}
               height={180}
-              className="absolute left-1/2 top-[-52px] w-[147px] -translate-x-1/2 md:w-[170px] lg:w-[180px]"
+              className="absolute left-1/2 -top-13 w-36.75 -translate-x-1/2 md:w-42.5 lg:w-45"
             />
-            <h2 className="mb-[17px] text-[15px] font-bold uppercase tracking-[1.07px] text-black lg:text-[18px] lg:tracking-[1.29px]">
+            <h2 className="mb-4.25 text-copy font-bold uppercase tracking-copy text-black lg:text-title lg:tracking-heading">
               {category.label}
             </h2>
             <Link
               href={`/${category.slug}`}
-              className="inline-flex items-center gap-[13px] text-[13px] font-bold uppercase tracking-[1px] text-black/50 transition-colors hover:text-[#D87D4A]"
+              className="inline-flex items-center gap-3.25 text-label font-bold uppercase tracking-copy text-black/50 transition-colors hover:text-brand"
             >
               Shop
               <Image

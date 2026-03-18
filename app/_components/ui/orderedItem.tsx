@@ -1,6 +1,5 @@
 // OrderedItem: order detail card shown in checkout and order completion modals.
 // Includes product row, grand total, and home navigation action.
-import { toggleCart } from "@/app/store/uiState/cartSlice";
 import Image from "next/image";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
@@ -11,12 +10,10 @@ const OrderedItem = () => {
   const dispatch = useDispatch();
   return (
     <>
-      {/* Parent Container */}
-      <div className="bg-[#F1F1F1] flex flex-col rounded-lg ">
+      <div className="flex flex-col rounded-lg bg-surface">
         <div className="md:flex md:flex-row">
           <div className="md:w-1/2">
-            <div className="flex items-center justify-between p-8.75 ">
-              {/* Product Image */}
+            <div className="flex items-center justify-between p-8.75">
               <div>
                 <Image
                   src="/assets/cart/image-xx99-mark-two-headphones.jpg"
@@ -28,34 +25,25 @@ const OrderedItem = () => {
               </div>
 
               <div className="flex flex-col justify-center gap-2">
-                {/* Product Name */}
-                <p className="font-bold text-[15px] text-black">XX99 MK II</p>
-                {/* Product Price */}
-                <p className="font-bold text-[14px] text-[#00000082]">
-                  $ 2,999
-                </p>
+                <p className="text-copy font-bold text-black">XX99 MK II</p>
+                <p className="text-overline font-bold text-black/50">$ 2,999</p>
               </div>
-              {/* Product Quantity */}
-              <p className="self-start text-[#00000082] font-bold text-[15px]">
-                X1
-              </p>
+              <p className="self-start text-copy font-bold text-black/50">X1</p>
             </div>
-            <p className="text-[rgba(0,0,0,0.45)] font-bold text-[12px] pt-3 border-t-2 border-[#d8d8d8] w-53.75 mx-auto text-center pb-6 tracking-[-0.21px] md:border-t">
+            <p className="mx-auto w-53.75 border-t-2 border-line-strong pb-6 pt-3 text-center text-xs font-bold tracking-tight text-black/50 md:border-t">
               and two other item(s)
             </p>
           </div>
 
-          {/* Grand Total */}
-          <div className="md:w-1/2 bg-black py-3.75 px-6 rounded-b-lg flex flex-col justify-center">
-            <p className="font-medium text-[15px] leading-6.25 pb-2 text-[rgba(255,255,255,0.5)]">
+          <div className="flex flex-col justify-center rounded-b-lg bg-black px-6 py-3.75 md:w-1/2">
+            <p className="pb-2 text-copy leading-6.25 font-medium text-white/50">
               GRAND TOTAL
             </p>
-            <p className="font-bold text-white text-[18px]">$ 5,446</p>
+            <p className="text-title font-bold text-white">$ 5,446</p>
           </div>
         </div>
       </div>
-      <div className="mt-5.75 md:mt-11.5 w-full mx-auto md:cursor-pointer ">
-        {/* Close checkout modal before navigating to Home */}
+      <div className="mx-auto mt-5.75 w-full md:mt-11.5 md:cursor-pointer">
         <ModalButton
           onClick={() => {
             dispatch(closeOrderCompletion());

@@ -27,3 +27,7 @@ export interface ModalButtonProps {
 export interface NavMenuProps {
   absolute?: boolean;
 }
+
+export interface BestGearSectionProps {
+  className?: string;
+}

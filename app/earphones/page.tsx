@@ -10,7 +10,7 @@ const EarphonesPage = () => {
   return (
     <div className="bg-white">
       <PageBanner title="Earphones" />
-      <div className="mt-16 grid gap-[120px] md:mt-[120px] md:gap-[120px] lg:mt-[160px] lg:gap-[160px]">
+      <div className="mt-16 grid gap-30 md:mt-30 md:gap-30 lg:mt-40 lg:gap-40">
         {products.map((product, index) => (
           <ProductCategorySection
             key={product.slug}
@@ -19,8 +19,8 @@ const EarphonesPage = () => {
           />
         ))}
       </div>
-      <CategoryCards className="mt-[120px] lg:mt-[160px]" />
-      <BestGearSection className="mt-[120px] lg:mt-[168px]" />
+      <CategoryCards className="mt-30 lg:mt-40" />
+      <BestGearSection className="mt-30 lg:mt-42" />
     </div>
   );
 };

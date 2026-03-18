@@ -8,8 +8,41 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-brand: #d87d4a;
+  --color-brand-hover: #fbaf85;
+  --color-brand-dark: #4c4c4c;
+  --color-surface: #f1f1f1;
+  --color-surface-muted: #fafafa;
+  --color-panel: #141414;
+  --color-line: #cfcfcf;
+  --color-line-strong: #d8d8d8;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --text-label: 0.8125rem;
+  --text-copy: 0.9375rem;
+  --text-overline: 0.875rem;
+  --text-title: 1.125rem;
+  --text-heading-sm: 1.5rem;
+  --text-heading-md: 1.75rem;
+  --text-heading-lg: 2.5rem;
+  --text-display: 2.25rem;
+  --text-hero: 3.5rem;
+  --tracking-copy: 0.0625rem;
+  --tracking-title: 0.080625rem;
+  --tracking-heading: 0.05375rem;
+  --tracking-banner: 0.089375rem;
+  --tracking-overline: 0.625rem;
+  --leading-copy: 1.5625rem;
+  --leading-heading: 2.375rem;
+  --leading-display: 2.75rem;
+  --leading-hero: 3.625rem;
+  --grid-template-columns-checkout: 45.625rem 21.875rem;
+  --grid-template-columns-product-detail: 33.75rem 27.8125rem;
+  --grid-template-columns-product-meta: 39.6875rem 21.875rem;
+  --grid-template-columns-gallery: 27.8125rem minmax(0, 1fr);
+  --grid-template-columns-best-gear: minmax(0, 1fr) 33.75rem;
+  --shadow-modal: 0 24px 48px rgba(0, 0, 0, 0.28);
+  --shadow-panel: 0 18px 38px rgba(0, 0, 0, 0.24);
 }
 
 body {

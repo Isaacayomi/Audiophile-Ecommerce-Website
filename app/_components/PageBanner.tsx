@@ -1,7 +1,7 @@
 const PageBanner = ({ title }: { title: string }) => {
   return (
-    <section className="bg-black px-6 py-8 md:px-10 md:py-[105px] lg:px-[165px] lg:py-[98px]">
-      <h1 className="text-center text-[28px] font-bold uppercase tracking-[2px] text-white md:text-[40px] md:tracking-[1.43px]">
+    <section className="bg-black px-6 py-8 md:px-10 md:py-26.25 lg:px-41.25 lg:py-24.5">
+      <h1 className="text-center text-heading-md font-bold uppercase tracking-banner text-white md:text-heading-lg md:tracking-title">
         {title}
       </h1>
     </section>

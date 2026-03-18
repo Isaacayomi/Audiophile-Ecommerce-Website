@@ -4,11 +4,11 @@ import ResponsivePicture from "./ResponsivePicture";
 
 const RelatedProducts = ({ product }: { product: Product }) => {
   return (
-    <section className="mx-6 mt-[120px] text-center md:mx-10 lg:mx-auto lg:mt-[160px] lg:max-w-[1110px]">
-      <h2 className="mb-10 text-[24px] font-bold uppercase tracking-[0.86px] text-black md:mb-14 md:text-[32px] md:tracking-[1.14px]">
+    <section className="mx-6 mt-30 text-center md:mx-10 lg:mx-auto lg:mt-40 lg:max-w-277.5">
+      <h2 className="mb-10 text-heading-sm font-bold uppercase tracking-heading text-black md:mb-14 md:text-4xl md:tracking-title">
         You may also like
       </h2>
-      <div className="grid gap-14 md:grid-cols-3 md:gap-[11px] lg:gap-[30px]">
+      <div className="grid gap-14 md:grid-cols-3 md:gap-2.75 lg:gap-7.5">
         {product.others.map((other) => {
           const item = getProductBySlug(other.slug);
           if (!item) return null;
@@ -20,14 +20,14 @@ const RelatedProducts = ({ product }: { product: Product }) => {
                 tabletSrc={other.image.tablet}
                 desktopSrc={other.image.desktop}
                 alt={other.name}
-                imageClassName="mb-8 h-[120px] rounded-lg object-cover md:h-[318px]"
+                imageClassName="mb-8 h-30 rounded-lg object-cover md:h-79.5"
               />
-              <h3 className="mb-8 text-[24px] font-bold uppercase tracking-[1.71px] text-black">
+              <h3 className="mb-8 text-heading-sm font-bold uppercase tracking-title text-black">
                 {other.name}
               </h3>
               <Link
                 href={`/${item.category}/${item.slug}`}
-                className="inline-flex h-12 items-center justify-center bg-[#D87D4A] px-[31px] text-[13px] font-bold uppercase tracking-[1px] text-white transition-colors hover:bg-[#FBAF85]"
+                className="inline-flex h-12 items-center justify-center bg-brand px-8 text-label font-bold uppercase tracking-copy text-white transition-colors hover:bg-brand-hover"
               >
                 See Product
               </Link>

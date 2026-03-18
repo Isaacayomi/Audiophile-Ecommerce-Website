@@ -12,7 +12,7 @@ const ModalButton = ({
   return (
     <button
       onClick={onClick}
-      className={`${width} ${paddingX} ${classname} bg-[#D87D4A] text-white font-bold py-3.75 text-[13px] tracking-[1px] hover:bg-[#FBAF85] transition-colors cursor-pointer`}
+      className={`${width} ${paddingX} ${classname} cursor-pointer bg-brand py-3.75 text-label font-bold tracking-copy text-white transition-colors hover:bg-brand-hover`}
     >
       {children}
     </button>

@@ -28,7 +28,7 @@ const Header = () => {
 
   return (
     <nav className="relative z-20 bg-black">
-      <div className="mx-6 flex items-center justify-between border-b border-[#ffffff22] py-8 md:hidden">
+      <div className="mx-6 flex items-center justify-between border-b border-white/15 py-8 md:hidden">
         <button
           onClick={() => dispatch(toggleNav())}
           className="flex h-4 w-4 items-center justify-center"
@@ -65,7 +65,7 @@ const Header = () => {
         </button>
       </div>
 
-      <div className="mx-10 hidden items-center justify-between border-b border-[#ffffff22] py-8 md:flex lg:hidden">
+      <div className="mx-10 hidden items-center justify-between border-b border-white/15 py-8 md:flex lg:hidden">
         <div className="flex items-center gap-10.5">
           <button
             onClick={() => dispatch(toggleNav())}
@@ -104,7 +104,7 @@ const Header = () => {
         </button>
       </div>
 
-      <div className="mx-[165px] hidden items-center justify-between border-b border-[#ffffff22] py-[36px] lg:flex">
+      <div className="mx-41.25 hidden items-center justify-between border-b border-white/15 py-9 lg:flex">
         <Link href="/">
           <Image
             src="/assets/shared/desktop/logo.svg"
@@ -114,11 +114,11 @@ const Header = () => {
           />
         </Link>
 
-        <div className="flex items-center justify-center gap-[34px] text-[13px] font-bold leading-[25px] tracking-[2px] text-white">
+        <div className="flex items-center justify-center gap-8.5 text-label font-bold leading-6.25 tracking-banner text-white">
           {items.map((item) => (
             <Link
               key={item}
-              className="uppercase transition-colors hover:text-[#D87D4A]"
+              className="uppercase transition-colors hover:text-brand"
               href={item === "home" ? "/" : `/${item}`}
             >
               {item.toUpperCase()}

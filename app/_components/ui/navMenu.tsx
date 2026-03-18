@@ -29,23 +29,23 @@ const NavMenu = ({ absolute = true }: NavMenuProps) => {
         {products.map((product) => (
           <div
             key={product.name}
-            className="relative mx-auto w-full rounded-lg bg-[#F1F1F1] px-6 pb-[22px] pt-[88px] text-center"
+            className="relative mx-auto w-full rounded-lg bg-surface px-6 pb-5.5 pt-22 text-center"
           >
             <Image
               src={product.image}
               alt={product.name}
               width={180}
               height={180}
-              className="absolute left-1/2 top-[-52px] w-[147px] -translate-x-1/2"
+              className="absolute left-1/2 -top-13 w-36.75 -translate-x-1/2"
             />
 
-            <p className="pb-[17px] text-[15px] font-bold tracking-[1.07px] text-black">
+            <p className="pb-4.25 text-copy font-bold tracking-copy text-black">
               {product.name}
             </p>
 
             <Link
               href={product.link}
-              className="inline-flex items-center justify-center gap-[13px] text-[13px] font-bold uppercase tracking-[1px] text-black/50"
+              className="inline-flex items-center justify-center gap-3.25 text-label font-bold uppercase tracking-copy text-black/50"
             >
               Shop
               <Image
