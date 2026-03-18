@@ -3,15 +3,37 @@ import ModalButton from "./ui/modalButton";
 
 const HeroSection = () => {
   return (
-    <div className="h-screen bg-black bg-[url('/assets/mobile-hero.png')] bg-no-repeat bg-[position:center_-98px] md:bg-[position:center_-112px] md:bg-[url('/assets/sample-tablet.png')] bg-cover overflow-hidden mb-[40px]">
-      <div className="w-[328px] md:w-[406px]  mx-auto text-center pt-[108px] pb-[112px] md:pt-[126px] md:pb-[167px] md:h-screen ">
+    <div
+      className="
+        bg-black
+        bg-[url('/assets/mobile-hero.png')]
+        bg-no-repeat
+        bg-[position:center_-120px]      /* tweak for mobile like desktop */
+        bg-[length:auto_100%]           /* mobile behaves like desktop */
+        min-h-[600px]
+        md:bg-[url('/assets/sample-tablet.png')]
+        md:bg-[length:768px_auto]
+        md:bg-[position:center_-112px]
+        md:min-h-[900px]
+        relative
+        overflow-hidden
+        mb-[40px]
+      "
+    >
+      {/* Overlay only for tablet and above */}
+      <div className="hidden md:block absolute inset-0 bg-[radial-gradient(circle,transparent_60%,black_100%)]"></div>
+
+      {/* Hero content */}
+      <div className="w-[328px] md:w-[406px] mx-auto text-center pt-[108px] pb-[112px] md:pt-[126px] md:pb-[167px] relative z-10">
         <p className="pb-[16px] text-[14px] tracking-[10px] text-[#FFFFFF7F] md:pb-[24px]">
           NEW PRODUCT
         </p>
-        <h1 className="pb-[24px] uppercase font-bold text-[36px] tracking-[1.29px] leading-[41px]  md:text-[56px] tracking-[2px] md:leading-[62px]">
+
+        <h1 className="pb-[24px] uppercase font-bold text-[36px] md:text-[56px] tracking-[2px] md:leading-[62px]">
           XX99 Mark II Headphones
         </h1>
-        <p className="pb-[28px] text-[15px] font-medium leading-[30px] tracking-[1.15px] text-[#FFFFFFBF] leading-[25px]">
+
+        <p className="pb-[28px] text-[15px] font-medium tracking-[1.15px] text-[#FFFFFFBF] leading-[25px]">
           Experience natural, lifelike audio and exceptional build quality made
           for the passionate music enthusiast.
         </p>
@@ -21,7 +43,10 @@ const HeroSection = () => {
         </ModalButton>
       </div>
 
-      <NavMenu absolute={false} />
+      {/* Next section: NavMenu as part of page */}
+      <section className="bg-white relative z-0">
+        <NavMenu absolute={false} />
+      </section>
     </div>
   );
 };
