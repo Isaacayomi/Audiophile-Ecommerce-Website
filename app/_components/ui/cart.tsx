@@ -1,15 +1,13 @@
 "use client";
 
-// Cart component displays current cart items and the checkout action.
-// Clicking the cart close button hides cart overlay via Redux toggle.
 import Image from "next/image";
-import ModalButton from "./modalButton";
 import { useDispatch } from "react-redux";
 import { toggleCart } from "../../store/uiState/cartSlice";
-import { toggleCheckout } from "../../store/uiState/checkoutSlice";
+import { useRouter } from "next/navigation";
 
 const Cart = () => {
   const dispatch = useDispatch();
+  const router = useRouter();
   return (
     <div className="fixed top-24 md:top-16 md:mt-10 mr-3 inset-x-0 bottom-0 z-50 flex items-start justify-center md:items-start md:justify-end">
       <div className="relative max-w-81.75 w-full bg-white py-8 px-7 rounded-2xl">
@@ -20,10 +18,9 @@ const Cart = () => {
         >
           <span className="leading-none">&times;</span>
         </button>
-        {/* Close button toggles cart overlay state to hidden */}
         <p className="flex items-center justify-between pb-7.75 pt-3">
           <span className="font-bold text-[18px] tracking-[1.29px] text-black">
-            CART (3)
+            CART (1)
           </span>
           <span className="cursor-pointer underline text-[#00000082]">
             Remove all
@@ -33,11 +30,10 @@ const Cart = () => {
         <div className="mb-6 bg-white flex items-center justify-between">
           <div className="bg-[#F1F1F1] w-16 h-16 flex justify-center items-center rounded-lg">
             <Image
-              src="/assets/headphone-removed.png"
+              src="/assets/cart/image-xx99-mark-two-headphones.jpg"
               alt="Product image"
-              width={36.19}
-              height={40}
-              quality={100}
+              width={64}
+              height={64}
               className="rounded-lg"
             />
           </div>
@@ -63,17 +59,18 @@ const Cart = () => {
 
         <div className="pb-6 flex items-center justify-between pt-8">
           <p className="text-[#00000082] font-medium text-[15px]">TOTAL</p>
-          <p className="font-bold text-black text-[18px]">$ 5,396</p>
+          <p className="font-bold text-black text-[18px]">$ 2,999</p>
         </div>
-        {/* Checkout button closes cart, opens checkout modal */}
-        <ModalButton
+        <button
+          type="button"
           onClick={() => {
-            dispatch(toggleCheckout());
             dispatch(toggleCart());
+            router.push("/checkout");
           }}
+          className="inline-flex h-12 w-full items-center justify-center bg-[#D87D4A] text-[13px] font-bold uppercase tracking-[1px] text-white transition-colors hover:bg-[#FBAF85]"
         >
           CHECKOUT
-        </ModalButton>
+        </button>
       </div>
     </div>
   );

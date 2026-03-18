@@ -1,7 +1,5 @@
 "use client";
 
-// Header component: renders navigation and toggles UI overlays (cart, checkout, order completion).
-// Uses redux state to show/hide menus and modals.
 import Image from "next/image";
 import Link from "next/link";
 import NavMenu from "./ui/navMenu";
@@ -17,7 +15,6 @@ import CheckoutModal from "./ui/checkoutModal";
 const Header = () => {
   const items = ["home", "headphones", "speakers", "earphones"];
 
-  // Redux selectors for each overlay modal/menu state.
   const isOpen = useSelector((state: RootState) => state.ui.value);
   const isCartOpen = useSelector((state: RootState) => state.cart.value);
   const isCheckoutOpen = useSelector(
@@ -28,115 +25,124 @@ const Header = () => {
   );
 
   const dispatch = useDispatch();
+
   return (
-    // <nav className="pb-[108px] md:pb-[126px] lg:pb-[128px]">
     <nav className="relative z-20 bg-black">
-      {/* Mobile Navbar */}
-      <div className="flex items-center justify-between py-8 mx-6 border-b border-[#ffffff22] md:hidden">
-        <div
+      <div className="mx-6 flex items-center justify-between border-b border-[#ffffff22] py-8 md:hidden">
+        <button
           onClick={() => dispatch(toggleNav())}
-          className="w-4 h-4 flex items-center justify-center"
+          className="flex h-4 w-4 items-center justify-center"
+          aria-label="Toggle navigation"
         >
           {!isOpen ? (
             <Image
-              src="/hamburger.svg"
-              alt="Hamburger"
+              src="/assets/shared/tablet/icon-hamburger.svg"
+              alt=""
               height={16}
               width={16}
             />
           ) : (
-            <FaTimes size={16} />
+            <FaTimes size={16} className="text-white" />
           )}
-        </div>
-        <div>
-          <Image src="/logo.png" alt="Logo" height={25} width={143} />
-        </div>
-        <div onClick={() => dispatch(toggleCart())}>
+        </button>
+
+        <Link href="/">
           <Image
-            src="/assets/cart-icon.svg"
-            alt="cart-icon"
+            src="/assets/shared/desktop/logo.svg"
+            alt="Audiophile"
+            height={25}
+            width={143}
+          />
+        </Link>
+
+        <button onClick={() => dispatch(toggleCart())} aria-label="Open cart">
+          <Image
+            src="/assets/shared/desktop/icon-cart.svg"
+            alt=""
             height={20}
             width={23}
           />
-        </div>
+        </button>
       </div>
 
-      {/* Tablet Navbar */}
-      <div className="hidden lg:hidden md:flex items-center gap-116.25 justify-between py-8 mx-9.75 border-b border-[#ffffff22] ">
+      <div className="mx-10 hidden items-center justify-between border-b border-[#ffffff22] py-8 md:flex lg:hidden">
         <div className="flex items-center gap-10.5">
-          <div
+          <button
             onClick={() => dispatch(toggleNav())}
-            className="w-4 h-4 flex items-center justify-center"
+            className="flex h-4 w-4 items-center justify-center"
+            aria-label="Toggle navigation"
           >
             {!isOpen ? (
               <Image
-                src="/hamburger.svg"
-                alt="Hamburger"
+                src="/assets/shared/tablet/icon-hamburger.svg"
+                alt=""
                 height={16}
                 width={16}
               />
             ) : (
-              <FaTimes size={16} />
+              <FaTimes size={16} className="text-white" />
             )}
-          </div>
-          <div onClick={() => dispatch(toggleCart())}>
-            <Image src="/logo.png" alt="Logo" height={25} width={143} />
-          </div>
+          </button>
+
+          <Link href="/">
+            <Image
+              src="/assets/shared/desktop/logo.svg"
+              alt="Audiophile"
+              height={25}
+              width={143}
+            />
+          </Link>
         </div>
-        <div onClick={() => dispatch(toggleCart())}>
+
+        <button onClick={() => dispatch(toggleCart())} aria-label="Open cart">
           <Image
-            src="/assets/cart-icon.svg"
-            alt="cart-icon"
+            src="/assets/shared/desktop/icon-cart.svg"
+            alt=""
             height={20}
             width={23}
           />
-        </div>
+        </button>
       </div>
 
-      {/* Desktop Navbar */}
-      <div className="hidden lg:flex items-center justify-between py-8.75 mx-41.25 border-b border-[#ffffff22] ">
-        <div>
+      <div className="mx-[165px] hidden items-center justify-between border-b border-[#ffffff22] py-[36px] lg:flex">
+        <Link href="/">
           <Image
-            src="/logo.png"
-            alt="Logo"
+            src="/assets/shared/desktop/logo.svg"
+            alt="Audiophile"
             height={25}
             width={143}
-            className="cursor-pointer"
           />
-        </div>
-        <div className="flex items-center justify-center text-[13px] gap-8.5 font-bold leading-6.25 tracking-[2px] text-white">
-          {items.map((item, i) => {
-            return (
-              <Link key={i} className="hover:text-[#D87D4A]" href={`/${item}`}>
-                {item.toUpperCase()}
-              </Link>
-            );
-          })}
+        </Link>
+
+        <div className="flex items-center justify-center gap-[34px] text-[13px] font-bold leading-[25px] tracking-[2px] text-white">
+          {items.map((item) => (
+            <Link
+              key={item}
+              className="uppercase transition-colors hover:text-[#D87D4A]"
+              href={item === "home" ? "/" : `/${item}`}
+            >
+              {item.toUpperCase()}
+            </Link>
+          ))}
         </div>
 
-        <div onClick={() => dispatch(toggleCart())}>
+        <button onClick={() => dispatch(toggleCart())} aria-label="Open cart">
           <Image
-            src="/assets/cart-icon.svg"
-            alt="cart icon"
+            src="/assets/shared/desktop/icon-cart.svg"
+            alt=""
             height={20}
             width={23}
             className="cursor-pointer"
           />
-        </div>
+        </button>
       </div>
 
-      {/* Mobile Menu */}
       {isOpen && <NavMenu />}
-
-      {/* Cart component is shown when cart is open */}
       {isCartOpen && <Cart />}
-
-      {/* Checkout modal is shown when user clicks CHECKOUT in cart */}
       {isCheckoutOpen && <CheckoutModal />}
-
-      {/* Order completion confirmation modal shown after payment */}
       {isOrderComplete && <OrderCompletionModal />}
     </nav>
   );
 };
+
 export default Header;

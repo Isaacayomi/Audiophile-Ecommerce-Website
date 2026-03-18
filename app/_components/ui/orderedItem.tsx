@@ -19,10 +19,9 @@ const OrderedItem = () => {
               {/* Product Image */}
               <div>
                 <Image
-                  src="/assets/headphone-removed.png"
+                  src="/assets/cart/image-xx99-mark-two-headphones.jpg"
                   width={28}
                   height={32}
-                  quality={100}
                   alt="Item Ordered"
                   className="h-8 w-7"
                 />

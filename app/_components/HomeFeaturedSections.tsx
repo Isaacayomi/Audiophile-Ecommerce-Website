@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ResponsivePicture from "./ResponsivePicture";
 
 const secondaryButtonClass =
   "inline-flex h-12 items-center justify-center border border-black px-[30px] text-[13px] font-bold uppercase tracking-[1px] text-black transition-colors hover:bg-black hover:text-white";
@@ -7,20 +8,15 @@ const HomeFeaturedSections = () => {
   return (
     <section className="mx-6 mb-[120px] md:mx-10 lg:mx-auto lg:mb-[200px] lg:max-w-[1110px]">
       <div className="relative overflow-hidden rounded-lg bg-[#D87D4A] px-6 pb-[55px] pt-[55px] text-center md:px-[58px] md:pb-16 md:pt-[52px] lg:min-h-[560px] lg:px-[95px] lg:pt-0 lg:text-left">
-        <div className="pointer-events-none absolute left-1/2 top-[52px] h-[558px] w-[558px] -translate-x-1/2 rounded-full border border-white/20 md:top-[30px] lg:left-[220px] lg:top-[-36px] lg:translate-x-0"></div>
-        <div className="pointer-events-none absolute left-1/2 top-[88px] h-[472px] w-[472px] -translate-x-1/2 rounded-full border border-white/10 md:top-[73px] lg:left-[263px] lg:top-[7px] lg:translate-x-0"></div>
-        <div className="pointer-events-none absolute left-1/2 top-[123px] h-[390px] w-[390px] -translate-x-1/2 rounded-full border border-white/10 md:top-[114px] lg:left-[304px] lg:top-[50px] lg:translate-x-0"></div>
+        <div className="pointer-events-none absolute inset-0 bg-[url('/assets/home/desktop/pattern-circles.svg')] bg-[length:558px_558px] bg-[position:center_-120px] bg-no-repeat md:bg-[position:center_-290px] md:bg-[length:944px_944px] lg:bg-[position:-149px_-36px]"></div>
 
         <div className="relative z-10 mx-auto mb-8 w-[172px] md:mb-16 md:w-[197px] lg:absolute lg:bottom-0 lg:left-[95px] lg:mb-0 lg:w-[410px]">
-          <picture>
-            <source media="(min-width: 1024px)" srcSet="/assets/home/zx9-desktop.png" />
-            <source media="(min-width: 768px)" srcSet="/assets/home/zx9-tablet.png" />
-            <img
-              src="/assets/home/zx9-mobile.png"
-              alt="ZX9 speaker"
-              className="h-auto w-full"
-            />
-          </picture>
+          <ResponsivePicture
+            mobileSrc="/assets/home/mobile/image-speaker-zx9.png"
+            tabletSrc="/assets/home/tablet/image-speaker-zx9.png"
+            desktopSrc="/assets/home/desktop/image-speaker-zx9.png"
+            alt="ZX9 speaker"
+          />
         </div>
 
         <div className="relative z-10 lg:ml-auto lg:flex lg:min-h-[560px] lg:w-[349px] lg:items-center">
@@ -37,7 +33,7 @@ const HomeFeaturedSections = () => {
             </p>
 
             <Link
-              href="/speakers"
+              href="/speakers/zx9-speaker"
               className="inline-flex h-12 items-center justify-center bg-black px-[31px] text-[13px] font-bold uppercase tracking-[1px] text-white transition-colors hover:bg-[#4C4C4C]"
             >
               See Product
@@ -46,45 +42,25 @@ const HomeFeaturedSections = () => {
         </div>
       </div>
 
-      <div
-        className="
-          mt-6
-          rounded-lg
-          bg-[#F1F1F1]
-          bg-[url('/assets/home/zx7-mobile.jpg')]
-          bg-cover
-          bg-center
-          bg-no-repeat
-          px-6
-          py-[101px]
-          md:mt-8
-          md:bg-[url('/assets/home/zx7-tablet.jpg')]
-          md:px-[62px]
-          lg:mt-12
-          lg:bg-[url('/assets/home/zx7-desktop.jpg')]
-          lg:px-[95px]
-        "
-      >
+      <div className="mt-6 rounded-lg bg-[#F1F1F1] bg-[url('/assets/home/mobile/image-speaker-zx7.jpg')] bg-cover bg-center bg-no-repeat px-6 py-[101px] md:mt-8 md:bg-[url('/assets/home/tablet/image-speaker-zx7.jpg')] md:px-[62px] lg:mt-12 lg:bg-[url('/assets/home/desktop/image-speaker-zx7.jpg')] lg:px-[95px]">
         <h2 className="mb-8 text-[28px] leading-[38px] font-bold uppercase tracking-[2px] text-black">
           ZX7 Speaker
         </h2>
 
-        <Link href="/speakers" className={secondaryButtonClass}>
+        <Link href="/speakers/zx7-speaker" className={secondaryButtonClass}>
           See Product
         </Link>
       </div>
 
       <div className="mt-6 grid gap-6 md:mt-8 md:grid-cols-2 md:gap-[11px] lg:mt-12 lg:gap-[30px]">
         <div className="overflow-hidden rounded-lg">
-          <picture>
-            <source media="(min-width: 1024px)" srcSet="/assets/home/yx1-desktop.jpg" />
-            <source media="(min-width: 768px)" srcSet="/assets/home/yx1-tablet.jpg" />
-            <img
-              src="/assets/home/yx1-mobile.jpg"
-              alt="YX1 earphones"
-              className="h-[200px] w-full object-cover md:h-full"
-            />
-          </picture>
+          <ResponsivePicture
+            mobileSrc="/assets/home/mobile/image-earphones-yx1.jpg"
+            tabletSrc="/assets/home/tablet/image-earphones-yx1.jpg"
+            desktopSrc="/assets/home/desktop/image-earphones-yx1.jpg"
+            alt="YX1 earphones"
+            imageClassName="h-[200px] object-cover md:h-full"
+          />
         </div>
 
         <div className="rounded-lg bg-[#F1F1F1] px-6 py-[41px] md:px-[41px] md:py-[101px] lg:px-[95px]">
@@ -92,7 +68,7 @@ const HomeFeaturedSections = () => {
             YX1 Earphones
           </h2>
 
-          <Link href="/earphones" className={secondaryButtonClass}>
+          <Link href="/earphones/yx1-earphones" className={secondaryButtonClass}>
             See Product
           </Link>
         </div>

@@ -1,65 +1,72 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FaInstagram, FaTwitter } from "react-icons/fa";
-import { IoLogoFacebook } from "react-icons/io";
 
 const Footer = () => {
   const items = ["home", "headphones", "speakers", "earphones"];
 
   return (
-    <div className="pt-0 md:px-[40px] lg:px-[165px]">
-      <div className="bg-[#D87D4A] h-[4px] max-w-[101px] mx-auto md:mx-0 mt-0"></div>
-      <footer className="flex flex-col items-center md:items-start justify-center pb-[38px] ">
-        {/* Logo and nav links for md -> lg layout */}
-        <div className="w-full flex flex-col items-center md:items-start lg:flex-row lg:justify-between">
+    <div className="bg-black pt-0 md:px-[40px] lg:px-[165px]">
+      <div className="mt-0 h-[4px] max-w-[101px] bg-[#D87D4A] mx-auto md:mx-0"></div>
+      <footer className="flex flex-col items-center justify-center pb-[38px] md:items-start">
+        <div className="w-full flex-col items-center md:items-start lg:flex lg:flex-row lg:justify-between">
           <Link href="/">
             <Image
-              src="/logo.png"
-              width={100}
-              height={100}
+              src="/assets/shared/desktop/logo.svg"
+              width={143}
+              height={25}
               alt="Footer Logo"
-              className="mt-[52px] mb-[48px] md:mb-0 cursor-pointer"
+              className="mb-[48px] mt-[52px] cursor-pointer md:mb-0"
             />
           </Link>
 
-          <ul className="flex flex-col justify-center pb-[48px] text-center md:flex-row md:gap-[34px] md:items-start md:text-left md:pt-[32px] lg:pb-0">
+          <ul className="flex flex-col justify-center pb-[48px] text-center md:flex-row md:items-start md:gap-[34px] md:pb-0 md:pt-[32px] md:text-left">
             {items.map((item) => (
               <li key={item} className="pb-[16px]">
                 <Link
-                  className="uppercase font-bold text-[13px] tracking-[2px] leading-[25px] text-white cursor-pointer hover:text-[#D87D4A]"
-                  href={`/${item}`}
+                  className="uppercase font-bold leading-[25px] tracking-[2px] text-white transition-colors hover:text-[#D87D4A]"
+                  href={item === "home" ? "/" : `/${item}`}
                 >
-                  {item}
+                  {item.toUpperCase()}
                 </Link>
               </li>
             ))}
           </ul>
         </div>
 
-        {/* Summary + bottom row layout for lg screens */}
-        <div className="w-full flex flex-col items-center md:items-start gap-8 lg:flex-row lg:justify-between lg:items-start">
-          <div className="flex flex-col items-center md:items-start lg:max-w-[60%]">
-            <p className="text-[15px] leading-[25px] font-medium text-center md:text-left text-[rgba(255,255,255,0.5)] lg:pt-[36px] lg:pb-[56px] lg:max-w-[540px]">
+        <div className="w-full flex-col items-center gap-8 md:items-start lg:flex lg:flex-row lg:items-start lg:justify-between">
+          <div className="flex flex-col items-center md:items-start lg:max-w-[540px]">
+            <p className="text-center text-[15px] leading-[25px] font-medium text-white/50 md:text-left lg:pb-[56px] lg:pt-[36px]">
               Audiophile is an all in one stop to fulfill your audio needs.
-              We're a small team of music lovers and sound specialists who are
-              devoted to helping you get the most out of personal audio. Come
-              and visit our demo facility - we’re open 7 days a week.
+              We&apos;re a small team of music lovers and sound specialists who
+              are devoted to helping you get the most out of personal audio.
+              Come and visit our demo facility - we&apos;re open 7 days a week.
             </p>
 
-            <p className="mt-6 text-center md:text-left text-[rgba(255,255,255,0.5)] font-bold text-[15px] leading-[25px] ">
+            <p className="mt-6 text-center text-[15px] leading-[25px] font-bold text-white/50 md:text-left">
               Copyright 2021. All Rights Reserved
             </p>
           </div>
 
-          {/* On large screens, social icons are on the right, vertically centered */}
-          <div className="flex items-center justify-center gap-[16px] lg:pt-[105px]">
-            <IoLogoFacebook className="w-[24px] h-[24px] cursor-pointer hover:text-[#D87D4A]" />
-            <FaTwitter className="w-[24px] h-[24px] cursor-pointer hover:text-[#D87D4A]" />
-            <FaInstagram className="w-[24px] h-[24px] cursor-pointer hover:text-[#D87D4A]" />
+          <div className="flex items-center justify-center gap-4 lg:pt-[105px]">
+            {[
+              "icon-facebook.svg",
+              "icon-twitter.svg",
+              "icon-instagram.svg",
+            ].map((icon) => (
+              <Image
+                key={icon}
+                src={`/assets/shared/desktop/${icon}`}
+                alt=""
+                width={24}
+                height={24}
+                className="cursor-pointer"
+              />
+            ))}
           </div>
         </div>
       </footer>
     </div>
   );
 };
+
 export default Footer;
