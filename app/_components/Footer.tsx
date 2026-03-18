@@ -44,8 +44,8 @@ const Footer = () => {
           <p className="mt-[48px] max-w-[540px] text-center text-[15px] leading-[25px] font-medium text-white/50 md:mt-[32px] md:text-left lg:mt-[36px]">
             Audiophile is an all in one stop to fulfill your audio needs.
             We&apos;re a small team of music lovers and sound specialists who
-            are devoted to helping you get the most out of personal audio.
-            Come and visit our demo facility - we&apos;re open 7 days a week.
+            are devoted to helping you get the most out of personal audio. Come
+            and visit our demo facility - we&apos;re open 7 days a week.
           </p>
 
           {/* Tablet keeps copyright and socials on one row; mobile stacks them with extra breathing room. */}
