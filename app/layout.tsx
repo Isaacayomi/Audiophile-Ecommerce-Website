@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "./_components/Header";
 import Footer from "./_components/Footer";
 import Providers from "./_components/Providers";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -26,9 +27,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${manrope.variable} antialiased`}>
         <Providers>
-          <Header />
-          <main>{children}</main>
+          <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up">
+            <Header />
+            <main>{children}</main>
           <Footer />
+          </ClerkProvider>
         </Providers>
       </body>
     </html>

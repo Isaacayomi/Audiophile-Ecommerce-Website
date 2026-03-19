@@ -1,8 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
+import { auth } from "@clerk/nextjs/server";
 import { RhythmGroup, RhythmItem } from "../_components/ui/Rhythm";
 
-const CheckoutPage = () => {
+const CheckoutPage = async () => {
+  const { userId, redirectToSignIn } = await auth();
+
+  if (!userId) {
+    return redirectToSignIn({ returnBackUrl: "/checkout" });
+  }
+
   return (
     <div className="bg-neutral-100 px-6 py-4 md:px-10 md:py-12 lg:px-41.25 lg:py-19.75">
       <RhythmGroup inView={false}>
