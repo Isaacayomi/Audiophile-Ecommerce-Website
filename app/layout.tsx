@@ -29,7 +29,7 @@ export default function RootLayout({
         <ClerkProvider
           signInUrl="/sign-in"
           signUpUrl="/sign-up"
-          afterSignOutUrl="/"
+          afterSignOutUrl="/?auth=signed_out"
         >
           <Providers>
             <Header />
