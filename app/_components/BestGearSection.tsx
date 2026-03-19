@@ -22,20 +22,19 @@ const BestGearSection = ({ className = "" }: BestGearSectionProps) => {
 
       <RhythmGroup className="text-center lg:order-1 lg:text-left">
         <RhythmItem>
-          <h2 className="mb-8 text-heading-md leading-9.5 font-bold uppercase tracking-copy text-black md:mx-auto md:max-w-143.25 md:text-heading-lg md:leading-11 md:tracking-title lg:mx-0 lg:max-w-111.25">
-            Bringing you the <span className="text-brand">best</span> audio
-            gear
+          <h2 className="mb-8 text-heading-md leading-heading font-bold uppercase tracking-copy text-black md:mx-auto md:max-w-143.25 md:text-heading-lg md:leading-11 md:tracking-title lg:mx-0 lg:max-w-111.25">
+            Bringing you the <span className="text-brand">best</span> audio gear
           </h2>
         </RhythmItem>
 
         <RhythmItem>
-          <p className="text-copy leading-6.25 font-medium text-black/50 md:mx-auto md:max-w-143.25 lg:mx-0 lg:max-w-111.25">
-            Located at the heart of New York City, Audiophile is the premier store
-            for high end headphones, earphones, speakers, and audio accessories.
-            We have a large showroom and luxury demonstration rooms available for
-            you to browse and experience a wide range of our products. Stop by our
-            store to meet some of the fantastic people who make Audiophile the
-            best place to buy your portable audio equipment.
+          <p className="text-copy leading-copy font-medium text-black/50 md:mx-auto md:max-w-143.25 lg:mx-0 lg:max-w-111.25">
+            Located at the heart of New York City, Audiophile is the premier
+            store for high end headphones, earphones, speakers, and audio
+            accessories. We have a large showroom and luxury demonstration rooms
+            available for you to browse and experience a wide range of our
+            products. Stop by our store to meet some of the fantastic people who
+            make Audiophile the best place to buy your portable audio equipment.
           </p>
         </RhythmItem>
       </RhythmGroup>

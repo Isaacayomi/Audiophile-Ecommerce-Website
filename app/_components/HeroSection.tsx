@@ -40,15 +40,15 @@ const HeroSection = () => {
               </RhythmItem>
 
               <RhythmItem>
-                <h1 className="pb-6 text-display font-bold uppercase tracking-heading text-white md:text-hero md:leading-14.5 md:tracking-banner">
+                <h1 className="pb-6 text-display font-bold uppercase tracking-heading text-white md:text-hero md:leading-hero md:tracking-banner">
                   XX99 Mark II Headphones
                 </h1>
               </RhythmItem>
 
               <RhythmItem>
-                <p className="pb-7 text-copy leading-6.25 font-medium text-white/75 md:pb-10 lg:w-87.25">
-                  Experience natural, lifelike audio and exceptional build quality
-                  made for the passionate music enthusiast.
+                <p className="pb-7 text-copy leading-copy font-medium text-white/75 md:pb-10 lg:w-87.25">
+                  Experience natural, lifelike audio and exceptional build
+                  quality made for the passionate music enthusiast.
                 </p>
               </RhythmItem>
 

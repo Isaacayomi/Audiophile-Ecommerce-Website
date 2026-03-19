@@ -38,7 +38,7 @@ const OrderCompletionModal = () => {
           </p>
         </RhythmItem>
         <RhythmItem variant="soft">
-          <p className="pb-6 text-copy leading-6.25 font-medium text-black/50 md:pb-8.25">
+          <p className="pb-6 text-copy leading-copy font-medium text-black/50 md:pb-8.25">
             You will receive an email confirmation shortly.
           </p>
         </RhythmItem>

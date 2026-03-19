@@ -36,7 +36,7 @@ const OrderedItem = () => {
           </div>
 
           <div className="flex flex-col justify-center rounded-b-lg bg-black px-6 py-3.75 md:w-1/2">
-            <p className="pb-2 text-copy leading-6.25 font-medium text-white/50">
+            <p className="pb-2 text-copy leading-copy font-medium text-white/50">
               GRAND TOTAL
             </p>
             <p className="text-title font-bold text-white">$ 5,446</p>

@@ -22,13 +22,13 @@ const Footer = () => {
           <div className="flex flex-col items-center text-center md:items-start md:text-left lg:flex-row lg:items-start lg:justify-between">
             <RhythmItem variant="soft">
               <Link href="/" className="mb-12 md:mb-8 lg:mb-0">
-              <Image
-                src="/assets/shared/desktop/logo.svg"
-                width={143}
-                height={25}
-                alt="Audiophile"
-                className="cursor-pointer"
-              />
+                <Image
+                  src="/assets/shared/desktop/logo.svg"
+                  width={143}
+                  height={25}
+                  alt="Audiophile"
+                  className="cursor-pointer"
+                />
               </Link>
             </RhythmItem>
 
@@ -37,7 +37,7 @@ const Footer = () => {
               {items.map((item) => (
                 <RhythmListItem key={item} variant="soft">
                   <Link
-                    className="text-label font-bold uppercase leading-6.25 tracking-banner text-white transition-colors hover:text-brand"
+                    className="text-label font-bold uppercase leading-copy tracking-banner text-white transition-colors hover:text-brand"
                     href={item === "home" ? "/" : `/${item}`}
                   >
                     {item.toUpperCase()}
@@ -48,18 +48,18 @@ const Footer = () => {
           </div>
 
           <RhythmItem>
-            <p className="mt-12 max-w-135 text-center text-copy leading-6.25 font-medium text-white/50 md:mt-8 md:text-left lg:mt-9">
+            <p className="mt-12 max-w-135 text-center text-copy leading-copy font-medium text-white/50 md:mt-8 md:text-left lg:mt-9">
               Audiophile is an all in one stop to fulfill your audio needs.
               We&apos;re a small team of music lovers and sound specialists who
-              are devoted to helping you get the most out of personal audio. Come
-              and visit our demo facility - we&apos;re open 7 days a week.
+              are devoted to helping you get the most out of personal audio.
+              Come and visit our demo facility - we&apos;re open 7 days a week.
             </p>
           </RhythmItem>
 
           {/* Tablet keeps copyright and socials on one row; mobile stacks them with extra breathing room. */}
           <div className="mt-12 flex flex-col items-center gap-12 md:mt-20 md:flex-row md:items-center md:justify-between md:gap-0 lg:mt-14">
             <RhythmItem variant="soft">
-              <p className="text-center text-copy leading-6.25 font-bold text-white/50 md:text-left">
+              <p className="text-center text-copy leading-copy font-bold text-white/50 md:text-left">
                 Copyright 2021. All Rights Reserved
               </p>
             </RhythmItem>

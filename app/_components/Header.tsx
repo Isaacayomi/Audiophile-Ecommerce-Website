@@ -117,16 +117,16 @@ const Header = () => {
       >
         <RhythmItem variant="soft">
           <Link href="/">
-          <Image
-            src="/assets/shared/desktop/logo.svg"
-            alt="Audiophile"
-            height={25}
-            width={143}
-          />
+            <Image
+              src="/assets/shared/desktop/logo.svg"
+              alt="Audiophile"
+              height={25}
+              width={143}
+            />
           </Link>
         </RhythmItem>
 
-        <div className="flex items-center justify-center gap-8.5 text-label font-bold leading-6.25 tracking-banner text-white">
+        <div className="flex items-center justify-center gap-8.5 text-label font-bold leading-copy tracking-banner text-white">
           {items.map((item) => (
             <Link
               key={item}
