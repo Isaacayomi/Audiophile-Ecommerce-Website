@@ -26,13 +26,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${manrope.variable} antialiased`}>
-        <Providers>
-          <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up">
+        <ClerkProvider
+          signInUrl="/sign-in"
+          signUpUrl="/sign-up"
+          afterSignOutUrl="/"
+        >
+          <Providers>
             <Header />
             <main>{children}</main>
-          <Footer />
-          </ClerkProvider>
-        </Providers>
+            <Footer />
+          </Providers>
+        </ClerkProvider>
       </body>
     </html>
   );

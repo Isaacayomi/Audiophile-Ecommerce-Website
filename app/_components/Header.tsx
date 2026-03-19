@@ -12,6 +12,7 @@ import OrderCompletionModal from "./ui/orderCompletionModal";
 import Cart from "./ui/cart";
 import CheckoutModal from "./ui/checkoutModal";
 import { RhythmGroup, RhythmItem } from "./ui/Rhythm";
+import HeaderAuth from "./ui/headerAuth";
 
 const Header = () => {
   const items = ["home", "headphones", "speakers", "earphones"];
@@ -59,14 +60,17 @@ const Header = () => {
           />
         </Link>
 
-        <button onClick={() => dispatch(toggleCart())} aria-label="Open cart">
-          <Image
-            src="/assets/shared/desktop/icon-cart.svg"
-            alt=""
-            height={20}
-            width={23}
-          />
-        </button>
+        <div className="flex items-center gap-4">
+          <button onClick={() => dispatch(toggleCart())} aria-label="Open cart">
+            <Image
+              src="/assets/shared/desktop/icon-cart.svg"
+              alt=""
+              height={20}
+              width={23}
+            />
+          </button>
+          <HeaderAuth />
+        </div>
       </RhythmGroup>
 
       <RhythmGroup
@@ -101,14 +105,17 @@ const Header = () => {
           </Link>
         </div>
 
-        <button onClick={() => dispatch(toggleCart())} aria-label="Open cart">
-          <Image
-            src="/assets/shared/desktop/icon-cart.svg"
-            alt=""
-            height={20}
-            width={23}
-          />
-        </button>
+        <div className="flex items-center gap-4">
+          <button onClick={() => dispatch(toggleCart())} aria-label="Open cart">
+            <Image
+              src="/assets/shared/desktop/icon-cart.svg"
+              alt=""
+              height={20}
+              width={23}
+            />
+          </button>
+          <HeaderAuth />
+        </div>
       </RhythmGroup>
 
       <RhythmGroup
@@ -138,15 +145,18 @@ const Header = () => {
           ))}
         </div>
 
-        <button onClick={() => dispatch(toggleCart())} aria-label="Open cart">
-          <Image
-            src="/assets/shared/desktop/icon-cart.svg"
-            alt=""
-            height={20}
-            width={23}
-            className="cursor-pointer"
-          />
-        </button>
+        <div className="flex items-center gap-6">
+          <button onClick={() => dispatch(toggleCart())} aria-label="Open cart">
+            <Image
+              src="/assets/shared/desktop/icon-cart.svg"
+              alt=""
+              height={20}
+              width={23}
+              className="cursor-pointer"
+            />
+          </button>
+          <HeaderAuth />
+        </div>
       </RhythmGroup>
 
       {isOpen && <NavMenu />}
