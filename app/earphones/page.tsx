@@ -2,16 +2,17 @@ import BestGearSection from "../_components/BestGearSection";
 import CategoryCards from "../_components/CategoryCards";
 import PageBanner from "../_components/PageBanner";
 import ProductCategorySection from "../_components/ProductCategorySection";
-import { getCategoryProducts } from "../lib/products";
+import { getCategoryProducts, Product } from "../lib/products";
 
-const EarphonesPage = () => {
-  const products = getCategoryProducts("earphones");
+const EarphonesPage = async () => {
+  // Fetch products directly in the component (App Router style)
+  const products: Product[] = await getCategoryProducts("earphones");
 
   return (
     <div className="bg-white">
       <PageBanner title="Earphones" />
       <div className="mt-16 grid gap-30 md:mt-30 md:gap-30 lg:mt-40 lg:gap-40">
-        {products.map((product, index) => (
+        {products?.map((product, index) => (
           <ProductCategorySection
             key={product.slug}
             product={product}

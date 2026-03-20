@@ -38,6 +38,10 @@ export interface Product {
   categoryOrder: number;
 }
 
+export interface ProductApiResponse {
+  data: Product[];
+}
+
 export const categories: Array<{ slug: Category; label: string }> = [
   { slug: "headphones", label: "Headphones" },
   { slug: "speakers", label: "Speakers" },
@@ -75,9 +79,12 @@ export const products: Product[] = [
         "/assets/product-xx99-mark-two-headphones/desktop/image-category-page-preview.jpg",
     },
     productImage: {
-      mobile: "/assets/product-xx99-mark-two-headphones/mobile/image-product.jpg",
-      tablet: "/assets/product-xx99-mark-two-headphones/tablet/image-product.jpg",
-      desktop: "/assets/product-xx99-mark-two-headphones/desktop/image-product.jpg",
+      mobile:
+        "/assets/product-xx99-mark-two-headphones/mobile/image-product.jpg",
+      tablet:
+        "/assets/product-xx99-mark-two-headphones/tablet/image-product.jpg",
+      desktop:
+        "/assets/product-xx99-mark-two-headphones/desktop/image-product.jpg",
     },
     gallery: {
       first: {
@@ -167,9 +174,12 @@ export const products: Product[] = [
         "/assets/product-xx99-mark-one-headphones/desktop/image-category-page-preview.jpg",
     },
     productImage: {
-      mobile: "/assets/product-xx99-mark-one-headphones/mobile/image-product.jpg",
-      tablet: "/assets/product-xx99-mark-one-headphones/tablet/image-product.jpg",
-      desktop: "/assets/product-xx99-mark-one-headphones/desktop/image-product.jpg",
+      mobile:
+        "/assets/product-xx99-mark-one-headphones/mobile/image-product.jpg",
+      tablet:
+        "/assets/product-xx99-mark-one-headphones/tablet/image-product.jpg",
+      desktop:
+        "/assets/product-xx99-mark-one-headphones/desktop/image-product.jpg",
     },
     gallery: {
       first: {
@@ -569,13 +579,30 @@ export const products: Product[] = [
   },
 ];
 
-export const getCategoryProducts = (category: Category) =>
-  products
-    .filter((product) => product.category === category)
-    .sort((a, b) => a.categoryOrder - b.categoryOrder);
+// export const getCategoryProducts = (category: Category) =>
+//   products
+//     .filter((product) => product.category === category)
+//     .sort((a, b) => a.categoryOrder - b.categoryOrder);
+
+export const getCategoryProducts = async (
+  category: string,
+): Promise<Product[]> => {
+  const res = await fetch(
+    `http://127.0.0.1:8000/products/category/${category}`,
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch products");
+  }
+
+  const data: ProductApiResponse = await res.json(); // type the response
+  return data.data; // extract the products array
+};
 
 export const getProduct = (category: Category, slug: string) =>
-  products.find((product) => product.category === category && product.slug === slug);
+  products.find(
+    (product) => product.category === category && product.slug === slug,
+  );
 
 export const getProductBySlug = (slug: string) =>
   products.find((product) => product.slug === slug);

@@ -1,25 +1,36 @@
+import ProductDetailLayout from "@/app/_components/ProductDetailLayout";
+import { getCategoryProducts, Product } from "@/app/lib/products";
 import { notFound } from "next/navigation";
-import ProductDetailLayout from "../../_components/ProductDetailLayout";
-import { getCategoryProducts, getProduct } from "../../lib/products";
 
-// Prebuild every earphone product page so each slug can be statically generated.
-export const generateStaticParams = () =>
-  getCategoryProducts("earphones").map((product) => ({ slug: product.slug }));
+// Prebuild all slugs for static generation (optional, if using SSG)
+export const generateStaticParams = async () => {
+  // Fetch all products in this category from backend
+  const products: Product[] = await getCategoryProducts("earphones");
+
+  // Map products to the { slug } format Next.js expects
+  return products.map((product) => ({ slug: product.slug }));
+};
 
 const EarphoneProductPage = async ({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 }) => {
-  // Resolve the incoming slug and look up the matching earphone product record.
-  const { slug } = await params;
-  const product = getProduct("earphones", slug);
+  // Extract the slug from the URL
+  const { slug } = params;
 
-  // Delegate unknown slugs to Next.js so the route renders the 404 page.
+  // Fetch all earphones (or fetch single product if your backend supports it)
+  const products: Product[] = await getCategoryProducts("earphones");
+
+  // Find the product that matches the slug
+  const product = products.find((p) => p.slug === slug);
+
+  // If product is not found, delegate to Next.js 404 page
   if (!product) {
     notFound();
   }
 
+  // Render the product details layout component
   return <ProductDetailLayout product={product} />;
 };
 
