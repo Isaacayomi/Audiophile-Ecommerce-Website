@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getProductBySlug, Product } from "../lib/products";
+import { Product } from "../lib/products";
 import ResponsivePicture from "./ResponsivePicture";
 import { RhythmGroup, RhythmItem } from "./ui/Rhythm";
 
@@ -13,11 +13,9 @@ const RelatedProducts = ({ product }: { product: Product }) => {
           </h2>
         </RhythmItem>
       </RhythmGroup>
+
       <RhythmGroup className="grid gap-14 md:grid-cols-3 md:gap-2.75 lg:gap-7.5">
         {product.others.map((other) => {
-          const item = getProductBySlug(other.slug);
-          if (!item) return null;
-
           return (
             <RhythmItem key={other.slug} variant="pop">
               <ResponsivePicture
@@ -27,11 +25,13 @@ const RelatedProducts = ({ product }: { product: Product }) => {
                 alt={other.name}
                 imageClassName="mb-8 h-30 rounded-lg object-cover md:h-79.5"
               />
+
               <h3 className="mb-8 text-heading-sm font-bold uppercase tracking-title text-black">
                 {other.name}
               </h3>
+
               <Link
-                href={`/${item.category}/${item.slug}`}
+                href={`/${other.category}/${other.slug}`}
                 className="inline-flex h-12 items-center justify-center bg-brand px-8 text-label font-bold uppercase tracking-copy text-white transition-colors hover:bg-brand-hover"
               >
                 See Product
