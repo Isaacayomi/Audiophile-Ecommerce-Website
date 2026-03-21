@@ -14,6 +14,8 @@ const ProductCategorySection = ({
         className={`overflow-hidden rounded-lg ${reverse ? "lg:order-2" : ""}`}
         variant="pop"
       >
+        {/* On category pages we show the preview image returned by the
+            category endpoint, not the larger product-detail image. */}
         <ResponsivePicture
           mobileSrc={product.categoryImage.mobile}
           tabletSrc={product.categoryImage.tablet}
@@ -26,6 +28,8 @@ const ProductCategorySection = ({
       <RhythmGroup
         className={`mx-auto max-w-143 py-8 text-center md:py-13 lg:mx-0 lg:max-w-111.25 lg:py-0 lg:text-left ${reverse ? "lg:order-1" : ""}`}
       >
+        {/* The "New Product" label only appears when the backend marks
+            this product with `isNew: true`. */}
         {product.isNew ? (
           <RhythmItem variant="soft">
             <p className="mb-6 text-overline uppercase tracking-overline text-brand">
@@ -45,6 +49,8 @@ const ProductCategorySection = ({
         </RhythmItem>
         <RhythmItem variant="pop">
           <Link
+            // Product detail pages live under their category, so a headphones
+            // product becomes `/headphones/<slug>`.
             href={`/${product.category}/${product.slug}`}
             className="inline-flex h-12 items-center justify-center bg-brand px-8 text-label font-bold uppercase tracking-copy text-white transition-colors hover:bg-brand-hover"
           >

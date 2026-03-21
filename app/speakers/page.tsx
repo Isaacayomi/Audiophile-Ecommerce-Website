@@ -5,7 +5,7 @@ import ProductCategorySection from "../_components/ProductCategorySection";
 import { getCategoryProducts, Product } from "../lib/products";
 
 const SpeakersPage = async () => {
-  // Fetch products directly in the component (App Router style)
+  // Category pages read their product list directly from the backend.
   const products: Product[] = await getCategoryProducts("speakers");
 
   return (
@@ -16,6 +16,7 @@ const SpeakersPage = async () => {
           <ProductCategorySection
             key={product.slug}
             product={product}
+            // Alternate the desktop layout to match the design rhythm.
             reverse={index % 2 === 1}
           />
         ))}

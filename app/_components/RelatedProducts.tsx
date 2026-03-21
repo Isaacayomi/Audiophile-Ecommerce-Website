@@ -18,6 +18,8 @@ const RelatedProducts = ({ product }: { product: Product }) => {
         {product.others.map((other) => {
           return (
             <RhythmItem key={other.slug} variant="pop">
+              {/* The backend already sends the related product cards in `others`,
+                  so this section can render directly without making extra requests. */}
               <ResponsivePicture
                 mobileSrc={other.image.mobile}
                 tabletSrc={other.image.tablet}
