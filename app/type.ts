@@ -91,3 +91,7 @@ export interface Product {
   }>;
   categoryOrder: number;
 }
+
+export type CartQuantityBadgeProps = {
+  count: number;
+};

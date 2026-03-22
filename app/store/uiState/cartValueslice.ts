@@ -4,24 +4,26 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 const initialState: cartValueState = {
   // Persisted cart count used by header/cart badge UI.
   value: 0,
+  // Quantity picker value shown in ProductPurchaseCard.
+  selectedValue: 1,
 };
 
 export const increaseValueSlice = createSlice({
   name: "increaseValue",
   initialState,
   reducers: {
-    // Increases the cart count by one unit.
+    // Increases the temporary quantity picker value.
     increaseValue: (state) => {
-      state.value += 1;
+      state.selectedValue += 1;
     },
-    // Decreases count but never allows negative totals.
+    // Decreases picker value but never goes below one.
     decreaseValue: (state) => {
-      state.value -= 1;
-      state.value <= 0 ? (state.value = 0) : (state.value = state.value);
+      state.selectedValue = Math.max(1, state.selectedValue - 1);
     },
     // Adds an arbitrary amount (used by "Add to cart" with selected quantity).
     addToCartValue: (state, action: PayloadAction<number>) => {
       state.value += action.payload;
+      state.selectedValue = 1;
     },
   },
 });
