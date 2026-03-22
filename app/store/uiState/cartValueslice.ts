@@ -1,5 +1,6 @@
 import { cartValueState } from "@/app/type";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import toast from "react-hot-toast";
 
 const initialState: cartValueState = {
   value: 0,
@@ -66,11 +67,22 @@ export const increaseValueSlice = createSlice({
         );
       }
     },
+    // Removes one item line fully from the cart
+    removeCartItem: (state, action: PayloadAction<string>) => {
+      const item = state.items.find((entry) => entry.slug === action.payload);
+      if (!item) return;
+
+      state.value = Math.max(0, state.value - item.quantity);
+      state.items = state.items.filter(
+        (entry) => entry.slug !== action.payload,
+      );
+    },
     removeAllCartItems: (state) => {
       // Full cart reset used by "Remove all" and post-checkout cleanup paths.
       state.items = [];
       state.value = 0;
       state.selectedValue = 1;
+      toast.success(`${state.shortName} removed from cart`);
     },
   },
 });
@@ -81,6 +93,7 @@ export const {
   addToCartValue,
   increaseCartItemQuantity,
   decreaseCartItemQuantity,
+  removeCartItem,
   removeAllCartItems,
 } = increaseValueSlice.actions;
 export default increaseValueSlice.reducer;

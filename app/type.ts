@@ -20,6 +20,7 @@ export interface cartValueState {
   value: number;
   selectedValue: number;
   items: CartItem[];
+  shortName?: string;
 }
 
 export interface CartItem {

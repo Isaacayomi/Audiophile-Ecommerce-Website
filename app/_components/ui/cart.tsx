@@ -10,8 +10,10 @@ import { AppDispatch, RootState } from "@/app/store/store";
 import {
   decreaseCartItemQuantity,
   increaseCartItemQuantity,
+  removeCartItem,
   removeAllCartItems,
 } from "@/app/store/uiState/cartValueslice";
+import { FiTrash2 } from "react-icons/fi";
 
 const formatPrice = (price: number) =>
   new Intl.NumberFormat("en-US", {
@@ -95,27 +97,37 @@ const Cart = () => {
                   </p>
                 </div>
 
-                {/* Quantity controls mutate the specific line item in Redux. */}
-                <div className="flex w-24 items-center justify-between gap-3 bg-surface px-3 py-1.75 text-label">
+                <div className="ml-3 flex items-center gap-2">
                   <button
                     type="button"
-                    className="cursor-pointer font-bold text-black/50 transition-colors hover:text-brand"
-                    onClick={() =>
-                      dispatch(decreaseCartItemQuantity(item.slug))
-                    }
+                    aria-label={`Remove ${item.name} from cart`}
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-md text-black/45 transition-colors hover:bg-surface hover:text-brand"
+                    onClick={() => dispatch(removeCartItem(item.slug))}
                   >
-                    -
+                    <FiTrash2 size={16} />
                   </button>
-                  <span className="font-bold text-black">{item.quantity}</span>
-                  <button
-                    type="button"
-                    className="cursor-pointer font-bold text-black/50 transition-colors hover:text-brand"
-                    onClick={() =>
-                      dispatch(increaseCartItemQuantity(item.slug))
-                    }
-                  >
-                    +
-                  </button>
+                  {/* Quantity controls mutate the specific line item in Redux. */}
+                  <div className="flex w-24 items-center justify-between gap-3 bg-surface px-3 py-1.75 text-label">
+                    <button
+                      type="button"
+                      className="cursor-pointer font-bold text-black/50 transition-colors hover:text-brand"
+                      onClick={() =>
+                        dispatch(decreaseCartItemQuantity(item.slug))
+                      }
+                    >
+                      -
+                    </button>
+                    <span className="font-bold text-black">{item.quantity}</span>
+                    <button
+                      type="button"
+                      className="cursor-pointer font-bold text-black/50 transition-colors hover:text-brand"
+                      onClick={() =>
+                        dispatch(increaseCartItemQuantity(item.slug))
+                      }
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
