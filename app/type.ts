@@ -19,6 +19,16 @@ export interface toggleOrderCompletionState {
 export interface cartValueState {
   value: number;
   selectedValue: number;
+  items: CartItem[];
+}
+
+export interface CartItem {
+  slug: string;
+  name: string;
+  shortName: string;
+  price: number;
+  image: string;
+  quantity: number;
 }
 
 export interface ModalButtonProps {

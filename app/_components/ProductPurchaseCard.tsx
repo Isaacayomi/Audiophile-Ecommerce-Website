@@ -83,7 +83,16 @@ const ProductPurchaseCard = ({ product }: { product: Product }) => {
             className="inline-flex h-12 items-center justify-center bg-brand px-8 text-label font-bold uppercase tracking-copy text-white transition-colors hover:bg-brand-hover"
             onClick={() => {
               // Commit the currently selected quantity into the persisted cart total.
-              dispatch(addToCartValue(quantity));
+              dispatch(
+                addToCartValue({
+                  slug: product.slug,
+                  name: product.name,
+                  shortName: product.shortName,
+                  price: product.price,
+                  image: `/assets/cart/image-${product.slug}.jpg`,
+                  quantity,
+                }),
+              );
               // Immediate UX feedback for a successful add-to-cart action.
               toast.success("Added to cart");
             }}
