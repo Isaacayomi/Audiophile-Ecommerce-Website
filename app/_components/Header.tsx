@@ -13,6 +13,7 @@ import Cart from "./ui/cart";
 import CheckoutModal from "./ui/checkoutModal";
 import { RhythmGroup, RhythmItem } from "./ui/Rhythm";
 import HeaderAuth from "./ui/headerAuth";
+import CartQuantityBadge from "./ui/CartQuantityBadge";
 
 const Header = () => {
   const items = ["home", "headphones", "speakers", "earphones"];
@@ -22,6 +23,7 @@ const Header = () => {
   const isCheckoutOpen = useSelector(
     (state: RootState) => state.checkout.value,
   );
+  const cartQuantity = useSelector((state: RootState) => state.cartValue.value);
   const isOrderComplete = useSelector(
     (state: RootState) => state.orderCompletion.value,
   );
@@ -61,7 +63,12 @@ const Header = () => {
         </Link>
 
         <div className="flex items-center gap-4">
-          <button onClick={() => dispatch(toggleCart())} aria-label="Open cart">
+          <button
+            onClick={() => dispatch(toggleCart())}
+            aria-label="Open cart"
+            className="relative inline-flex"
+          >
+            <CartQuantityBadge count={cartQuantity} />
             <Image
               src="/assets/shared/desktop/icon-cart.svg"
               alt=""
@@ -106,7 +113,12 @@ const Header = () => {
         </div>
 
         <div className="flex items-center gap-4">
-          <button onClick={() => dispatch(toggleCart())} aria-label="Open cart">
+          <button
+            onClick={() => dispatch(toggleCart())}
+            aria-label="Open cart"
+            className="relative inline-flex"
+          >
+            <CartQuantityBadge count={cartQuantity} />
             <Image
               src="/assets/shared/desktop/icon-cart.svg"
               alt=""
@@ -146,7 +158,12 @@ const Header = () => {
         </div>
 
         <div className="flex items-center gap-6">
-          <button onClick={() => dispatch(toggleCart())} aria-label="Open cart">
+          <button
+            onClick={() => dispatch(toggleCart())}
+            aria-label="Open cart"
+            className="relative inline-flex"
+          >
+            <CartQuantityBadge count={cartQuantity} />
             <Image
               src="/assets/shared/desktop/icon-cart.svg"
               alt=""

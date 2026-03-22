@@ -1,8 +1,9 @@
 import { cartValueState } from "@/app/type";
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: cartValueState = {
   value: 0,
+  selectedValue: 1,
 };
 
 export const increaseValueSlice = createSlice({
@@ -10,14 +11,18 @@ export const increaseValueSlice = createSlice({
   initialState,
   reducers: {
     increaseValue: (state) => {
-      state.value += 1;
+      state.selectedValue += 1;
     },
     decreaseValue: (state) => {
-      state.value -= 1;
-      state.value <= 0 ? (state.value = 0) : (state.value = state.value);
+      state.selectedValue = Math.max(1, state.selectedValue - 1);
+    },
+    addToCartValue: (state, action: PayloadAction<number>) => {
+      state.value += action.payload;
+      state.selectedValue = 1;
     },
   },
 });
 
-export const { increaseValue, decreaseValue } = increaseValueSlice.actions;
+export const { increaseValue, decreaseValue, addToCartValue } =
+  increaseValueSlice.actions;
 export default increaseValueSlice.reducer;

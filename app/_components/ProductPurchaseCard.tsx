@@ -3,9 +3,14 @@
 import { RhythmGroup, RhythmItem } from "./ui/Rhythm";
 import { Product } from "../type";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../store/store";
+import { AppDispatch, RootState } from "../store/store";
 
-import { decreaseValue, increaseValue } from "../store/uiState/cartValueslice";
+import {
+  addToCartValue,
+  decreaseValue,
+  increaseValue,
+} from "../store/uiState/cartValueslice";
+import { toast } from "react-hot-toast";
 
 const formatPrice = (price: number) =>
   new Intl.NumberFormat("en-US", {
@@ -15,8 +20,10 @@ const formatPrice = (price: number) =>
   }).format(price);
 
 const ProductPurchaseCard = ({ product }: { product: Product }) => {
-  const dispatch = useDispatch();
-  const quantity = useSelector((state: RootState) => state.cartValue.value);
+  const dispatch = useDispatch<AppDispatch>();
+  const quantity = useSelector(
+    (state: RootState) => state.cartValue.selectedValue ?? 1,
+  );
 
   return (
     <RhythmGroup
@@ -73,6 +80,10 @@ const ProductPurchaseCard = ({ product }: { product: Product }) => {
           <button
             type="button"
             className="inline-flex h-12 items-center justify-center bg-brand px-8 text-label font-bold uppercase tracking-copy text-white transition-colors hover:bg-brand-hover"
+            onClick={() => {
+              dispatch(addToCartValue(quantity));
+              toast.success("Added to cart");
+            }}
           >
             Add to cart
           </button>
