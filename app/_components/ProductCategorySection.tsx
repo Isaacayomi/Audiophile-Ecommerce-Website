@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Product } from "../lib/products";
 import ResponsivePicture from "./ResponsivePicture";
 import { ProductCategorySectionProps } from "../type";
 import { RhythmGroup, RhythmItem } from "./ui/Rhythm";

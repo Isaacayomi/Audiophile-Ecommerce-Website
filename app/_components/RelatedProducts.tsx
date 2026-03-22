@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { Product } from "../lib/products";
 import ResponsivePicture from "./ResponsivePicture";
 import { RhythmGroup, RhythmItem } from "./ui/Rhythm";
+import { Product } from "../type";
 
 const RelatedProducts = ({ product }: { product: Product }) => {
   return (

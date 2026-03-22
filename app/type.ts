@@ -1,5 +1,4 @@
 import { ReactNode } from "react";
-import { Product } from "./lib/products";
 
 export interface toggleNavState {
   value: boolean;
@@ -46,4 +45,44 @@ export interface ResponsivePictureProps {
   desktopSrc: string;
   className?: string;
   imageClassName?: string;
+}
+
+export type Category = "headphones" | "speakers" | "earphones";
+
+export interface ResponsiveImageSet {
+  mobile: string;
+  tablet: string;
+  desktop: string;
+}
+
+export interface ProductInclude {
+  quantity: number;
+  item: string;
+}
+
+export interface Product {
+  slug: string;
+  category: Category;
+  categoryLabel: string;
+  shortName: string;
+  name: string;
+  isNew?: boolean;
+  price: number;
+  description: string;
+  features: string[];
+  includes: ProductInclude[];
+  categoryImage: ResponsiveImageSet;
+  productImage: ResponsiveImageSet;
+  gallery: {
+    first: ResponsiveImageSet;
+    second: ResponsiveImageSet;
+    third: ResponsiveImageSet;
+  };
+  others: Array<{
+    slug: string;
+    category: Category;
+    name: string;
+    image: ResponsiveImageSet;
+  }>;
+  categoryOrder: number;
 }

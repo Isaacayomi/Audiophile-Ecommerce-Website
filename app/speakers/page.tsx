@@ -2,7 +2,8 @@ import BestGearSection from "../_components/BestGearSection";
 import CategoryCards from "../_components/CategoryCards";
 import PageBanner from "../_components/PageBanner";
 import ProductCategorySection from "../_components/ProductCategorySection";
-import { getCategoryProducts, Product } from "../lib/products";
+import { getCategoryProducts } from "../lib/products";
+import { Product } from "../type";
 
 const SpeakersPage = async () => {
   // Category pages read their product list directly from the backend.

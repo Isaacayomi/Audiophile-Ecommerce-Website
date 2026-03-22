@@ -1,42 +1,4 @@
-export type Category = "headphones" | "speakers" | "earphones";
-
-export interface ResponsiveImageSet {
-  mobile: string;
-  tablet: string;
-  desktop: string;
-}
-
-export interface ProductInclude {
-  quantity: number;
-  item: string;
-}
-
-export interface Product {
-  slug: string;
-  category: Category;
-  categoryLabel: string;
-  shortName: string;
-  name: string;
-  isNew?: boolean;
-  price: number;
-  description: string;
-  features: string[];
-  includes: ProductInclude[];
-  categoryImage: ResponsiveImageSet;
-  productImage: ResponsiveImageSet;
-  gallery: {
-    first: ResponsiveImageSet;
-    second: ResponsiveImageSet;
-    third: ResponsiveImageSet;
-  };
-  others: Array<{
-    slug: string;
-    category: Category;
-    name: string;
-    image: ResponsiveImageSet;
-  }>;
-  categoryOrder: number;
-}
+import { Category, Product, ResponsiveImageSet } from "../type";
 
 export const categories: Array<{ slug: Category; label: string }> = [
   { slug: "headphones", label: "Headphones" },
@@ -96,10 +58,7 @@ const normalizeProduct = (product: Partial<Product>): Product => ({
 // We validate that shape, convert each item into our normalized `Product` type,
 // then keep only the products that actually belong to the requested category.
 // That extra filter protects the frontend if the backend ever returns mixed data.
-const parseCategoryProducts = (
-  data: unknown,
-  category: string,
-): Product[] => {
+const parseCategoryProducts = (data: unknown, category: string): Product[] => {
   if (!Array.isArray(data)) {
     throw new Error("Unexpected category response shape");
   }
