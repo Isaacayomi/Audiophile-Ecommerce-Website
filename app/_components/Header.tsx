@@ -18,11 +18,13 @@ import CartQuantityBadge from "./ui/CartQuantityBadge";
 const Header = () => {
   const items = ["home", "headphones", "speakers", "earphones"];
 
+  // UI flags for menus/modals rendered from global state.
   const isOpen = useSelector((state: RootState) => state.ui.value);
   const isCartOpen = useSelector((state: RootState) => state.cart.value);
   const isCheckoutOpen = useSelector(
     (state: RootState) => state.checkout.value,
   );
+  // Badge count shown on the cart icon across all breakpoints.
   const cartQuantity = useSelector((state: RootState) => state.cartValue.value);
   const isOrderComplete = useSelector(
     (state: RootState) => state.orderCompletion.value,

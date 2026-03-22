@@ -1,6 +1,7 @@
 import { CartQuantityBadgeProps } from "@/app/type";
 
 const CartQuantityBadge = ({ count }: CartQuantityBadgeProps) => {
+  // Hide badge when cart is empty to reduce visual noise.
   if (count < 1) return null;
 
   return (

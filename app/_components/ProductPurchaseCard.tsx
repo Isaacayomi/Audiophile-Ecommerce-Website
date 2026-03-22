@@ -21,6 +21,7 @@ const formatPrice = (price: number) =>
 
 const ProductPurchaseCard = ({ product }: { product: Product }) => {
   const dispatch = useDispatch<AppDispatch>();
+  // Read the "picker" quantity from Redux; fallback keeps UI stable during slice transitions.
   const quantity = useSelector(
     (state: RootState) => state.cartValue.selectedValue ?? 1,
   );
@@ -81,7 +82,9 @@ const ProductPurchaseCard = ({ product }: { product: Product }) => {
             type="button"
             className="inline-flex h-12 items-center justify-center bg-brand px-8 text-label font-bold uppercase tracking-copy text-white transition-colors hover:bg-brand-hover"
             onClick={() => {
+              // Commit the currently selected quantity into the persisted cart total.
               dispatch(addToCartValue(quantity));
+              // Immediate UX feedback for a successful add-to-cart action.
               toast.success("Added to cart");
             }}
           >

@@ -6,6 +6,7 @@ import orderCompletionReducer from "./uiState/orderCompletionSlice";
 import cartValueReducer from "./uiState/cartValueslice";
 
 export const store = configureStore({
+  // Each key here becomes a top-level key in RootState.
   reducer: {
     ui: uiReducer,
     cart: cartReducer,
@@ -15,5 +16,7 @@ export const store = configureStore({
   },
 });
 
+// Full Redux state shape inferred from the configured reducers.
 export type RootState = ReturnType<typeof store.getState>;
+// Dispatch type used for strongly typed action dispatching in components.
 export type AppDispatch = typeof store.dispatch;
