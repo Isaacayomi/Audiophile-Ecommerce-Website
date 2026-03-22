@@ -1,4 +1,4 @@
-import { Product } from "../lib/products";
+import { Product } from "../type";
 import ResponsivePicture from "./ResponsivePicture";
 import { RhythmGroup, RhythmItem } from "./ui/Rhythm";
 
@@ -8,20 +8,20 @@ const ProductGallery = ({ product }: { product: Product }) => {
       <div className="grid gap-5 md:gap-6">
         <RhythmItem variant="pop">
           <ResponsivePicture
-          mobileSrc={product.gallery.first.mobile}
-          tabletSrc={product.gallery.first.tablet}
-          desktopSrc={product.gallery.first.desktop}
-          alt={`${product.name} gallery image 1`}
-          imageClassName="h-43.5 rounded-lg object-cover lg:h-70"
+            mobileSrc={product.gallery.first.mobile}
+            tabletSrc={product.gallery.first.tablet}
+            desktopSrc={product.gallery.first.desktop}
+            alt={`${product.name} gallery image 1`}
+            imageClassName="h-43.5 rounded-lg object-cover lg:h-70"
           />
         </RhythmItem>
         <RhythmItem variant="pop">
           <ResponsivePicture
-          mobileSrc={product.gallery.second.mobile}
-          tabletSrc={product.gallery.second.tablet}
-          desktopSrc={product.gallery.second.desktop}
-          alt={`${product.name} gallery image 2`}
-          imageClassName="h-43.5 rounded-lg object-cover lg:h-70"
+            mobileSrc={product.gallery.second.mobile}
+            tabletSrc={product.gallery.second.tablet}
+            desktopSrc={product.gallery.second.desktop}
+            alt={`${product.name} gallery image 2`}
+            imageClassName="h-43.5 rounded-lg object-cover lg:h-70"
           />
         </RhythmItem>
       </div>

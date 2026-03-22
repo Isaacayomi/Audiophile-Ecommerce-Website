@@ -3,6 +3,7 @@ import uiReducer from "./uiState/uiSlice";
 import cartReducer from "./uiState/cartSlice";
 import checkoutReducer from "./uiState/checkoutSlice";
 import orderCompletionReducer from "./uiState/orderCompletionSlice";
+import cartValueReducer from "./uiState/cartValueslice";
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     cart: cartReducer,
     checkout: checkoutReducer,
     orderCompletion: orderCompletionReducer,
+    cartValue: cartValueReducer,
   },
 });
 

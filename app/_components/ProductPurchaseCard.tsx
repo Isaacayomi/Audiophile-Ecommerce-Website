@@ -1,8 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { Product } from "../lib/products";
 import { RhythmGroup, RhythmItem } from "./ui/Rhythm";
+import { Product } from "../type";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store/store";
+
+import { decreaseValue, increaseValue } from "../store/uiState/cartValueslice";
 
 const formatPrice = (price: number) =>
   new Intl.NumberFormat("en-US", {
@@ -12,10 +15,14 @@ const formatPrice = (price: number) =>
   }).format(price);
 
 const ProductPurchaseCard = ({ product }: { product: Product }) => {
-  const [quantity, setQuantity] = useState(1);
+  const dispatch = useDispatch();
+  const quantity = useSelector((state: RootState) => state.cartValue.value);
 
   return (
-    <RhythmGroup className="mx-auto max-w-143 py-8 md:py-13 lg:mx-0 lg:max-w-111.25 lg:py-0" inView={false}>
+    <RhythmGroup
+      className="mx-auto max-w-143 py-8 md:py-13 lg:mx-0 lg:max-w-111.25 lg:py-0"
+      inView={false}
+    >
       {product.isNew ? (
         <RhythmItem variant="soft">
           <p className="mb-6 text-overline uppercase tracking-overline text-brand">
@@ -45,11 +52,11 @@ const ProductPurchaseCard = ({ product }: { product: Product }) => {
       <RhythmItem variant="pop">
         <div className="flex items-center gap-4">
           <div className="flex h-12 w-30 items-center justify-between bg-surface px-4 text-label font-bold text-black">
-          {/* Keep quantity from going below one so the CTA always represents a valid cart action. */}
+            {/* Keep quantity from going below one so the CTA always represents a valid cart action. */}
             <button
-            type="button"
-            className="cursor-pointer text-black/25 transition-colors hover:text-brand"
-              onClick={() => setQuantity((current) => Math.max(1, current - 1))}
+              type="button"
+              className="cursor-pointer text-black/25 transition-colors hover:text-brand"
+              onClick={() => dispatch(decreaseValue())}
             >
               -
             </button>
@@ -57,7 +64,7 @@ const ProductPurchaseCard = ({ product }: { product: Product }) => {
             <button
               type="button"
               className="cursor-pointer text-black/25 transition-colors hover:text-brand"
-              onClick={() => setQuantity((current) => current + 1)}
+              onClick={() => dispatch(increaseValue())}
             >
               +
             </button>

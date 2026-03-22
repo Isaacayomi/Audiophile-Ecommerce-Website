@@ -1,17 +1,21 @@
 import Link from "next/link";
-import { Product } from "../lib/products";
 import ResponsivePicture from "./ResponsivePicture";
 import ProductPurchaseCard from "./ProductPurchaseCard";
 import ProductGallery from "./ProductGallery";
 import RelatedProducts from "./RelatedProducts";
 import CategoryCards from "./CategoryCards";
 import BestGearSection from "./BestGearSection";
+
 import { RhythmGroup, RhythmItem } from "./ui/Rhythm";
+import { Product } from "../type";
 
 const ProductDetailLayout = ({ product }: { product: Product }) => {
   return (
     <div className="bg-white pt-4 md:pt-8.25 lg:pt-19.75">
-      <RhythmGroup className="mx-6 md:mx-10 lg:mx-auto lg:max-w-277.5" inView={false}>
+      <RhythmGroup
+        className="mx-6 md:mx-10 lg:mx-auto lg:max-w-277.5"
+        inView={false}
+      >
         <RhythmItem variant="soft">
           <Link
             // "Go Back" takes the user to the matching category page,

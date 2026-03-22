@@ -16,6 +16,10 @@ export interface toggleOrderCompletionState {
   value: boolean;
 }
 
+export interface cartValueState {
+  value: number;
+}
+
 export interface ModalButtonProps {
   children: ReactNode;
   onClick?: () => void;
