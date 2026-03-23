@@ -10,7 +10,9 @@ export const categories: Array<{ slug: Category; label: string }> = [
 // In production we can point this to another API with an environment variable,
 // but during local development it falls back to the backend running on port 8000.
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8000";
+  // process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8000";
+  process.env.NEXT_PUBLIC_API_BASE_URL ??
+  "https://audiophille-database-3.onrender.com";
 
 // Some API responses may miss one or more image sizes.
 // This helper guarantees that every image object has `mobile`, `tablet`,
