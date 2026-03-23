@@ -82,7 +82,13 @@ export const increaseValueSlice = createSlice({
       state.items = [];
       state.value = 0;
       state.selectedValue = 1;
-      toast.success(`${state.shortName} removed from cart`);
+      toast.success("Cart cleared");
+    },
+    completeCheckout: (state) => {
+      // Silent reset used after a successful payment redirect.
+      state.items = [];
+      state.value = 0;
+      state.selectedValue = 1;
     },
   },
 });
@@ -95,5 +101,6 @@ export const {
   decreaseCartItemQuantity,
   removeCartItem,
   removeAllCartItems,
+  completeCheckout,
 } = increaseValueSlice.actions;
 export default increaseValueSlice.reducer;

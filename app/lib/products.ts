@@ -27,7 +27,7 @@ const normalizeImageSet = (
 
 // The category endpoints and product-detail endpoints do not always return
 // exactly the same amount of information. We normalize both into one shared
-// `Product` shape here so the components can work with a single predictable model.
+// `Product` shape here so the components can work with a single predictable model
 const normalizeProduct = (product: Partial<Product>): Product => ({
   slug: product.slug ?? "",
   category: (product.category as Category | undefined) ?? "headphones",
