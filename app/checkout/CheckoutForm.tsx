@@ -1,10 +1,12 @@
 "use client";
 
 import Image from "next/image";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { RhythmGroup, RhythmItem } from "../_components/ui/Rhythm";
+import { API_BASE_URL } from "../lib/products";
 import { RootState } from "../store/store";
 import {
   calculateCheckoutTotals,
@@ -21,8 +23,9 @@ const getInputClassName = (hasError: boolean) =>
   }`;
 
 const CheckoutForm = () => {
-  // Live Redux cart state powers the summary list and will later feed the FastAPI checkout payload.
+  // Live Redux cart state powers the summary list and is sent to FastAPI when payment starts.
   const cartItems = useSelector((state: RootState) => state.cartValue.items);
+  const [isRedirectingToCheckout, setIsRedirectingToCheckout] = useState(false);
 
   // Totals are derived once from the cart so the sidebar stays in sync with the current order.
   const { subtotal, shipping, vat, grandTotal } =
@@ -45,19 +48,54 @@ const CheckoutForm = () => {
     },
   });
 
-  // For now this only validates and packages the checkout data until the FastAPI payment endpoint is ready.
+  // Once the local form passes validation, the same payload is posted to FastAPI to create a Stripe session.
   const onSubmit = async (values: CheckoutFormValues) => {
     if (cartItems.length === 0) {
       toast.error("Your cart is empty.");
       return;
     }
 
-    const customer = normalizeCheckoutFormValues(values);
-    console.log("Checkout form validated and ready for FastAPI", {
-      customer,
-      cartItems,
-    });
-    toast.success("Checkout form validated. FastAPI payment endpoint comes next.");
+    setIsRedirectingToCheckout(true);
+
+    try {
+      const customer = normalizeCheckoutFormValues(values);
+
+      const response = await fetch(
+        `${API_BASE_URL}/payments/create-checkout-session`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            customer,
+            cartItems,
+          }),
+        },
+      );
+
+      const payload = (await response.json()) as {
+        detail?: string;
+        url?: string;
+      };
+
+      if (!response.ok || !payload.url) {
+        throw new Error(
+          payload.detail ?? "Unable to start Stripe checkout right now.",
+        );
+      }
+
+      // Redirect the shopper to Stripe's hosted checkout page returned by the FastAPI backend.
+      window.location.href = payload.url;
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Unable to start Stripe checkout right now.";
+
+      toast.error(message);
+      setIsRedirectingToCheckout(false);
+    }
   };
 
   return (
@@ -69,7 +107,7 @@ const CheckoutForm = () => {
           </h1>
 
           <div className="grid gap-8">
-            {/* These customer fields are validated locally and will be posted to FastAPI next. */}
+            {/* These customer fields are validated locally before the payment session request is sent to FastAPI. */}
             <div>
               <h2 className="mb-4 text-label font-bold uppercase tracking-copy text-brand">
                 Contact details
@@ -143,7 +181,7 @@ const CheckoutForm = () => {
               </div>
             </div>
 
-            {/* Shipping fields stay in your app so delivery details are ready for the FastAPI backend. */}
+            {/* Shipping fields stay in your app so the backend receives delivery details alongside the cart payload. */}
             <div>
               <h2 className="mb-4 text-label font-bold uppercase tracking-copy text-brand">
                 Shipping info
@@ -231,16 +269,15 @@ const CheckoutForm = () => {
               </div>
             </div>
 
-            {/* This notice keeps the page honest while payment creation is being moved into FastAPI. */}
+            {/* This note explains that payment now continues on Stripe after FastAPI creates the hosted session. */}
             <div className="rounded-lg bg-surface-muted p-6">
               <h2 className="mb-3 text-label font-bold uppercase tracking-copy text-brand">
                 Payment integration
               </h2>
               <p className="text-copy leading-copy font-medium text-black/50">
-                This form now validates checkout details locally and is ready to
-                connect to your FastAPI payment endpoint. Once the backend route
-                is in place, this submit action can send the same validated
-                payload there.
+                When you continue, we will send your validated checkout details
+                and cart contents to FastAPI, which creates a Stripe Checkout
+                Session and returns the hosted payment URL for redirect.
               </p>
             </div>
           </div>
@@ -254,7 +291,7 @@ const CheckoutForm = () => {
             Summary
           </h2>
 
-          {/* Summary rows mirror the current cart so the order review matches what the backend will receive. */}
+          {/* Summary rows mirror the current cart so the order review matches the payload FastAPI sends to Stripe. */}
           {cartItems.length === 0 ? (
             <p className="text-copy leading-copy font-medium text-black/50">
               Your cart is empty.
@@ -286,7 +323,7 @@ const CheckoutForm = () => {
             </div>
           )}
 
-          {/* Totals are derived from cart state so the sidebar stays aligned with the eventual backend payload. */}
+          {/* Totals are derived from cart state so the sidebar stays aligned with the backend checkout payload. */}
           <div className="mt-8 grid gap-2">
             {[
               ["Total", formatPrice(subtotal)],
@@ -307,13 +344,15 @@ const CheckoutForm = () => {
             </p>
           </div>
 
-          {/* The primary CTA currently performs form validation while the FastAPI payment flow is being built. */}
+          {/* The primary CTA validates the form, then starts Stripe Checkout through the FastAPI backend. */}
           <button
             type="submit"
-            disabled={isSubmitting || cartItems.length === 0}
+            disabled={
+              isSubmitting || isRedirectingToCheckout || cartItems.length === 0
+            }
             className="mt-8 inline-flex h-12 w-full items-center justify-center bg-brand text-label font-bold uppercase tracking-copy text-white transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Continue &amp; Pay
+            {isRedirectingToCheckout ? "Redirecting..." : "Continue & Pay"}
           </button>
         </RhythmItem>
       </RhythmGroup>
