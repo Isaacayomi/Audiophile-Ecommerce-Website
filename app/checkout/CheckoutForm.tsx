@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
@@ -22,11 +21,10 @@ const getInputClassName = (hasError: boolean) =>
   }`;
 
 const CheckoutForm = () => {
-  // Live Redux cart state powers both the summary list and the Stripe payload we submit.
+  // Live Redux cart state powers the summary list and will later feed the FastAPI checkout payload.
   const cartItems = useSelector((state: RootState) => state.cartValue.items);
-  const [isRedirectingToStripe, setIsRedirectingToStripe] = useState(false);
 
-  // Totals are derived once from the cart so the sidebar stays in sync with Stripe pricing.
+  // Totals are derived once from the cart so the sidebar stays in sync with the current order.
   const { subtotal, shipping, vat, grandTotal } =
     calculateCheckoutTotals(cartItems);
 
@@ -47,45 +45,19 @@ const CheckoutForm = () => {
     },
   });
 
-  // After local validation succeeds, we ask our server to create a Stripe Checkout Session and return its URL.
+  // For now this only validates and packages the checkout data until the FastAPI payment endpoint is ready.
   const onSubmit = async (values: CheckoutFormValues) => {
     if (cartItems.length === 0) {
       toast.error("Your cart is empty.");
       return;
     }
 
-    setIsRedirectingToStripe(true);
-
-    try {
-      const customer = normalizeCheckoutFormValues(values);
-      const response = await fetch("/api/checkout-session", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          cartItems,
-          customer,
-        }),
-      });
-
-      const payload = (await response.json()) as { error?: string; url?: string };
-
-      if (!response.ok || !payload.url) {
-        throw new Error(payload.error ?? "Unable to start Stripe checkout.");
-      }
-
-      // A hard redirect hands control over to Stripe's hosted checkout experience.
-      window.location.href = payload.url;
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Unable to start Stripe checkout.";
-
-      toast.error(message);
-      setIsRedirectingToStripe(false);
-    }
+    const customer = normalizeCheckoutFormValues(values);
+    console.log("Checkout form validated and ready for FastAPI", {
+      customer,
+      cartItems,
+    });
+    toast.success("Checkout form validated. FastAPI payment endpoint comes next.");
   };
 
   return (
@@ -97,7 +69,7 @@ const CheckoutForm = () => {
           </h1>
 
           <div className="grid gap-8">
-            {/* These customer fields are validated locally, then sent to the server for Stripe session creation. */}
+            {/* These customer fields are validated locally and will be posted to FastAPI next. */}
             <div>
               <h2 className="mb-4 text-label font-bold uppercase tracking-copy text-brand">
                 Contact details
@@ -171,7 +143,7 @@ const CheckoutForm = () => {
               </div>
             </div>
 
-            {/* Shipping fields stay in your app so you can preserve delivery data alongside the Stripe payment. */}
+            {/* Shipping fields stay in your app so delivery details are ready for the FastAPI backend. */}
             <div>
               <h2 className="mb-4 text-label font-bold uppercase tracking-copy text-brand">
                 Shipping info
@@ -259,16 +231,16 @@ const CheckoutForm = () => {
               </div>
             </div>
 
-            {/* Stripe owns the sensitive payment UI, so this block sets expectations before the redirect. */}
+            {/* This notice keeps the page honest while payment creation is being moved into FastAPI. */}
             <div className="rounded-lg bg-surface-muted p-6">
               <h2 className="mb-3 text-label font-bold uppercase tracking-copy text-brand">
-                Payment on Stripe
+                Payment integration
               </h2>
               <p className="text-copy leading-copy font-medium text-black/50">
-                When you continue, we will create a secure Stripe Checkout
-                Session with your cart and contact details, then redirect you to
-                Stripe&apos;s hosted payment page to enter card and billing
-                information.
+                This form now validates checkout details locally and is ready to
+                connect to your FastAPI payment endpoint. Once the backend route
+                is in place, this submit action can send the same validated
+                payload there.
               </p>
             </div>
           </div>
@@ -282,7 +254,7 @@ const CheckoutForm = () => {
             Summary
           </h2>
 
-          {/* Summary rows mirror the current cart so the order review matches what Stripe receives. */}
+          {/* Summary rows mirror the current cart so the order review matches what the backend will receive. */}
           {cartItems.length === 0 ? (
             <p className="text-copy leading-copy font-medium text-black/50">
               Your cart is empty.
@@ -314,7 +286,7 @@ const CheckoutForm = () => {
             </div>
           )}
 
-          {/* Totals are derived from cart state so the sidebar stays aligned with the Stripe session payload. */}
+          {/* Totals are derived from cart state so the sidebar stays aligned with the eventual backend payload. */}
           <div className="mt-8 grid gap-2">
             {[
               ["Total", formatPrice(subtotal)],
@@ -335,13 +307,13 @@ const CheckoutForm = () => {
             </p>
           </div>
 
-          {/* The primary CTA now starts the Stripe redirect instead of completing payment locally. */}
+          {/* The primary CTA currently performs form validation while the FastAPI payment flow is being built. */}
           <button
             type="submit"
-            disabled={isSubmitting || isRedirectingToStripe || cartItems.length === 0}
+            disabled={isSubmitting || cartItems.length === 0}
             className="mt-8 inline-flex h-12 w-full items-center justify-center bg-brand text-label font-bold uppercase tracking-copy text-white transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {isRedirectingToStripe ? "Redirecting..." : "Continue & Pay"}
+            Continue &amp; Pay
           </button>
         </RhythmItem>
       </RhythmGroup>
