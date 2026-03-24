@@ -97,8 +97,8 @@ All Rights Reserved.
 
 ## Author
 **Isaac Ayomide**
-*   LinkedIn: [linkedin.com/in/yourusername](https://linkedin.com/in/yourusername) *(Please replace with your actual LinkedIn URL)*
-*   X (Twitter): [twitter.com/yourusername](https://twitter.com/yourusername) *(Please replace with your actual X/Twitter URL)*
+*   LinkedIn: [Isaac Ayomide Okunlola](linkedin.com/in/isaac-ayomide-okunlola-3568b7275) 
+*   X (Twitter): [_devPRIME](https://x.com/_devPRIME) 
 
 ---
 ![Next.js](https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
