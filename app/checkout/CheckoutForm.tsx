@@ -268,18 +268,6 @@ const CheckoutForm = () => {
                 </label>
               </div>
             </div>
-
-            {/* This note explains that payment now continues on Stripe after FastAPI creates the hosted session. */}
-            <div className="rounded-lg bg-surface-muted p-6">
-              <h2 className="mb-3 text-label font-bold uppercase tracking-copy text-brand">
-                Payment integration
-              </h2>
-              <p className="text-copy leading-copy font-medium text-black/50">
-                When you continue, we will send your validated checkout details
-                and cart contents to FastAPI, which creates a Stripe Checkout
-                Session and returns the hosted payment URL for redirect.
-              </p>
-            </div>
           </div>
         </RhythmItem>
 
