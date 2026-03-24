@@ -12,10 +12,13 @@ export const toggleNavSlice = createSlice({
     toggleNav: (state) => {
       state.value === false ? (state.value = true) : (state.value = false);
     },
+    closeNav: (state) => {
+      state.value = false;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { toggleNav } = toggleNavSlice.actions;
+export const { toggleNav, closeNav } = toggleNavSlice.actions;
 
 export default toggleNavSlice.reducer;

@@ -1,9 +1,13 @@
 import { NavMenuProps } from "@/app/type";
 import Image from "next/image";
 import Link from "next/link";
+import { useDispatch } from "react-redux";
+import { closeNav } from "@/app/store/uiState/uiSlice";
 import { RhythmGroup, RhythmItem } from "./Rhythm";
 
 const NavMenu = ({ absolute = true }: NavMenuProps) => {
+  const dispatch = useDispatch();
+
   const products = [
     {
       image: "/assets/shared/desktop/image-category-thumbnail-headphones.png",
@@ -47,6 +51,7 @@ const NavMenu = ({ absolute = true }: NavMenuProps) => {
 
             <Link
               href={product.link}
+              onClick={() => dispatch(closeNav())}
               className="inline-flex items-center justify-center gap-3.25 text-label font-bold uppercase tracking-copy text-black/50"
             >
               Shop
