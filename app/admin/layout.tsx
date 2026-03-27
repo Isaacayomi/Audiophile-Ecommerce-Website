@@ -14,46 +14,48 @@ export default function AdminLayout({
   ];
 
   return (
-    <div className="flex min-h-screen bg-surface-muted font-manrope">
+    <div className="flex min-h-screen bg-[#0B0B0B] font-manrope text-white selection:bg-brand/30">
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-line bg-white">
-        <div className="flex h-full flex-col px-3 py-4">
-          <div className="mb-10 flex items-center px-4 pt-4">
-             <Link href="/" className="flex items-center gap-2">
-                <span className="text-heading-sm font-bold tracking-tight text-black">
+      <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-white/5 bg-[#121212]">
+        <div className="flex h-full flex-col px-4 py-6">
+          <div className="mb-12 flex items-center px-2">
+             <Link href="/" className="group flex items-center gap-2">
+                <span className="text-heading-sm font-bold tracking-tight text-white transition-colors group-hover:text-brand">
                     AUDIOPHILE <span className="text-brand">ADMIN</span>
                 </span>
              </Link>
           </div>
-          <ul className="space-y-2 font-medium">
+
+          <nav className="flex-1 space-y-1.5">
+            <p className="mb-4 px-2 text-xs font-bold uppercase tracking-widest text-white/30">Menu</p>
             {navItems.map((item) => (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className="flex items-center rounded-lg p-3 text-black transition-colors hover:bg-surface group"
-                >
-                  <span className="text-xl text-black/50 group-hover:text-brand transition-colors">
-                    {item.icon}
-                  </span>
-                  <span className="ml-3 text-copy font-bold">{item.label}</span>
-                </Link>
-              </li>
+              <Link
+                key={item.href}
+                href={item.href}
+                className="flex items-center rounded-xl px-4 py-3 text-white/60 transition-all hover:bg-white/5 hover:text-white group"
+              >
+                <span className="text-xl group-hover:text-brand transition-colors">
+                  {item.icon}
+                </span>
+                <span className="ml-3 text-copy font-bold">{item.label}</span>
+              </Link>
             ))}
-          </ul>
-          <div className="mt-auto border-t border-line pt-4">
+          </nav>
+
+          <div className="mt-auto space-y-1.5 border-t border-white/5 pt-6">
             <Link
               href="/"
-              className="flex items-center rounded-lg p-3 text-black transition-colors hover:bg-surface group"
+              className="flex items-center rounded-xl px-4 py-3 text-white/60 transition-all hover:bg-white/5 hover:text-white group"
             >
-              <span className="text-xl text-black/50 group-hover:text-brand transition-colors">
+              <span className="text-xl group-hover:text-brand transition-colors">
                 <FiHome />
               </span>
               <span className="ml-3 text-copy font-bold">Back to Store</span>
             </Link>
             <button
-              className="mt-2 flex w-full items-center rounded-lg p-3 text-red-500 transition-colors hover:bg-red-50 group"
+              className="mt-2 flex w-full items-center rounded-xl px-4 py-3 text-red-400/80 transition-all hover:bg-red-500/10 hover:text-red-400 group"
             >
-              <span className="text-xl group-hover:scale-110 transition-transform">
+              <span className="text-xl transition-transform group-hover:scale-110">
                 <FiLogOut />
               </span>
               <span className="ml-3 text-copy font-bold">Logout</span>
@@ -63,8 +65,8 @@ export default function AdminLayout({
       </aside>
 
       {/* Main content */}
-      <main className="ml-64 w-full p-8">
-        <div className="mx-auto max-w-6xl">
+      <main className="ml-64 w-full min-h-screen">
+        <div className="mx-auto max-w-6xl px-8 py-10">
             {children}
         </div>
       </main>

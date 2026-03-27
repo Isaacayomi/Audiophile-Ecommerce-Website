@@ -38,7 +38,7 @@ const Header = () => {
   if (pathname.startsWith("/admin")) return null;
 
   return (
-    <nav className="relative z-50 bg-black md:sticky md:top-0 md:bg-black/90 md:backdrop-blur-md lg:bg-black/85">
+    <nav className="relative z-50 bg-black">
       <RhythmGroup
         className="mx-6 flex items-center justify-between border-b border-white/10 py-8 md:hidden"
         inView={false}

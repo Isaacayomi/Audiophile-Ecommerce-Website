@@ -46,12 +46,12 @@ const Cart = () => {
         <button
           onClick={() => dispatch(closeCart())}
           aria-label="Close cart"
-          className="absolute -top-3 -right-3 flex h-9 w-9 items-center justify-center rounded-full bg-brand text-white shadow-lg transition-transform hover:scale-110 active:scale-95"
+          className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full bg-brand text-white shadow-sm transition-all hover:scale-110 active:scale-95"
         >
-          <FiX size={20} />
+          <FiX size={16} />
         </button>
 
-        <p className="flex items-center justify-between pb-7.75 pt-6">
+        <p className="flex items-center justify-between pb-7.75 pt-3">
           <span className="text-title font-bold tracking-heading text-black">
             CART ({cartCount})
           </span>

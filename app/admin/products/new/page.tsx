@@ -1,14 +1,14 @@
 import React from "react";
 import Link from "next/link";
-import { FiArrowLeft, FiUploadCloud, FiX } from "react-icons/fi";
+import { FiArrowLeft, FiUploadCloud, FiX, FiCheckCircle } from "react-icons/fi";
 
 const FormInput = ({ label, placeholder, type = "text", ...props }: any) => (
-  <div className="flex flex-col gap-2">
-    <label className="text-label font-bold text-black uppercase">{label}</label>
+  <div className="flex flex-col gap-3">
+    <label className="text-xs font-bold text-white/40 uppercase tracking-widest">{label}</label>
     <input
       type={type}
       placeholder={placeholder}
-      className="rounded-lg border border-line bg-white px-4 py-3 text-copy outline-none transition-focus focus:border-brand"
+      className="rounded-xl border border-white/10 bg-white/5 px-5 py-3.5 text-white placeholder:text-white/20 outline-none transition-all focus:border-brand/50 focus:bg-white/10"
       {...props}
     />
   </div>
@@ -16,100 +16,121 @@ const FormInput = ({ label, placeholder, type = "text", ...props }: any) => (
 
 export default function NewProduct() {
   return (
-    <div className="space-y-8">
-      <div className="flex items-center gap-4">
+    <div className="space-y-10 pb-20">
+      <header className="flex items-center gap-6">
         <Link
           href="/admin/products"
-          className="rounded-lg p-2 text-black/50 transition-colors hover:bg-surface hover:text-brand"
+          className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/5 text-white/40 transition-all hover:bg-brand/20 hover:text-brand"
         >
           <FiArrowLeft size={24} />
         </Link>
         <div>
-          <h1 className="text-heading-lg font-bold tracking-heading text-black">Add New Product</h1>
-          <p className="text-copy font-medium text-black/50">Enter the details of the new product.</p>
+          <h1 className="text-display font-bold tracking-tight text-white">Create <span className="text-white/40 font-medium">New Product</span></h1>
+          <p className="mt-1 text-copy font-medium text-white/40">Add a new premium audio device to your inventory.</p>
         </div>
-      </div>
+      </header>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
         {/* Left Column: Product Info */}
-        <div className="lg:col-span-2 space-y-6 rounded-xl border border-line bg-white p-6 shadow-sm">
-          <h2 className="text-heading-sm font-bold text-black">Basic Information</h2>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <FormInput label="Product Name" placeholder="e.g. XX99 Mark II Headphones" />
-            <div className="flex flex-col gap-2">
-                <label className="text-label font-bold text-black uppercase">Category</label>
-                <select className="rounded-lg border border-line bg-white px-4 py-3 text-copy outline-none transition-focus focus:border-brand">
-                    <option>Headphones</option>
-                    <option>Speakers</option>
-                    <option>Earphones</option>
-                </select>
+        <div className="lg:col-span-2 space-y-8">
+          <section className="rounded-2xl border border-white/5 bg-white/5 p-8 backdrop-blur-sm space-y-8">
+            <div className="flex items-center gap-3">
+                <div className="h-8 w-8 rounded-lg bg-brand/20 flex items-center justify-center text-brand">
+                    <FiCheckCircle size={18} />
+                </div>
+                <h2 className="text-heading-sm font-bold text-white">Basic Specification</h2>
             </div>
-            <FormInput label="Price ($)" type="number" placeholder="2999" />
-            <FormInput label="Stock Quantity" type="number" placeholder="100" />
-          </div>
 
-          <div className="flex flex-col gap-2">
-            <label className="text-label font-bold text-black uppercase">Description</label>
-            <textarea
-              rows={5}
-              placeholder="Tell us about the product..."
-              className="rounded-lg border border-line bg-white px-4 py-3 text-copy outline-none transition-focus focus:border-brand resize-none"
-            />
-          </div>
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+                <FormInput label="Product Name" placeholder="e.g. XX99 Mark II Headphones" />
+                <div className="flex flex-col gap-3">
+                    <label className="text-xs font-bold text-white/40 uppercase tracking-widest">Category</label>
+                    <div className="relative">
+                        <select className="w-full appearance-none rounded-xl border border-white/10 bg-white/5 px-5 py-3.5 text-white outline-none transition-all focus:border-brand/50 focus:bg-white/10 cursor-pointer">
+                            <option className="bg-[#121212]">Headphones</option>
+                            <option className="bg-[#121212]">Speakers</option>
+                            <option className="bg-[#121212]">Earphones</option>
+                        </select>
+                        <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-white/20">
+                            <FiArrowLeft size={16} className="-rotate-90" />
+                        </div>
+                    </div>
+                </div>
+                <FormInput label="Unit Price ($)" type="number" placeholder="2999" />
+                <FormInput label="Available Stock" type="number" placeholder="100" />
+            </div>
 
-          <div className="flex flex-col gap-2">
-            <label className="text-label font-bold text-black uppercase">Features</label>
-            <textarea
-              rows={5}
-              placeholder="List the key features..."
-              className="rounded-lg border border-line bg-white px-4 py-3 text-copy outline-none transition-focus focus:border-brand resize-none"
-            />
-          </div>
+            <div className="flex flex-col gap-3">
+                <label className="text-xs font-bold text-white/40 uppercase tracking-widest">Product Description</label>
+                <textarea
+                rows={5}
+                placeholder="Write a compelling description for the product..."
+                className="rounded-xl border border-white/10 bg-white/5 px-5 py-3.5 text-white placeholder:text-white/20 outline-none transition-all focus:border-brand/50 focus:bg-white/10 resize-none"
+                />
+            </div>
+
+            <div className="flex flex-col gap-3">
+                <label className="text-xs font-bold text-white/40 uppercase tracking-widest">Key Features</label>
+                <textarea
+                rows={5}
+                placeholder="List the technical features (one per line)..."
+                className="rounded-xl border border-white/10 bg-white/5 px-5 py-3.5 text-white placeholder:text-white/20 outline-none transition-all focus:border-brand/50 focus:bg-white/10 resize-none"
+                />
+            </div>
+          </section>
         </div>
 
         {/* Right Column: Images & Actions */}
-        <div className="space-y-6">
-          <div className="rounded-xl border border-line bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-heading-sm font-bold text-black">Product Media</h2>
-            <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-line bg-surface-muted p-8 text-center transition-colors hover:border-brand">
-              <FiUploadCloud size={48} className="mb-4 text-black/25" />
-              <p className="text-copy font-medium text-black/50">
-                <span className="font-bold text-brand underline cursor-pointer">Click to upload</span> or drag and drop
+        <div className="space-y-8">
+          <section className="rounded-2xl border border-white/5 bg-white/5 p-8 backdrop-blur-sm space-y-6">
+            <h2 className="text-heading-sm font-bold text-white">Visual Assets</h2>
+            <div className="group flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-white/10 bg-white/[0.02] p-10 text-center transition-all hover:border-brand hover:bg-brand/5 cursor-pointer">
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/5 text-white/20 transition-all group-hover:scale-110 group-hover:bg-brand/20 group-hover:text-brand">
+                <FiUploadCloud size={32} />
+              </div>
+              <p className="text-copy font-bold text-white/60">
+                <span className="text-brand">Click to upload</span>
               </p>
-              <p className="mt-2 text-xs text-black/25">SVG, PNG, JPG or GIF (max. 800x400px)</p>
+              <p className="mt-1 text-xs text-white/20 uppercase tracking-widest">PNG, JPG up to 10MB</p>
             </div>
 
             {/* Placeholder for uploaded images */}
-            <div className="mt-4 grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-3">
                 {[1, 2].map(i => (
-                    <div key={i} className="relative aspect-square overflow-hidden rounded-lg bg-surface group">
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
-                            <FiX className="text-white cursor-pointer" />
+                    <div key={i} className="relative aspect-square overflow-hidden rounded-xl bg-white/10 group border border-white/5">
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity group-hover:opacity-100 backdrop-blur-sm">
+                            <FiX className="text-white cursor-pointer hover:scale-125 transition-transform" size={20} />
                         </div>
                     </div>
                 ))}
             </div>
-          </div>
+          </section>
 
-          <div className="rounded-xl border border-line bg-white p-6 shadow-sm">
-             <h2 className="mb-4 text-heading-sm font-bold text-black">Visibility</h2>
+          <section className="rounded-2xl border border-white/5 bg-white/5 p-8 backdrop-blur-sm space-y-6">
+             <h2 className="text-heading-sm font-bold text-white">Publish Settings</h2>
              <div className="space-y-4">
-                <label className="flex items-center gap-3 cursor-pointer">
-                    <input type="radio" name="status" className="h-4 w-4 text-brand" defaultChecked />
-                    <span className="text-copy font-medium text-black">Public</span>
+                <label className="flex items-center gap-4 cursor-pointer group">
+                    <div className="relative flex h-5 w-5 items-center justify-center rounded-full border-2 border-brand ring-offset-2 ring-offset-[#0B0B0B] transition-all">
+                        <input type="radio" name="status" className="peer absolute h-full w-full opacity-0 cursor-pointer" defaultChecked />
+                        <div className="h-2.5 w-2.5 rounded-full bg-brand opacity-0 peer-checked:opacity-100 transition-opacity" />
+                    </div>
+                    <span className="text-copy font-bold text-white/60 group-hover:text-white transition-colors">Public Storefront</span>
                 </label>
-                <label className="flex items-center gap-3 cursor-pointer">
-                    <input type="radio" name="status" className="h-4 w-4 text-brand" />
-                    <span className="text-copy font-medium text-black">Draft</span>
+                <label className="flex items-center gap-4 cursor-pointer group">
+                    <div className="relative flex h-5 w-5 items-center justify-center rounded-full border-2 border-white/20 ring-offset-2 ring-offset-[#0B0B0B] transition-all peer-checked:border-brand">
+                        <input type="radio" name="status" className="peer absolute h-full w-full opacity-0 cursor-pointer" />
+                        <div className="h-2.5 w-2.5 rounded-full bg-brand opacity-0 peer-checked:opacity-100 transition-opacity" />
+                    </div>
+                    <span className="text-copy font-bold text-white/60 group-hover:text-white transition-colors">Save as Draft</span>
                 </label>
              </div>
-          </div>
+          </section>
 
           <div className="flex gap-4">
-            <button className="flex-1 rounded-lg border border-line bg-white py-3 text-label font-bold uppercase tracking-copy text-black transition-colors hover:bg-surface">
+            <button className="flex-1 rounded-xl border border-white/10 bg-white/5 py-4 text-label font-bold uppercase tracking-widest text-white transition-all hover:bg-white/10 hover:border-white/20 active:scale-95">
               Cancel
             </button>
-            <button className="flex-1 rounded-lg bg-brand py-3 text-label font-bold uppercase tracking-copy text-white transition-colors hover:bg-brand-hover">
+            <button className="flex-1 rounded-xl bg-brand py-4 text-label font-bold uppercase tracking-widest text-white transition-all hover:bg-brand-hover hover:scale-105 active:scale-95 shadow-lg shadow-brand/20">
               Save Product
             </button>
           </div>

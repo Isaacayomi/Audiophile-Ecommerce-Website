@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { FiPlus, FiEdit2, FiTrash2, FiSearch } from "react-icons/fi";
+import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiFilter } from "react-icons/fi";
 import Image from "next/image";
 
 export default function ProductManagement() {
@@ -32,96 +32,106 @@ export default function ProductManagement() {
   ];
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
+    <div className="space-y-10">
+      <header className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-heading-lg font-bold tracking-heading text-black">Product Management</h1>
-          <p className="text-copy font-medium text-black/50">View and manage your product catalog.</p>
+          <h1 className="text-display font-bold tracking-tight text-white">Product <span className="text-white/40 font-medium">Catalog</span></h1>
+          <p className="mt-2 text-copy font-medium text-white/40">Manage your audio equipment inventory and pricing.</p>
         </div>
         <Link
           href="/admin/products/new"
-          className="inline-flex items-center gap-2 rounded-lg bg-brand px-6 py-3 text-label font-bold uppercase tracking-copy text-white transition-colors hover:bg-brand-hover"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-8 py-4 text-label font-bold uppercase tracking-widest text-white transition-all hover:bg-brand-hover hover:scale-105 active:scale-95 shadow-lg shadow-brand/20"
         >
-          <FiPlus />
-          Add Product
+          <FiPlus size={20} />
+          Add New Product
         </Link>
-      </div>
+      </header>
 
       {/* Filters and Search */}
-      <div className="flex flex-col gap-4 rounded-xl border border-line bg-white p-4 shadow-sm md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-4 rounded-2xl border border-white/5 bg-white/5 p-6 backdrop-blur-sm md:flex-row md:items-center md:justify-between">
         <div className="relative flex-1">
-          <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-black/50" />
+          <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" />
           <input
             type="text"
-            placeholder="Search products..."
-            className="w-full rounded-lg border border-line bg-surface-muted py-2 pl-10 pr-4 outline-none transition-focus focus:border-brand"
+            placeholder="Search products by name or SKU..."
+            className="w-full rounded-xl border border-white/10 bg-white/5 py-3.5 pl-12 pr-4 text-white placeholder:text-white/20 outline-none transition-all focus:border-brand/50 focus:bg-white/10"
           />
         </div>
-        <div className="flex items-center gap-4">
-          <select className="rounded-lg border border-line bg-surface-muted px-4 py-2 outline-none">
-            <option>All Categories</option>
-            <option>Headphones</option>
-            <option>Speakers</option>
-            <option>Earphones</option>
-          </select>
-          <select className="rounded-lg border border-line bg-surface-muted px-4 py-2 outline-none">
-            <option>In Stock</option>
-            <option>Low Stock</option>
-            <option>Out of Stock</option>
-          </select>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3.5 text-white/60">
+            <FiFilter className="text-brand" />
+            <select className="bg-transparent outline-none cursor-pointer font-bold text-sm">
+                <option className="bg-[#121212]">All Categories</option>
+                <option className="bg-[#121212]">Headphones</option>
+                <option className="bg-[#121212]">Speakers</option>
+                <option className="bg-[#121212]">Earphones</option>
+            </select>
+          </div>
         </div>
       </div>
 
       {/* Product Table */}
-      <div className="overflow-hidden rounded-xl border border-line bg-white shadow-sm">
-        <table className="w-full text-left">
-          <thead className="bg-surface-muted">
-            <tr className="border-b border-line text-label font-bold uppercase text-black/50">
-              <th className="px-6 py-4">Product</th>
-              <th className="px-6 py-4">Category</th>
-              <th className="px-6 py-4">Price</th>
-              <th className="px-6 py-4">Stock</th>
-              <th className="px-6 py-4 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-line">
-            {products.map((product) => (
-              <tr key={product.id} className="text-copy transition-colors hover:bg-surface-muted/50">
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 overflow-hidden rounded-lg bg-surface">
-                      <Image
-                        src={product.image}
-                        alt={product.name}
-                        width={48}
-                        height={48}
-                        className="h-full w-full object-cover"
-                      />
+      <div className="overflow-hidden rounded-2xl border border-white/5 bg-white/5 backdrop-blur-sm">
+        <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+            <thead>
+                <tr className="border-b border-white/5 bg-white/5 text-label font-bold uppercase tracking-widest text-white/30">
+                <th className="px-8 py-5">Product Details</th>
+                <th className="px-6 py-5">Category</th>
+                <th className="px-6 py-5">Price</th>
+                <th className="px-6 py-5">Availability</th>
+                <th className="px-8 py-5 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody className="divide-y divide-white/5">
+                {products.map((product) => (
+                <tr key={product.id} className="text-copy transition-all hover:bg-white/[0.03] group">
+                    <td className="px-8 py-6">
+                    <div className="flex items-center gap-5">
+                        <div className="h-16 w-16 overflow-hidden rounded-xl bg-white/10 border border-white/10 p-1 transition-transform group-hover:scale-110">
+                        <Image
+                            src={product.image}
+                            alt={product.name}
+                            width={64}
+                            height={64}
+                            className="h-full w-full object-cover rounded-lg"
+                        />
+                        </div>
+                        <div>
+                            <span className="block font-bold text-white group-hover:text-brand transition-colors">{product.name}</span>
+                            <span className="text-xs text-white/30 tracking-widest uppercase">ID: PRD-00{product.id}</span>
+                        </div>
                     </div>
-                    <span className="font-bold text-black">{product.name}</span>
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-black/50">{product.category}</td>
-                <td className="px-6 py-4 font-bold text-black">{product.price}</td>
-                <td className="px-6 py-4">
-                  <span className={`font-medium ${product.stock < 20 ? 'text-red-500' : 'text-black/50'}`}>
-                    {product.stock} units
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-right">
-                  <div className="flex justify-end gap-2">
-                    <button className="rounded-lg p-2 text-black/50 transition-colors hover:bg-surface hover:text-brand">
-                      <FiEdit2 size={18} />
-                    </button>
-                    <button className="rounded-lg p-2 text-black/50 transition-colors hover:bg-red-50 hover:text-red-500">
-                      <FiTrash2 size={18} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                    </td>
+                    <td className="px-6 py-6">
+                        <span className="px-3 py-1 rounded-lg bg-white/5 text-white/60 font-medium border border-white/5">
+                            {product.category}
+                        </span>
+                    </td>
+                    <td className="px-6 py-6 font-bold text-white">{product.price}</td>
+                    <td className="px-6 py-6">
+                    <div className="flex items-center gap-2">
+                        <span className={`h-2 w-2 rounded-full ${product.stock < 20 ? 'bg-rose-500 animate-pulse' : 'bg-emerald-500'}`} />
+                        <span className={`font-bold ${product.stock < 20 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                            {product.stock} in stock
+                        </span>
+                    </div>
+                    </td>
+                    <td className="px-8 py-6 text-right">
+                    <div className="flex justify-end gap-3">
+                        <button className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-white/40 transition-all hover:bg-brand/20 hover:text-brand">
+                        <FiEdit2 size={18} />
+                        </button>
+                        <button className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-white/40 transition-all hover:bg-rose-500/20 hover:text-rose-400">
+                        <FiTrash2 size={18} />
+                        </button>
+                    </div>
+                    </td>
+                </tr>
+                ))}
+            </tbody>
+            </table>
+        </div>
       </div>
     </div>
   );
