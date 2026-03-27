@@ -1,14 +1,20 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { RhythmGroup, RhythmItem, RhythmListItem } from "./ui/Rhythm";
+import { usePathname } from "next/navigation";
 
 const Footer = () => {
+  const pathname = usePathname();
   const items = ["home", "headphones", "speakers", "earphones"];
   const socialLinks = [
     { icon: "icon-facebook.svg", label: "Facebook" },
     { icon: "icon-twitter.svg", label: "Twitter" },
     { icon: "icon-instagram.svg", label: "Instagram" },
   ];
+
+  if (pathname.startsWith("/admin")) return null;
 
   return (
     <div className="bg-black">
@@ -21,7 +27,7 @@ const Footer = () => {
         >
           <div className="flex flex-col items-center text-center md:items-start md:text-left lg:flex-row lg:items-start lg:justify-between">
             <RhythmItem variant="soft">
-              <Link href="/" className="mb-12 md:mb-8 lg:mb-0">
+              <Link href="/" className="mb-14 inline-block md:mb-10 lg:mb-0">
                 <Image
                   src="/assets/shared/desktop/logo.svg"
                   width={143}

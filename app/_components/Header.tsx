@@ -15,8 +15,11 @@ import { RhythmGroup, RhythmItem } from "./ui/Rhythm";
 import HeaderAuth from "./ui/headerAuth";
 import CartQuantityBadge from "./ui/CartQuantityBadge";
 
+import { usePathname } from "next/navigation";
+
 const Header = () => {
   const items = ["home", "headphones", "speakers", "earphones"];
+  const pathname = usePathname();
 
   // UI flags for menus/modals rendered from global state.
   const isOpen = useSelector((state: RootState) => state.ui.value);
@@ -32,10 +35,12 @@ const Header = () => {
 
   const dispatch = useDispatch();
 
+  if (pathname.startsWith("/admin")) return null;
+
   return (
-    <nav className="relative z-20 bg-black">
+    <nav className="relative z-50 bg-black md:sticky md:top-0 md:bg-black/90 md:backdrop-blur-md lg:bg-black/85">
       <RhythmGroup
-        className="mx-6 flex items-center justify-between border-b border-white/15 py-8 md:hidden"
+        className="mx-6 flex items-center justify-between border-b border-white/10 py-8 md:hidden"
         inView={false}
       >
         <button

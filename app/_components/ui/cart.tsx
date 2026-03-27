@@ -13,7 +13,7 @@ import {
   removeCartItem,
   removeAllCartItems,
 } from "@/app/store/uiState/cartValueslice";
-import { FiTrash2 } from "react-icons/fi";
+import { FiTrash2, FiX } from "react-icons/fi";
 
 const formatPrice = (price: number) =>
   new Intl.NumberFormat("en-US", {
@@ -46,12 +46,12 @@ const Cart = () => {
         <button
           onClick={() => dispatch(closeCart())}
           aria-label="Close cart"
-          className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-lg font-bold text-black transition-colors hover:bg-gray-300"
+          className="absolute -top-3 -right-3 flex h-9 w-9 items-center justify-center rounded-full bg-brand text-white shadow-lg transition-transform hover:scale-110 active:scale-95"
         >
-          <span className="leading-none">&times;</span>
+          <FiX size={20} />
         </button>
 
-        <p className="flex items-center justify-between pb-7.75 pt-3">
+        <p className="flex items-center justify-between pb-7.75 pt-6">
           <span className="text-title font-bold tracking-heading text-black">
             CART ({cartCount})
           </span>
