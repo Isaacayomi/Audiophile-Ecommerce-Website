@@ -6,6 +6,9 @@ import { RhythmGroup, RhythmItem, RhythmListItem } from "./ui/Rhythm";
 import { usePathname } from "next/navigation";
 
 const Footer = () => {
+  const date = new Date();
+  const year = date.getFullYear();
+  console.log(date);
   const pathname = usePathname();
   const items = ["home", "headphones", "speakers", "earphones"];
   const socialLinks = [
@@ -66,7 +69,7 @@ const Footer = () => {
           <div className="mt-12 flex flex-col items-center gap-12 md:mt-20 md:flex-row md:items-center md:justify-between md:gap-0 lg:mt-14">
             <RhythmItem variant="soft">
               <p className="text-center text-copy leading-copy font-bold text-white/50 md:text-left">
-                Copyright 2021. All Rights Reserved
+                Copyright {year}. All Rights Reserved
               </p>
             </RhythmItem>
 

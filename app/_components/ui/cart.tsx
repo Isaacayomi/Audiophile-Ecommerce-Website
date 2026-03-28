@@ -51,7 +51,7 @@ const Cart = () => {
           <FiX size={16} />
         </button>
 
-        <p className="flex items-center justify-between pb-7.75 pt-3">
+        <p className="flex items-center justify-between pb-7.75 pt-3 mt-4">
           <span className="text-title font-bold tracking-heading text-black">
             CART ({cartCount})
           </span>
@@ -117,7 +117,9 @@ const Cart = () => {
                     >
                       -
                     </button>
-                    <span className="font-bold text-black">{item.quantity}</span>
+                    <span className="font-bold text-black">
+                      {item.quantity}
+                    </span>
                     <button
                       type="button"
                       className="cursor-pointer font-bold text-black/50 transition-colors hover:text-brand"
