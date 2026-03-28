@@ -1,20 +1,35 @@
 "use client";
 
-import React from "react";
+import type { ReactNode } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { 
-  FiSettings, 
-  FiUser, 
-  FiLock, 
-  FiBell, 
-  FiShield, 
-  FiGlobe, 
-  FiCpu 
+import {
+  FiBell,
+  FiCpu,
+  FiGlobe,
+  FiLock,
+  FiSave,
+  FiShield,
+  FiUser,
 } from "react-icons/fi";
+import { defaultSettings } from "../_lib/catalog";
+import { useAdminCatalog } from "../_components/AdminCatalogProvider";
 
-const SettingsSection = ({ title, description, children, icon, delay = 0 }: any) => (
+const SettingsSection = ({
+  title,
+  description,
+  icon,
+  children,
+  delay = 0,
+}: {
+  title: string;
+  description: string;
+  icon: ReactNode;
+  children: ReactNode;
+  delay?: number;
+}) => (
   <motion.section
-    initial={{ opacity: 0, y: 15 }}
+    initial={{ opacity: 0, y: 14 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.4, delay, ease: [0.16, 1, 0.3, 1] }}
     className="rounded-2xl border border-white/5 bg-white/[0.02] p-6"
@@ -24,143 +39,212 @@ const SettingsSection = ({ title, description, children, icon, delay = 0 }: any)
         {icon}
       </div>
       <div>
-        <h2 className="text-sm font-bold text-white uppercase tracking-widest">{title}</h2>
-        <p className="text-xs text-white/30 mt-1">{description}</p>
+        <h2 className="text-sm font-bold uppercase tracking-widest text-white">
+          {title}
+        </h2>
+        <p className="mt-1 text-xs text-white/30">{description}</p>
       </div>
     </div>
-    <div className="space-y-4">
-      {children}
-    </div>
+    <div className="space-y-4">{children}</div>
   </motion.section>
 );
 
-const SettingToggle = ({ label, description, defaultChecked }: any) => (
-  <div className="flex items-center justify-between py-2">
+const Toggle = ({
+  checked,
+  onChange,
+  label,
+  description,
+}: {
+  checked: boolean;
+  onChange: (value: boolean) => void;
+  label: string;
+  description: string;
+}) => (
+  <div className="flex items-center justify-between gap-4 py-1">
     <div>
       <p className="text-xs font-bold text-white">{label}</p>
-      <p className="text-[10px] text-white/30 mt-0.5">{description}</p>
+      <p className="mt-0.5 text-[10px] text-white/30">{description}</p>
     </div>
-    <button className={`h-5 w-9 rounded-full transition-all relative ${defaultChecked ? 'bg-[#D87D4A]' : 'bg-white/10'}`}>
-      <div className={`absolute top-1 h-3 w-3 rounded-full bg-white transition-all ${defaultChecked ? 'right-1' : 'left-1'}`} />
+    <button
+      type="button"
+      onClick={() => onChange(!checked)}
+      className={`relative h-5 w-9 rounded-full transition-all ${
+        checked ? "bg-[#D87D4A]" : "bg-white/10"
+      }`}
+    >
+      <span
+        className={`absolute top-1 h-3 w-3 rounded-full bg-white transition-all ${
+          checked ? "right-1" : "left-1"
+        }`}
+      />
     </button>
   </div>
 );
 
 export default function SettingsPage() {
+  const { settings, saveSettings } = useAdminCatalog();
+  const [form, setForm] = useState(settings);
+
+  const updateField = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
+    setForm((current) => ({ ...current, [key]: value }));
+  };
+
+  const handleSave = () => {
+    // The settings page persists to localStorage through the shared admin
+    // provider, so these values are available across the dashboard after save.
+    saveSettings(form);
+  };
+
+  const handleRestoreDefaults = () => {
+    setForm(defaultSettings);
+    saveSettings(defaultSettings);
+  };
+
   return (
-    <div className="space-y-8 max-w-4xl pb-20">
+    <div className="max-w-4xl space-y-8 pb-20">
       <header>
-        <h1 className="text-2xl font-bold tracking-tight text-white">Store Settings</h1>
-        <p className="text-sm text-white/40 mt-1">Tune the Audiophile admin experience and storefront preferences.</p>
+        <h1 className="text-2xl font-bold tracking-tight text-white">
+          Store Settings
+        </h1>
+        <p className="mt-1 text-sm text-white/40">
+          Control how the Audiophile admin area identifies itself and how it
+          behaves.
+        </p>
       </header>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <SettingsSection 
-          title="Account Profile" 
-          description="Manage the profile shown across the Audiophile admin area."
+        <SettingsSection
+          title="Store Profile"
+          description="These values show up in the dashboard and shared admin chrome."
           icon={<FiUser />}
-          delay={0.1}
+          delay={0.05}
         >
-          <div className="space-y-4">
-            <div className="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/5">
-              <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-[#D87D4A] to-[#FBAF85] flex items-center justify-center text-white font-bold text-lg">
-                JD
-              </div>
-              <div className="flex-1">
-                <p className="text-xs font-bold text-white">John Doe</p>
-                <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">Store Admin</p>
-              </div>
-              <button className="text-[10px] font-bold text-[#D87D4A] hover:underline uppercase tracking-widest">Edit</button>
+          <div className="grid grid-cols-1 gap-4">
+            <div className="flex flex-col gap-2">
+              <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/20">
+                Store Name
+              </label>
+              <input
+                value={form.storeName}
+                onChange={(event) => updateField("storeName", event.target.value)}
+                className="h-10 rounded-xl border border-white/5 bg-white/5 px-4 text-xs text-white outline-none"
+              />
             </div>
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">Email Address</label>
-              <input 
-                type="email" 
-                defaultValue="admin@audiophile.com" 
-                className="h-10 rounded-xl bg-white/5 border border-white/5 px-4 text-xs text-white/60 outline-none"
-                readOnly
+              <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/20">
+                Admin Name
+              </label>
+              <input
+                value={form.adminName}
+                onChange={(event) => updateField("adminName", event.target.value)}
+                className="h-10 rounded-xl border border-white/5 bg-white/5 px-4 text-xs text-white outline-none"
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/20">
+                Support Email
+              </label>
+              <input
+                type="email"
+                value={form.supportEmail}
+                onChange={(event) => updateField("supportEmail", event.target.value)}
+                className="h-10 rounded-xl border border-white/5 bg-white/5 px-4 text-xs text-white outline-none"
               />
             </div>
           </div>
         </SettingsSection>
 
-        <SettingsSection 
-          title="Security" 
-          description="Keep the admin area secure and easy to manage."
+        <SettingsSection
+          title="Security"
+          description="Keep the admin workspace secure and easy to manage."
           icon={<FiShield />}
+          delay={0.1}
+        >
+          <button className="flex w-full items-center justify-between rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-xs font-bold text-white transition-all hover:bg-white/10">
+            <span className="flex items-center gap-3">
+              <FiLock className="text-[#D87D4A]" />
+              Change Password
+            </span>
+            <FiGlobe className="text-white/20" />
+          </button>
+
+          <Toggle
+            checked={form.catalogSyncEnabled}
+            onChange={(value) => updateField("catalogSyncEnabled", value)}
+            label="Catalog Sync"
+            description="Keep the dashboard aligned with storefront data"
+          />
+          <Toggle
+            checked={form.emailAlertsEnabled}
+            onChange={(value) => updateField("emailAlertsEnabled", value)}
+            label="Email Alerts"
+            description="Get notified about updates and low stock"
+          />
+        </SettingsSection>
+
+        <SettingsSection
+          title="Platform"
+          description="Tune the admin workflow and catalog tone."
+          icon={<FiCpu />}
+          delay={0.15}
+        >
+          <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-white/25">
+              Storefront Notes
+            </p>
+            <textarea
+              rows={5}
+              value={form.storefrontNotes}
+              onChange={(event) =>
+                updateField("storefrontNotes", event.target.value)
+              }
+              className="mt-3 w-full resize-none rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-white outline-none"
+            />
+          </div>
+          <div className="rounded-xl border border-white/5 bg-white/[0.02] px-4 py-3">
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30">
+              Current build
+            </p>
+            <p className="mt-1 text-xs text-[#D87D4A]">Audiophile admin tools</p>
+          </div>
+        </SettingsSection>
+
+        <SettingsSection
+          title="Notifications"
+          description="Choose how you want to receive operational updates."
+          icon={<FiBell />}
           delay={0.2}
         >
-          <div className="space-y-4">
-            <button className="w-full flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5 text-xs font-bold text-white hover:bg-white/10 transition-all">
-              <span className="flex items-center gap-3"><FiLock className="text-[#D87D4A]" /> Change Password</span>
-              <FiGlobe className="text-white/20" />
-            </button>
-            <SettingToggle 
-              label="Two-Factor Auth" 
-              description="Protect your admin account with 2FA" 
-              defaultChecked={true} 
-            />
-            <SettingToggle 
-              label="Session Monitoring" 
-              description="Alert on suspicious sign-ins" 
-              defaultChecked={true} 
-            />
-          </div>
-        </SettingsSection>
-
-        <SettingsSection 
-          title="Platform" 
-          description="Control how the admin workspace behaves."
-          icon={<FiCpu />}
-          delay={0.3}
-        >
-          <div className="space-y-4">
-            <SettingToggle 
-              label="Live Sync" 
-              description="Keep catalog changes in sync" 
-              defaultChecked={true} 
-            />
-            <SettingToggle 
-              label="Real-time Metrics" 
-              description="Track catalog and order activity" 
-              defaultChecked={true} 
-            />
-            <div className="h-px bg-white/5" />
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Storefront Build</span>
-              <span className="text-[10px] font-bold text-[#D87D4A] uppercase tracking-widest bg-[#D87D4A]/10 px-2 py-0.5 rounded-lg">v2.4.0-stable</span>
-            </div>
-          </div>
-        </SettingsSection>
-
-        <SettingsSection 
-          title="Notifications" 
-          description="Choose how you receive store updates."
-          icon={<FiBell />}
-          delay={0.4}
-        >
-          <div className="space-y-4">
-            <SettingToggle 
-              label="Email Alerts" 
-              description="Order and stock notifications" 
-              defaultChecked={true} 
-            />
-            <SettingToggle 
-              label="System Audio" 
-              description="Play sound on notifications" 
-              defaultChecked={false} 
-            />
-            <button className="w-full mt-2 rounded-xl bg-white/5 py-3 text-[10px] font-bold uppercase tracking-widest text-white/40 hover:bg-white/10 hover:text-white transition-all border border-white/5">
-              Manage Alerts
-            </button>
+          <Toggle
+            checked={form.emailAlertsEnabled}
+            onChange={(value) => updateField("emailAlertsEnabled", value)}
+            label="Operational Email"
+            description="Order and catalog updates"
+          />
+          <div className="rounded-xl border border-white/5 bg-white/[0.02] px-4 py-3">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-white/25">
+              Admin identity
+            </p>
+            <p className="mt-1 text-xs text-white/60">{form.adminName}</p>
           </div>
         </SettingsSection>
       </div>
 
-      <div className="flex items-center justify-end gap-4 pt-6 border-t border-white/5">
-        <button className="text-xs font-bold text-white/40 hover:text-white transition-all uppercase tracking-widest">Restore Defaults</button>
-        <button className="rounded-xl bg-[#D87D4A] px-10 py-3 text-xs font-bold text-white shadow-lg shadow-[rgba(216,125,74,0.2)] hover:bg-[#FBAF85] transition-all">
-          Save Global Changes
+      <div className="flex flex-col gap-4 border-t border-white/5 pt-6 sm:flex-row sm:items-center sm:justify-end">
+        <button
+          type="button"
+          onClick={handleRestoreDefaults}
+          className="text-xs font-bold uppercase tracking-widest text-white/40 transition-all hover:text-white"
+        >
+          Restore Defaults
+        </button>
+        <button
+          type="button"
+          onClick={handleSave}
+          className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#D87D4A] px-8 text-xs font-bold text-white shadow-lg shadow-[rgba(216,125,74,0.2)] transition-all hover:bg-[#FBAF85]"
+        >
+          <FiSave />
+          Save Changes
         </button>
       </div>
     </div>

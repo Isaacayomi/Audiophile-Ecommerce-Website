@@ -1,0 +1,30 @@
+Audiophile Admin Dashboard Update Notes
+
+What changed
+- Renamed the dashboard branding to a cleaner Audiophile / Admin presentation instead of "Audiophile Admin" as a single label.
+- Reworked the admin shell to use Audiophile's orange brand color across the sidebar, header, buttons, charts, and status indicators.
+- Connected the admin pages to a shared catalog provider so the dashboard is no longer static.
+- Kept the storefront pages untouched. The dashboard now reads from the storefront product source when it can, and falls back to local seed data when needed.
+
+Functional flow
+- The shared admin provider lives in `app/admin/_components/AdminCatalogProvider.tsx`.
+- It seeds the admin catalog from the storefront API helper in `app/lib/products.ts`.
+- It persists catalog and settings changes in `localStorage` so edits stay available across admin pages.
+- The dashboard overview in `app/admin/page.tsx` now derives stats from the live admin catalog.
+- The product list in `app/admin/products/page.tsx` now supports search, category filtering, edit, delete, and storefront links.
+- The create/edit form in `app/admin/products/new/page.tsx` now saves new products and updates existing ones.
+- The settings page in `app/admin/settings/page.tsx` now persists store profile and admin preferences.
+
+Frontend connection
+- Each product card includes a storefront route so the admin can jump directly to the public product page.
+- The sync action refreshes the catalog from the storefront data source instead of relying only on hard-coded demo content.
+- The admin product form uses the same category and slug structure as the storefront routes.
+
+Responsive behavior
+- The admin layout already supports mobile and desktop navigation.
+- The product catalog now has a mobile card layout and a desktop table layout.
+- The new product form and settings panels use stacked grids that collapse cleanly on smaller screens.
+
+Verification
+- Production build completed successfully with `npm.cmd run build`.
+

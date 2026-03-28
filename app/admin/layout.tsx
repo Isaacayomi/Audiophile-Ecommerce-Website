@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { AdminCatalogProvider } from "./_components/AdminCatalogProvider";
 import { 
   FiLayout, 
   FiBox, 
@@ -11,10 +12,8 @@ import {
   FiLogOut, 
   FiHome, 
   FiMenu, 
-  FiX, 
   FiSearch, 
   FiBell, 
-  FiUser,
   FiSettings,
   FiChevronDown
 } from "react-icons/fi";
@@ -37,7 +36,8 @@ export default function AdminLayout({
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   return (
-    <div className="flex min-h-screen bg-[#0F172A] font-manrope text-white selection:bg-[#D87D4A]/30 overflow-x-hidden">
+    <AdminCatalogProvider>
+      <div className="flex min-h-screen bg-[#0F172A] font-manrope text-white selection:bg-[#D87D4A]/30 overflow-x-hidden">
       {/* Sidebar Backdrop (Mobile) */}
       <AnimatePresence>
         {isSidebarOpen && (
@@ -62,9 +62,14 @@ export default function AdminLayout({
             <div className="h-8 w-8 rounded-lg bg-[#D87D4A] flex items-center justify-center text-white shadow-[0_0_15px_rgba(216,125,74,0.4)]">
               <FiBox className="text-lg" />
             </div>
-            <span className="text-xl font-bold tracking-tight text-white">
-              Audiophile<span className="text-[#D87D4A]">Admin</span>
-            </span>
+            <div>
+              <span className="block text-xl font-bold tracking-tight text-white">
+                Audiophile
+              </span>
+              <span className="block text-[10px] font-bold uppercase tracking-[0.25em] text-white/30">
+                Admin
+              </span>
+            </div>
           </div>
 
           <nav className="flex-1 space-y-1">
@@ -169,6 +174,7 @@ export default function AdminLayout({
           </motion.div>
         </main>
       </div>
-    </div>
+      </div>
+    </AdminCatalogProvider>
   );
 }
