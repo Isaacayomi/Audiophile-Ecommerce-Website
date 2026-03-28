@@ -14,11 +14,14 @@ Functional flow
 - The product list in `app/admin/products/page.tsx` now supports search, category filtering, edit, delete, and storefront links.
 - The create/edit form in `app/admin/products/new/page.tsx` now saves new products and updates existing ones.
 - The settings page in `app/admin/settings/page.tsx` now persists store profile and admin preferences.
+- The middle action in the product list duplicates a product so it is now functional instead of decorative.
+- The product form accepts image uploads and stores the result as a data URL for immediate admin preview.
 
 Frontend connection
 - Each product card includes a storefront route so the admin can jump directly to the public product page.
 - The sync action refreshes the catalog from the storefront data source instead of relying only on hard-coded demo content.
 - The admin product form uses the same category and slug structure as the storefront routes.
+- Storefront publishing still depends on the shared product API/data source; if that backend is not updated, admin-created items stay in the admin catalog and do not automatically appear on the public site.
 
 Responsive behavior
 - The admin layout already supports mobile and desktop navigation.
@@ -27,4 +30,3 @@ Responsive behavior
 
 Verification
 - Production build completed successfully with `npm.cmd run build`.
-

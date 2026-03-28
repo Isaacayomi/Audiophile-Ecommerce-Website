@@ -14,6 +14,7 @@ import {
   loadStorefrontCatalog,
   normalizeAdminProducts,
   slugify,
+  duplicateAdminProduct,
   upsertAdminProduct,
 } from "../_lib/catalog";
 
@@ -26,6 +27,7 @@ type AdminCatalogContextValue = {
   lastSyncedAt: string | null;
   syncCatalog: () => Promise<void>;
   upsertProduct: (product: Omit<AdminProduct, "updatedAt">) => void;
+  duplicateProduct: (slug: string) => void;
   deleteProduct: (slug: string) => void;
   saveSettings: (settings: Partial<AdminSettings>) => void;
   getProductBySlug: (slug: string) => AdminProduct | undefined;
@@ -161,6 +163,11 @@ export function AdminCatalogProvider({
     toast.success("Product saved");
   };
 
+  const duplicateProduct = (slug: string) => {
+    setProducts((current) => duplicateAdminProduct(current, slug));
+    toast.success("Product duplicated");
+  };
+
   const deleteProduct = (slug: string) => {
     setProducts((current) => current.filter((product) => product.slug !== slug));
     toast.success("Product removed");
@@ -184,6 +191,7 @@ export function AdminCatalogProvider({
       lastSyncedAt,
       syncCatalog,
       upsertProduct,
+      duplicateProduct,
       deleteProduct,
       saveSettings,
       getProductBySlug,

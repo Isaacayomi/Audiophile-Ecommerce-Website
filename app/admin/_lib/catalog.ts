@@ -200,3 +200,33 @@ export const upsertAdminProduct = (
   return normalizeAdminProducts(next);
 };
 
+export const duplicateAdminProduct = (
+  current: AdminProduct[],
+  slug: string,
+): AdminProduct[] => {
+  const source = current.find((product) => product.slug === slug);
+
+  if (!source) return current;
+
+  const baseSlug = `${source.slug}-copy`;
+  let nextSlug = baseSlug;
+  let suffix = 2;
+
+  while (current.some((product) => product.slug === nextSlug)) {
+    nextSlug = `${baseSlug}-${suffix}`;
+    suffix += 1;
+  }
+
+  const copy: AdminProduct = {
+    ...source,
+    slug: nextSlug,
+    name: `${source.name} Copy`,
+    shortName: `${source.shortName} Copy`,
+    status: "Draft",
+    featured: false,
+    updatedAt: nowIso(),
+    storefrontPath: `/${source.category}/${nextSlug}`,
+  };
+
+  return normalizeAdminProducts([copy, ...current]);
+};

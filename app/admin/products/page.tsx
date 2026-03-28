@@ -6,6 +6,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   FiBox,
+  FiCopy,
   FiEdit2,
   FiExternalLink,
   FiFilter,
@@ -25,7 +26,7 @@ const statusClasses = {
 } as const;
 
 export default function ProductManagement() {
-  const { products, deleteProduct } = useAdminCatalog();
+  const { products, deleteProduct, duplicateProduct } = useAdminCatalog();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<"all" | Category>("all");
 
@@ -33,7 +34,8 @@ export default function ProductManagement() {
     const normalizedQuery = query.trim().toLowerCase();
 
     return products.filter((product) => {
-      const matchesCategory = category === "all" || product.category === category;
+      const matchesCategory =
+        category === "all" || product.category === category;
       const matchesQuery =
         !normalizedQuery ||
         product.name.toLowerCase().includes(normalizedQuery) ||
@@ -90,7 +92,11 @@ export default function ProductManagement() {
                 All categories
               </option>
               {storefrontCategories.map((item) => (
-                <option key={item.slug} value={item.slug} className="bg-[#0F172A]">
+                <option
+                  key={item.slug}
+                  value={item.slug}
+                  className="bg-[#0F172A]"
+                >
                   {item.label}
                 </option>
               ))}
@@ -114,23 +120,41 @@ export default function ProductManagement() {
           >
             <div className="flex items-start gap-4">
               <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-black/50">
-                <Image src={product.image} alt={product.name} fill className="object-cover" />
+                <Image
+                  src={product.image}
+                  alt={product.name}
+                  fill
+                  className="object-cover"
+                />
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-bold text-white">{product.name}</p>
+                    <p className="truncate text-sm font-bold text-white">
+                      {product.name}
+                    </p>
                     <p className="mt-1 text-[10px] uppercase tracking-widest text-white/25">
                       {product.slug}
                     </p>
                   </div>
-                  <span className={`inline-flex rounded-lg px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest ${statusClasses[product.status]}`}>
+                  <span
+                    className={`inline-flex rounded-lg px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest ${statusClasses[product.status]}`}
+                  >
                     {product.status}
                   </span>
                 </div>
                 <p className="mt-3 text-xs text-white/50">
-                  {product.category} · {formatCurrency(product.price)} · {product.stock} units
+                  {product.category} - {formatCurrency(product.price)} -{" "}
+                  {product.stock} units
                 </p>
+                <div className="mt-3 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white/30">
+                  <Link
+                    href={product.storefrontPath}
+                    className="inline-flex items-center gap-1 text-[#D87D4A] hover:underline"
+                  >
+                    View storefront <FiExternalLink />
+                  </Link>
+                </div>
               </div>
             </div>
 
@@ -141,12 +165,12 @@ export default function ProductManagement() {
               >
                 Edit
               </Link>
-              <Link
-                href={product.storefrontPath}
-                className="inline-flex items-center justify-center rounded-xl bg-[#D87D4A] px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-white hover:bg-[#FBAF85]"
+              <button
+                onClick={() => duplicateProduct(product.slug)}
+                className="inline-flex items-center justify-center rounded-xl bg-white/5 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-white/50 hover:bg-emerald-500/10 hover:text-emerald-400"
               >
-                View
-              </Link>
+                Copy
+              </button>
               <button
                 onClick={() => deleteProduct(product.slug)}
                 className="inline-flex items-center justify-center rounded-xl bg-white/5 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-white/50 hover:bg-rose-500/10 hover:text-rose-400"
@@ -177,11 +201,11 @@ export default function ProductManagement() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.06 }}
-                className="group bg-white/[0.02] hover:bg-white/[0.05] transition-colors"
+                className="group bg-white/[0.02] transition-colors hover:bg-white/[0.05]"
               >
                 <td className="rounded-l-2xl px-6 py-4">
                   <div className="flex items-center gap-4">
-                    <div className="relative h-12 w-12 overflow-hidden rounded-xl bg-black border border-white/5">
+                    <div className="relative h-12 w-12 overflow-hidden rounded-xl border border-white/5 bg-black">
                       <Image
                         src={product.image}
                         alt={product.name}
@@ -236,13 +260,13 @@ export default function ProductManagement() {
                     >
                       <FiEdit2 size={16} />
                     </Link>
-                    <Link
-                      href={product.storefrontPath}
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-white/20 transition-all hover:bg-white/10 hover:text-white"
-                      aria-label={`View ${product.name} on storefront`}
+                    <button
+                      onClick={() => duplicateProduct(product.slug)}
+                      className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-white/20 transition-all hover:bg-emerald-500/20 hover:text-emerald-400"
+                      aria-label={`Duplicate ${product.name}`}
                     >
-                      <FiExternalLink size={16} />
-                    </Link>
+                      <FiCopy size={16} />
+                    </button>
                     <button
                       onClick={() => deleteProduct(product.slug)}
                       className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-white/20 transition-all hover:bg-rose-500/20 hover:text-rose-400"
@@ -269,3 +293,4 @@ export default function ProductManagement() {
     </div>
   );
 }
+

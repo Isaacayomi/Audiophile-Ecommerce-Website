@@ -98,6 +98,7 @@ export default function NewProduct() {
   const [form, setForm] = useState<ProductFormState>(createEmptyForm());
   const [saveMode, setSaveMode] = useState<SaveMode>("Draft");
   const pendingSaveMode = useRef<SaveMode>("Draft");
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   useEffect(() => {
     // When we open this screen with `?edit=slug`, we hydrate the fields from
@@ -138,6 +139,29 @@ export default function NewProduct() {
     value: ProductFormState[K],
   ) => {
     setForm((current) => ({ ...current, [key]: value }));
+  };
+
+  const handleImageUpload = (file: File | null) => {
+    if (!file) return;
+
+    // We convert the selected image into a data URL so the admin preview and
+    // local catalog can show it immediately without a separate upload backend.
+    setIsUploadingImage(true);
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const result = typeof reader.result === "string" ? reader.result : "";
+      if (result) {
+        updateField("image", result);
+      }
+      setIsUploadingImage(false);
+    };
+
+    reader.onerror = () => {
+      setIsUploadingImage(false);
+    };
+
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -313,7 +337,7 @@ export default function NewProduct() {
         <div className="space-y-6">
           <SectionCard
             title="Product Media"
-            description="Use the same image paths the storefront already understands."
+            description="Upload an image for the admin catalog preview."
             icon={<FiImage />}
           >
             <div className="group relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-white/5 bg-white/[0.01] p-8 text-center transition-all hover:border-[#D87D4A]/40 hover:bg-[#D87D4A]/5">
@@ -321,10 +345,27 @@ export default function NewProduct() {
                 <FiUploadCloud size={24} />
               </div>
               <p className="text-xs font-bold text-white/40 group-hover:text-white">
-                Image path or upload placeholder
+                Upload or paste an image
               </p>
               <p className="mt-1 text-[9px] font-bold uppercase tracking-widest text-white/10">
-                Keep the product image aligned with the storefront asset set
+                The selected image is stored locally in the admin catalog
+              </p>
+            </div>
+
+            <div className="mt-4 flex flex-col gap-2">
+              <FieldLabel>Upload Image</FieldLabel>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(event) =>
+                  handleImageUpload(event.target.files?.[0] ?? null)
+                }
+                className="rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-white file:mr-4 file:rounded-lg file:border-0 file:bg-[#D87D4A] file:px-3 file:py-1.5 file:text-[10px] file:font-bold file:uppercase file:tracking-widest file:text-white"
+              />
+              <p className="text-[10px] text-white/25">
+                {isUploadingImage
+                  ? "Processing image..."
+                  : "Supported for local admin preview and catalog cards."}
               </p>
             </div>
 
@@ -348,6 +389,15 @@ export default function NewProduct() {
               <p className="mt-1 text-xs text-white/40">
                 {formatCurrency(Number(form.price || 0))}
               </p>
+              <div className="mt-4 overflow-hidden rounded-xl border border-white/5 bg-white/5">
+                {/* This preview is intentionally lightweight so uploaded images
+                can be tested immediately in the admin workflow. */}
+                <img
+                  src={form.image}
+                  alt={form.name || "Product preview"}
+                  className="h-40 w-full object-cover"
+                />
+              </div>
             </div>
           </SectionCard>
 

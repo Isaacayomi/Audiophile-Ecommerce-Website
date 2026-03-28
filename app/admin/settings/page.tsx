@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   FiBell,
@@ -84,6 +84,11 @@ const Toggle = ({
 export default function SettingsPage() {
   const { settings, saveSettings } = useAdminCatalog();
   const [form, setForm] = useState(settings);
+
+  useEffect(() => {
+    // Keep the form in sync if the shared admin profile changes elsewhere.
+    setForm(settings);
+  }, [settings]);
 
   const updateField = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
     setForm((current) => ({ ...current, [key]: value }));
