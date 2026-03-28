@@ -166,12 +166,14 @@ export default function ProductManagement() {
                 Edit
               </Link>
               <button
+                type="button"
                 onClick={() => duplicateProduct(product.slug)}
                 className="inline-flex items-center justify-center rounded-xl bg-white/5 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-white/50 hover:bg-emerald-500/10 hover:text-emerald-400"
               >
                 Copy
               </button>
               <button
+                type="button"
                 onClick={() => deleteProduct(product.slug)}
                 className="inline-flex items-center justify-center rounded-xl bg-white/5 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-white/50 hover:bg-rose-500/10 hover:text-rose-400"
               >
@@ -261,6 +263,7 @@ export default function ProductManagement() {
                       <FiEdit2 size={16} />
                     </Link>
                     <button
+                      type="button"
                       onClick={() => duplicateProduct(product.slug)}
                       className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-white/20 transition-all hover:bg-emerald-500/20 hover:text-emerald-400"
                       aria-label={`Duplicate ${product.name}`}
@@ -268,6 +271,7 @@ export default function ProductManagement() {
                       <FiCopy size={16} />
                     </button>
                     <button
+                      type="button"
                       onClick={() => deleteProduct(product.slug)}
                       className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-white/20 transition-all hover:bg-rose-500/20 hover:text-rose-400"
                       aria-label={`Delete ${product.name}`}
@@ -293,4 +297,3 @@ export default function ProductManagement() {
     </div>
   );
 }
-

@@ -20,8 +20,9 @@ import { categories as storefrontCategories } from "../../../lib/products";
 import { formatCurrency, slugify } from "../../_lib/catalog";
 import { useAdminCatalog } from "../../_components/AdminCatalogProvider";
 import type { Category } from "../../../type";
+import type { CatalogStatus } from "../../../lib/catalog-types";
 
-type SaveMode = "Draft" | "Live";
+type SaveMode = CatalogStatus;
 
 type ProductFormState = {
   name: string;
@@ -115,13 +116,13 @@ export default function NewProduct() {
       category: product.category,
       price: String(product.price),
       stock: String(product.stock),
-      status: product.status === "Live" ? "Live" : "Draft",
+      status: product.status,
       featured: product.featured,
       description: product.description,
       image: product.image,
     });
-    setSaveMode(product.status === "Live" ? "Live" : "Draft");
-    pendingSaveMode.current = product.status === "Live" ? "Live" : "Draft";
+    setSaveMode(product.status);
+    pendingSaveMode.current = product.status;
   }, [editSlug, getProductBySlug]);
 
   const productSlug = useMemo(
@@ -164,7 +165,7 @@ export default function NewProduct() {
     reader.readAsDataURL(file);
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!form.name.trim()) {
@@ -173,7 +174,7 @@ export default function NewProduct() {
 
     // The dashboard keeps the same catalog data shape across pages, so saving
     // here immediately updates the Products screen and the Dashboard overview.
-    upsertProduct({
+    const saved = await upsertProduct({
       slug: productSlug,
       name: form.name.trim(),
       shortName: form.shortName.trim() || form.name.trim(),
@@ -187,7 +188,9 @@ export default function NewProduct() {
       storefrontPath,
     });
 
-    router.push("/admin/products");
+    if (saved) {
+      router.push("/admin/products");
+    }
   };
 
   return (
@@ -407,7 +410,7 @@ export default function NewProduct() {
             icon={<FiSettings />}
           >
             <div className="space-y-4">
-              {(["Live", "Draft"] as const).map((mode) => (
+              {(["Live", "Draft", "Hidden"] as const).map((mode) => (
                 <label
                   key={mode}
                   className="flex cursor-pointer items-center gap-4 rounded-xl border border-white/5 bg-white/[0.02] p-3 transition-all hover:bg-white/[0.05]"
@@ -423,11 +426,19 @@ export default function NewProduct() {
                     <div className="h-2 w-2 rounded-full bg-[#D87D4A] opacity-0 transition-opacity peer-checked:opacity-100" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-white">{mode === "Live" ? "Live in store" : "Saved draft"}</p>
+                    <p className="text-xs font-bold text-white">
+                      {mode === "Live"
+                        ? "Live in store"
+                        : mode === "Draft"
+                          ? "Saved draft"
+                          : "Hidden from storefront"}
+                    </p>
                     <p className="mt-0.5 text-[10px] text-white/20 uppercase tracking-widest">
                       {mode === "Live"
                         ? "Visible to customers"
-                        : "Hidden until you publish it"}
+                        : mode === "Draft"
+                          ? "Saved and ready to publish"
+                          : "Not shown on the storefront"}
                     </p>
                   </div>
                 </label>

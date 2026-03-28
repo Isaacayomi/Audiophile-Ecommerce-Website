@@ -2,8 +2,10 @@ import BestGearSection from "../_components/BestGearSection";
 import CategoryCards from "../_components/CategoryCards";
 import PageBanner from "../_components/PageBanner";
 import ProductCategorySection from "../_components/ProductCategorySection";
-import { getCategoryProducts } from "../lib/products";
+import { getCategoryProducts } from "../lib/products.server";
 import { Product } from "../type";
+
+export const dynamic = "force-dynamic";
 
 const HeadphonesPage = async () => {
   // Category pages read their product list directly from the backend.

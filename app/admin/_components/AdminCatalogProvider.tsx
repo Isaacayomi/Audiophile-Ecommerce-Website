@@ -11,12 +11,14 @@ import {
   defaultSettings,
   fallbackOrders,
   fallbackProducts,
-  loadStorefrontCatalog,
+  mapStorefrontProductToAdmin,
+  makeStorefrontPath,
   normalizeAdminProducts,
   slugify,
-  duplicateAdminProduct,
-  upsertAdminProduct,
+  toCatalogInput,
 } from "../_lib/catalog";
+import { API_BASE_URL, categories as storefrontCategories } from "../../lib/products";
+import type { CatalogInput } from "../../lib/catalog-types";
 
 type AdminCatalogContextValue = {
   products: AdminProduct[];
@@ -26,9 +28,9 @@ type AdminCatalogContextValue = {
   isSyncing: boolean;
   lastSyncedAt: string | null;
   syncCatalog: () => Promise<void>;
-  upsertProduct: (product: Omit<AdminProduct, "updatedAt">) => void;
-  duplicateProduct: (slug: string) => void;
-  deleteProduct: (slug: string) => void;
+  upsertProduct: (product: CatalogInput) => Promise<boolean>;
+  duplicateProduct: (slug: string) => Promise<void>;
+  deleteProduct: (slug: string) => Promise<void>;
   saveSettings: (settings: Partial<AdminSettings>) => void;
   getProductBySlug: (slug: string) => AdminProduct | undefined;
 };
@@ -53,6 +55,60 @@ const writeStorage = (key: string, value: unknown) => {
   window.localStorage.setItem(key, JSON.stringify(value));
 };
 
+const apiJson = async <T,>(
+  path: string,
+  init?: RequestInit,
+): Promise<T> => {
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    ...init,
+    headers: {
+      "Content-Type": "application/json",
+      ...(init?.headers ?? {}),
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error(await res.text());
+  }
+
+  return (await res.json()) as T;
+};
+
+const loadRemoteProducts = async () => {
+  try {
+    const data = await apiJson<{ products: AdminProduct[] }>("/products");
+
+    if (Array.isArray(data.products)) {
+      return data.products;
+    }
+  } catch {
+    // Fall through to the category-based loader below.
+  }
+
+  const results = await Promise.allSettled(
+    storefrontCategories.map(async ({ slug }) => {
+      const data = await apiJson<unknown>(`/products/category/${slug}`);
+      return Array.isArray(data) ? data : [];
+    }),
+  );
+
+  return results
+    .flatMap((result) => (result.status === "fulfilled" ? result.value : []))
+    .map((item) => mapStorefrontProductToAdmin(item as never));
+};
+
+const normalizeCopySlug = (current: AdminProduct[], baseSlug: string) => {
+  let nextSlug = `${baseSlug}-copy`;
+  let suffix = 2;
+
+  while (current.some((product) => product.slug === nextSlug)) {
+    nextSlug = `${baseSlug}-copy-${suffix}`;
+    suffix += 1;
+  }
+
+  return nextSlug;
+};
+
 export function AdminCatalogProvider({
   children,
 }: {
@@ -65,9 +121,27 @@ export function AdminCatalogProvider({
   const [isSyncing, setIsSyncing] = useState(false);
   const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
 
+  const applyRecords = (records: AdminProduct[]) => {
+    setProducts(normalizeAdminProducts(records));
+    setLastSyncedAt(new Date().toISOString());
+  };
+
+  const syncCatalog = async () => {
+    setIsSyncing(true);
+
+    try {
+      // The API is the source of truth, so sync just refreshes from it.
+      const records = await loadRemoteProducts();
+      applyRecords(records.length ? records : fallbackProducts);
+      toast.success("Catalog refreshed");
+    } catch {
+      toast.error("Catalog sync is unavailable right now");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   useEffect(() => {
-    // We hydrate from localStorage first so the dashboard feels persistent
-    // between visits, then fall back to the storefront API as the canonical seed.
     const storedProducts = readStorage<AdminProduct[]>(ADMIN_CATALOG_STORAGE_KEY);
     const storedSettings = readStorage<AdminSettings>(ADMIN_SETTINGS_STORAGE_KEY);
 
@@ -79,27 +153,20 @@ export function AdminCatalogProvider({
       setSettings(storedSettings);
     }
 
-    const needsSeed = !storedProducts?.length;
-
-    if (needsSeed) {
-      void (async () => {
-        try {
-          setIsSyncing(true);
-          const storefrontCatalog = await loadStorefrontCatalog();
-          setProducts(normalizeAdminProducts(storefrontCatalog.length ? storefrontCatalog : fallbackProducts));
-          setLastSyncedAt(new Date().toISOString());
-          toast.success("Catalog synced from storefront");
-        } catch {
+    void (async () => {
+      try {
+        setIsSyncing(true);
+        const records = await loadRemoteProducts();
+        applyRecords(records.length ? records : fallbackProducts);
+      } catch {
+        if (!storedProducts?.length) {
           setProducts(normalizeAdminProducts(fallbackProducts));
-        } finally {
-          setIsSyncing(false);
-          setIsHydrated(true);
         }
-      })();
-      return;
-    }
-
-    setIsHydrated(true);
+      } finally {
+        setIsHydrated(true);
+        setIsSyncing(false);
+      }
+    })();
   }, []);
 
   useEffect(() => {
@@ -112,65 +179,71 @@ export function AdminCatalogProvider({
     writeStorage(ADMIN_SETTINGS_STORAGE_KEY, settings);
   }, [settings, isHydrated]);
 
-  const syncCatalog = async () => {
-    setIsSyncing(true);
+  const upsertProduct = async (product: CatalogInput) => {
+    const cleanedSlug = product.slug || slugify(product.name);
+    const payload: CatalogInput = {
+      ...product,
+      slug: cleanedSlug,
+      storefrontPath: makeStorefrontPath(product.category, cleanedSlug, product.storefrontPath),
+    };
 
     try {
-      const storefrontCatalog = await loadStorefrontCatalog();
-      setProducts((current) => {
-        // We preserve local changes when possible, but refresh the product
-        // names, slugs, categories, and imagery from the storefront source.
-        const currentBySlug = new Map(current.map((product) => [product.slug, product]));
-
-        const merged = storefrontCatalog.map((product) => {
-          const existing = currentBySlug.get(product.slug);
-          return {
-            ...product,
-            stock: existing?.stock ?? product.stock,
-            status: existing?.status ?? product.status,
-            featured: existing?.featured ?? product.featured,
-            description: existing?.description ?? product.description,
-            storefrontPath: existing?.storefrontPath ?? product.storefrontPath,
-          };
-        });
-
-        return normalizeAdminProducts(merged.length ? merged : fallbackProducts);
+      const method = products.some((item) => item.slug === cleanedSlug) ? "PUT" : "POST";
+      const endpoint =
+        method === "POST" ? "/products" : `/products/${cleanedSlug}`;
+      const data = await apiJson<{ product: AdminProduct } | { record: AdminProduct }>(endpoint, {
+        method,
+        body: JSON.stringify(payload),
       });
+      const record = "product" in data ? data.product : data.record;
 
-      setLastSyncedAt(new Date().toISOString());
-      toast.success("Catalog refreshed from storefront");
+      setProducts((current) => {
+        const next = current.filter((item) => item.slug !== record.slug);
+        next.unshift(record);
+        return normalizeAdminProducts(next);
+      });
+      toast.success("Product saved");
+      return true;
     } catch {
-      toast.error("Storefront sync is unavailable right now");
-    } finally {
-      setIsSyncing(false);
+      toast.error("Unable to save product");
+      return false;
     }
   };
 
-  const upsertProduct = (product: Omit<AdminProduct, "updatedAt">) => {
-    const cleanedSlug = product.slug || slugify(product.name);
-    const nextProduct = {
-      ...product,
-      slug: cleanedSlug,
-      storefrontPath: product.storefrontPath || `/${product.category}/${cleanedSlug}`,
-    };
+  const duplicateProduct = async (slug: string) => {
+    const source = products.find((product) => product.slug === slug);
 
-    setProducts((current) =>
-      upsertAdminProduct(current, {
-        ...nextProduct,
-        slug: cleanedSlug,
-      }),
-    );
-    toast.success("Product saved");
+    if (!source) {
+      toast.error("Product not found");
+      return;
+    }
+
+    const nextSlug = normalizeCopySlug(products, source.slug);
+
+    await upsertProduct({
+      ...toCatalogInput(source),
+      slug: nextSlug,
+      name: `${source.name} Copy`,
+      shortName: `${source.shortName} Copy`,
+      status: "Draft",
+      featured: false,
+      storefrontPath: `/${source.category}/${nextSlug}`,
+    });
   };
 
-  const duplicateProduct = (slug: string) => {
-    setProducts((current) => duplicateAdminProduct(current, slug));
-    toast.success("Product duplicated");
-  };
+  const deleteProduct = async (slug: string) => {
+    try {
+      const data = await apiJson<{ deleted: boolean }>(`/products/${slug}`, {
+        method: "DELETE",
+      });
 
-  const deleteProduct = (slug: string) => {
-    setProducts((current) => current.filter((product) => product.slug !== slug));
-    toast.success("Product removed");
+      if (data.deleted) {
+        setProducts((current) => current.filter((product) => product.slug !== slug));
+        toast.success("Product removed");
+      }
+    } catch {
+      toast.error("Unable to delete product");
+    }
   };
 
   const saveSettings = (next: Partial<AdminSettings>) => {

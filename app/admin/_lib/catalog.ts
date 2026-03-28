@@ -1,22 +1,8 @@
-import { categories as storefrontCategories, getCategoryProducts } from "../../lib/products";
+import type { CatalogInput, CatalogRecord } from "../../lib/catalog-types";
 import type { Category, Product } from "../../type";
 
-export type AdminStatus = "Live" | "Draft" | "Hidden";
-
-export type AdminProduct = {
-  slug: string;
-  name: string;
-  shortName: string;
-  category: Category;
-  price: number;
-  stock: number;
-  status: AdminStatus;
-  featured: boolean;
-  image: string;
-  description: string;
-  storefrontPath: string;
-  updatedAt: string;
-};
+export type AdminStatus = CatalogRecord["status"];
+export type AdminProduct = CatalogRecord;
 
 export type AdminOrder = {
   id: string;
@@ -39,57 +25,130 @@ export type AdminSettings = {
 export const ADMIN_CATALOG_STORAGE_KEY = "audiophile-admin-catalog-v1";
 export const ADMIN_SETTINGS_STORAGE_KEY = "audiophile-admin-settings-v1";
 
-const nowIso = () => new Date().toISOString();
-
 export const fallbackOrders: AdminOrder[] = [
-  { id: "ORD-7721", customer: "Alex Rivera", product: "XX99 Mark II", status: "Delivered", amount: "$2,999", time: "2m ago" },
-  { id: "ORD-7720", customer: "Sarah Chen", product: "ZX7 Speaker", status: "In Transit", amount: "$3,500", time: "15m ago" },
-  { id: "ORD-7719", customer: "James Wilson", product: "YX1 Earphones", status: "Pending", amount: "$599", time: "1h ago" },
-  { id: "ORD-7718", customer: "Elena Gomez", product: "XX59 Headphones", status: "Delivered", amount: "$899", time: "3h ago" },
+  {
+    id: "ORD-7721",
+    customer: "Alex Rivera",
+    product: "XX99 Mark II",
+    status: "Delivered",
+    amount: "$2,999",
+    time: "2m ago",
+  },
+  {
+    id: "ORD-7720",
+    customer: "Sarah Chen",
+    product: "ZX7 Speaker",
+    status: "In Transit",
+    amount: "$3,500",
+    time: "15m ago",
+  },
+  {
+    id: "ORD-7719",
+    customer: "James Wilson",
+    product: "YX1 Earphones",
+    status: "Pending",
+    amount: "$599",
+    time: "1h ago",
+  },
+  {
+    id: "ORD-7718",
+    customer: "Elena Gomez",
+    product: "XX59 Headphones",
+    status: "Delivered",
+    amount: "$899",
+    time: "3h ago",
+  },
 ];
+
+const seedTime = "2026-03-28T00:00:00.000Z";
+
+const imageSet = (slug: string, fileName: string) => ({
+  mobile: `/assets/${slug}/mobile/${fileName}`,
+  tablet: `/assets/${slug}/tablet/${fileName}`,
+  desktop: `/assets/${slug}/desktop/${fileName}`,
+});
 
 export const fallbackProducts: AdminProduct[] = [
   {
     slug: "xx99-mark-two-headphones",
-    name: "XX99 Mark II Headphones",
-    shortName: "XX99 MK II",
     category: "headphones",
+    categoryLabel: "Headphones",
+    shortName: "XX99 MK II",
+    name: "XX99 Mark II Headphones",
+    isNew: true,
     price: 2999,
+    description: "A flagship Audiophile headphone built for detailed sound and comfort.",
+    features: [],
+    includes: [],
+    categoryImage: imageSet("product-xx99-mark-two-headphones", "image-category-page-preview.jpg"),
+    productImage: imageSet("product-xx99-mark-two-headphones", "image-product.jpg"),
+    gallery: {
+      first: imageSet("product-xx99-mark-two-headphones", "image-gallery-1.jpg"),
+      second: imageSet("product-xx99-mark-two-headphones", "image-gallery-2.jpg"),
+      third: imageSet("product-xx99-mark-two-headphones", "image-gallery-3.jpg"),
+    },
+    others: [],
+    categoryOrder: 1,
     stock: 45,
     status: "Live",
     featured: true,
     image: "/assets/product-xx99-mark-two-headphones/desktop/image-product.jpg",
-    description: "A flagship headphone built for detailed sound, premium comfort, and everyday Audiophile listening.",
     storefrontPath: "/headphones/xx99-mark-two-headphones",
-    updatedAt: nowIso(),
+    updatedAt: seedTime,
   },
   {
     slug: "zx9-speaker",
-    name: "ZX9 Speaker",
-    shortName: "ZX9",
     category: "speakers",
+    categoryLabel: "Speakers",
+    shortName: "ZX9",
+    name: "ZX9 Speaker",
+    isNew: true,
     price: 4500,
+    description: "A powerful wireless speaker built for room-filling sound.",
+    features: [],
+    includes: [],
+    categoryImage: imageSet("product-zx9-speaker", "image-category-page-preview.jpg"),
+    productImage: imageSet("product-zx9-speaker", "image-product.jpg"),
+    gallery: {
+      first: imageSet("product-zx9-speaker", "image-gallery-1.jpg"),
+      second: imageSet("product-zx9-speaker", "image-gallery-2.jpg"),
+      third: imageSet("product-zx9-speaker", "image-gallery-3.jpg"),
+    },
+    others: [],
+    categoryOrder: 1,
     stock: 12,
     status: "Live",
     featured: false,
     image: "/assets/product-zx9-speaker/desktop/image-product.jpg",
-    description: "A high-impact wireless speaker for bold room-filling sound.",
     storefrontPath: "/speakers/zx9-speaker",
-    updatedAt: nowIso(),
+    updatedAt: seedTime,
   },
   {
     slug: "yx1-earphones",
-    name: "YX1 Earphones",
-    shortName: "YX1",
     category: "earphones",
+    categoryLabel: "Earphones",
+    shortName: "YX1",
+    name: "YX1 Earphones",
+    isNew: true,
     price: 599,
+    description: "Compact earphones tuned for everyday listening.",
+    features: [],
+    includes: [],
+    categoryImage: imageSet("product-yx1-earphones", "image-category-page-preview.jpg"),
+    productImage: imageSet("product-yx1-earphones", "image-product.jpg"),
+    gallery: {
+      first: imageSet("product-yx1-earphones", "image-gallery-1.jpg"),
+      second: imageSet("product-yx1-earphones", "image-gallery-2.jpg"),
+      third: imageSet("product-yx1-earphones", "image-gallery-3.jpg"),
+    },
+    others: [],
+    categoryOrder: 1,
     stock: 89,
     status: "Live",
     featured: false,
     image: "/assets/product-yx1-earphones/desktop/image-product.jpg",
-    description: "Compact earphones tuned for balanced daily listening.",
     storefrontPath: "/earphones/yx1-earphones",
-    updatedAt: nowIso(),
+    updatedAt: seedTime,
   },
 ];
 
@@ -99,7 +158,8 @@ export const defaultSettings: AdminSettings = {
   supportEmail: "admin@audiophile.com",
   catalogSyncEnabled: true,
   emailAlertsEnabled: true,
-  storefrontNotes: "Keep product copy aligned with the Audiophile catalog tone and pricing.",
+  storefrontNotes:
+    "Keep product copy aligned with the Audiophile catalog tone and pricing.",
 };
 
 export const formatCurrency = (value: number) =>
@@ -117,59 +177,6 @@ export const slugify = (value: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 
-export const categorizeStatus = (stock: number, status: AdminStatus) => {
-  if (status !== "Live") return status;
-  if (stock <= 15) return "Hidden";
-  if (stock <= 30) return "Draft";
-  return "Live";
-};
-
-const imageForProduct = (product: Product) =>
-  product.productImage.desktop || product.categoryImage.desktop || "";
-
-const stockForCategory = (category: Category) => {
-  if (category === "speakers") return 12;
-  if (category === "earphones") return 89;
-  return 45;
-};
-
-export const mapStorefrontProductToAdmin = (product: Product): AdminProduct => ({
-  slug: product.slug,
-  name: product.name,
-  shortName: product.shortName || product.name,
-  category: product.category,
-  price: product.price,
-  stock: stockForCategory(product.category),
-  status: categorizeStatus(stockForCategory(product.category), "Live"),
-  featured: Boolean(product.isNew),
-  image: imageForProduct(product),
-  description: product.description,
-  storefrontPath: `/${product.category}/${product.slug}`,
-  updatedAt: nowIso(),
-});
-
-export const loadStorefrontCatalog = async (): Promise<AdminProduct[]> => {
-  // The storefront already owns the product catalog API.
-  // We reuse that same source here so the dashboard reflects the live catalog
-  // without having to duplicate product content by hand.
-  const results = await Promise.all(
-    storefrontCategories.map(({ slug }) => getCategoryProducts(slug)),
-  );
-
-  const merged = results
-    .flat()
-    .filter((product) => Boolean(product.slug))
-    .map(mapStorefrontProductToAdmin);
-
-  const seen = new Set<string>();
-
-  return merged.filter((product) => {
-    if (seen.has(product.slug)) return false;
-    seen.add(product.slug);
-    return true;
-  });
-};
-
 export const normalizeAdminProducts = (products: AdminProduct[]) =>
   products
     .slice()
@@ -179,54 +186,55 @@ export const normalizeAdminProducts = (products: AdminProduct[]) =>
       featured: index === 0 ? true : product.featured,
     }));
 
-export const upsertAdminProduct = (
-  current: AdminProduct[],
-  draft: Omit<AdminProduct, "updatedAt">,
-): AdminProduct[] => {
-  const updated: AdminProduct = {
-    ...draft,
-    updatedAt: nowIso(),
-    storefrontPath: draft.storefrontPath || `/${draft.category}/${draft.slug}`,
-  };
+export const toCatalogInput = (product: AdminProduct): CatalogInput => ({
+  slug: product.slug,
+  shortName: product.shortName,
+  category: product.category,
+  name: product.name,
+  price: product.price,
+  description: product.description,
+  stock: product.stock,
+  status: product.status,
+  featured: product.featured,
+  image: product.image,
+  storefrontPath: product.storefrontPath,
+});
 
-  const existingIndex = current.findIndex((product) => product.slug === draft.slug);
-
-  if (existingIndex === -1) {
-    return normalizeAdminProducts([updated, ...current]);
-  }
-
-  const next = current.slice();
-  next[existingIndex] = updated;
-  return normalizeAdminProducts(next);
-};
-
-export const duplicateAdminProduct = (
-  current: AdminProduct[],
+export const makeStorefrontPath = (
+  category: Category,
   slug: string,
-): AdminProduct[] => {
-  const source = current.find((product) => product.slug === slug);
+  storefrontPath?: string,
+) => storefrontPath || `/${category}/${slug}`;
 
-  if (!source) return current;
-
-  const baseSlug = `${source.slug}-copy`;
-  let nextSlug = baseSlug;
-  let suffix = 2;
-
-  while (current.some((product) => product.slug === nextSlug)) {
-    nextSlug = `${baseSlug}-${suffix}`;
-    suffix += 1;
-  }
-
-  const copy: AdminProduct = {
-    ...source,
-    slug: nextSlug,
-    name: `${source.name} Copy`,
-    shortName: `${source.shortName} Copy`,
-    status: "Draft",
-    featured: false,
-    updatedAt: nowIso(),
-    storefrontPath: `/${source.category}/${nextSlug}`,
-  };
-
-  return normalizeAdminProducts([copy, ...current]);
+const stockForCategory = (category: Category) => {
+  if (category === "speakers") return 12;
+  if (category === "earphones") return 89;
+  return 45;
 };
+
+const imageForProduct = (product: Product) =>
+  product.productImage.desktop || product.categoryImage.desktop || "";
+
+export const mapStorefrontProductToAdmin = (product: Product): AdminProduct => ({
+  slug: product.slug,
+  name: product.name,
+  shortName: product.shortName || product.name,
+  category: product.category,
+  categoryLabel: product.categoryLabel,
+  price: product.price,
+  description: product.description,
+  features: product.features,
+  includes: product.includes,
+  categoryImage: product.categoryImage,
+  productImage: product.productImage,
+  gallery: product.gallery,
+  others: product.others,
+  categoryOrder: product.categoryOrder,
+  stock: stockForCategory(product.category),
+  status: "Live",
+  featured: Boolean(product.isNew),
+  image: imageForProduct(product),
+  storefrontPath: `/${product.category}/${product.slug}`,
+  isNew: product.isNew,
+  updatedAt: new Date().toISOString(),
+});

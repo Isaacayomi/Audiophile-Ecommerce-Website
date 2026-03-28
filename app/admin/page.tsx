@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -73,6 +74,12 @@ const StatusPill = ({ status }: { status: "Live" | "Draft" | "Hidden" }) => {
     </span>
   );
 };
+
+const statusCopy = {
+  Live: "Visible on storefront",
+  Draft: "Saved but not published",
+  Hidden: "Not shown on storefront",
+} as const;
 
 export default function AdminDashboard() {
   const {
@@ -175,8 +182,6 @@ export default function AdminDashboard() {
 
           <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {stockHighlights.map((product, index) => {
-              const height = Math.max(20, Math.min(product.stock, 100));
-
               return (
                 <motion.div
                   key={product.slug}
@@ -185,7 +190,18 @@ export default function AdminDashboard() {
                   transition={{ delay: 0.15 + index * 0.08 }}
                   className="rounded-2xl border border-white/5 bg-white/[0.02] p-4"
                 >
-                  <div className="flex items-start justify-between gap-3">
+                  <div className="relative overflow-hidden rounded-2xl border border-white/5 bg-black/30">
+                    <div className="relative aspect-[16/10] w-full">
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-4 flex items-start justify-between gap-3">
                     <div>
                       <p className="text-xs font-bold text-white">
                         {product.name}
@@ -197,21 +213,16 @@ export default function AdminDashboard() {
                     <StatusPill status={product.status} />
                   </div>
 
-                  <div className="mt-5 flex h-28 items-end gap-2">
-                    <div className="relative flex-1 overflow-hidden rounded-xl bg-black/30">
-                      <motion.div
-                        initial={{ height: 0 }}
-                        animate={{ height: `${height}%` }}
-                        transition={{ duration: 0.8, delay: 0.2 + index * 0.05 }}
-                        className="absolute bottom-0 left-0 right-0 rounded-xl bg-gradient-to-t from-[#D87D4A] to-[#FBAF85]"
-                      />
-                    </div>
-                    <div className="pb-1 text-right">
-                      <p className="text-sm font-bold text-white">{product.stock}</p>
+                  <div className="mt-4 flex items-center justify-between gap-3 rounded-xl bg-white/[0.03] px-4 py-3">
+                    <div>
+                      <p className="text-xs font-bold text-white">{product.stock}</p>
                       <p className="text-[10px] uppercase tracking-widest text-white/25">
                         Units
                       </p>
                     </div>
+                    <p className="max-w-[10rem] text-right text-[10px] text-white/35">
+                      {statusCopy[product.status]}
+                    </p>
                   </div>
 
                   <div className="mt-4 flex items-center justify-between border-t border-white/5 pt-4">
@@ -341,4 +352,3 @@ export default function AdminDashboard() {
     </div>
   );
 }
-

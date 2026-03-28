@@ -1,12 +1,17 @@
 import ProductDetailLayout from "@/app/_components/ProductDetailLayout";
-import { getCategoryProducts, getProduct } from "@/app/lib/products";
+import { getCategoryProducts, getProduct } from "@/app/lib/products.server";
 import { notFound } from "next/navigation";
+
+export const dynamic = "force-dynamic";
 
 // Next.js uses these slugs to pre-render the known product detail routes.
 export const generateStaticParams = async () => {
-  const products = await getCategoryProducts("earphones");
-
-  return products.map((product) => ({ slug: product.slug }));
+  try {
+    const products = await getCategoryProducts("earphones");
+    return products.map((product) => ({ slug: product.slug }));
+  } catch {
+    return [];
+  }
 };
 
 const EarphoneProductPage = async ({

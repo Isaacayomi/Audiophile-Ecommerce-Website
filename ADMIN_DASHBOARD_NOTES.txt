@@ -1,32 +1,34 @@
-Audiophile Admin Dashboard Update Notes
+Audiophile Admin Dashboard Sync Notes
 
 What changed
-- Renamed the dashboard branding to a cleaner Audiophile / Admin presentation instead of "Audiophile Admin" as a single label.
-- Reworked the admin shell to use Audiophile's orange brand color across the sidebar, header, buttons, charts, and status indicators.
-- Connected the admin pages to a shared catalog provider so the dashboard is no longer static.
-- Kept the storefront pages untouched. The dashboard now reads from the storefront product source when it can, and falls back to local seed data when needed.
+- The admin dashboard now uses the FastAPI product API as the source of truth.
+- The storefront and the dashboard both read from the same FastAPI-backed product data.
+- The dashboard brand label stays professional as Audiophile with a smaller Admin label.
+- The catalog health card now shows the actual product thumbnail instead of a stock bar.
+- Hidden now means not shown on the storefront.
 
-Functional flow
-- The shared admin provider lives in `app/admin/_components/AdminCatalogProvider.tsx`.
-- It seeds the admin catalog from the storefront API helper in `app/lib/products.ts`.
-- It persists catalog and settings changes in `localStorage` so edits stay available across admin pages.
-- The dashboard overview in `app/admin/page.tsx` now derives stats from the live admin catalog.
-- The product list in `app/admin/products/page.tsx` now supports search, category filtering, edit, delete, and storefront links.
-- The create/edit form in `app/admin/products/new/page.tsx` now saves new products and updates existing ones.
-- The settings page in `app/admin/settings/page.tsx` now persists store profile and admin preferences.
-- The middle action in the product list duplicates a product so it is now functional instead of decorative.
-- The product form accepts image uploads and stores the result as a data URL for immediate admin preview.
+Data flow
+- FastAPI product routes live in `backend/main.py`.
+- Storefront reads product data through `app/lib/products.server.ts`.
+- The client-safe storefront constant `API_BASE_URL` still lives in `app/lib/products.ts`.
+- Admin create, update, delete, and duplicate actions call the FastAPI `/products` endpoints.
+- Sync refreshes the admin state from the same FastAPI product source.
 
-Frontend connection
-- Each product card includes a storefront route so the admin can jump directly to the public product page.
-- The sync action refreshes the catalog from the storefront data source instead of relying only on hard-coded demo content.
-- The admin product form uses the same category and slug structure as the storefront routes.
-- Storefront publishing still depends on the shared product API/data source; if that backend is not updated, admin-created items stay in the admin catalog and do not automatically appear on the public site.
+Admin behavior
+- Product list actions now work end to end.
+- The middle action duplicates a product as a draft copy.
+- The new product form supports image upload and stores the preview image through the product API.
+- The visibility picker includes Live, Draft, and Hidden.
+- Hidden products are stored but not rendered on the public storefront.
 
-Responsive behavior
-- The admin layout already supports mobile and desktop navigation.
-- The product catalog now has a mobile card layout and a desktop table layout.
-- The new product form and settings panels use stacked grids that collapse cleanly on smaller screens.
+Storefront behavior
+- Category and product pages now render dynamically so catalog changes show without rebuilding.
+- Only Live products are returned to storefront pages.
+- Uploaded or replaced images are used in the dashboard preview and in the shared record.
+
+Backend note
+- The existing FastAPI file in the repo now includes GET, POST, PUT, and DELETE product routes in addition to the Stripe checkout endpoints.
+- If your production backend already lives elsewhere, copy the same product CRUD shape into that service so both apps stay aligned.
 
 Verification
 - Production build completed successfully with `npm.cmd run build`.
