@@ -21,7 +21,6 @@ const createEmptyAdminProductForm = (): AdminProductFormValues => ({
 const createInitialState = (): AdminProductFormState => ({
   form: createEmptyAdminProductForm(),
   saveMode: "Draft",
-  pendingSubmitMode: "Draft",
   isSaving: false,
   isUploadingImage: false,
 });
@@ -45,19 +44,11 @@ export const adminProductFormSlice = createSlice({
     resetAdminProductForm: (state) => {
       state.form = createEmptyAdminProductForm();
       state.saveMode = "Draft";
-      state.pendingSubmitMode = "Draft";
       state.isSaving = false;
       state.isUploadingImage = false;
     },
     setAdminProductSaveMode: (state, action: PayloadAction<CatalogStatus>) => {
       state.saveMode = action.payload;
-      state.pendingSubmitMode = action.payload;
-    },
-    setAdminProductPendingSubmitMode: (
-      state,
-      action: PayloadAction<CatalogStatus>,
-    ) => {
-      state.pendingSubmitMode = action.payload;
     },
     setAdminProductIsSaving: (state, action: PayloadAction<boolean>) => {
       state.isSaving = action.payload;
@@ -73,7 +64,6 @@ export const {
   mergeAdminProductForm,
   resetAdminProductForm,
   setAdminProductSaveMode,
-  setAdminProductPendingSubmitMode,
   setAdminProductIsSaving,
   setAdminProductIsUploadingImage,
 } = adminProductFormSlice.actions;

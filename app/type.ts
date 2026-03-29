@@ -176,7 +176,6 @@ export type AdminProductFormValues = {
 export type AdminProductFormState = {
   form: AdminProductFormValues;
   saveMode: CatalogStatus;
-  pendingSubmitMode: CatalogStatus;
   isSaving: boolean;
   isUploadingImage: boolean;
 };
