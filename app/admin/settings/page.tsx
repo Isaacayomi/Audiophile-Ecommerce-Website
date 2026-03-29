@@ -15,6 +15,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { defaultSettings } from "../_lib/catalog";
 import { useAdminCatalog } from "../_components/AdminCatalogProvider";
+import { useAdminIdentity } from "../_components/useAdminIdentity";
 import type { AppDispatch, RootState } from "../../store/store";
 import {
   mergeAdminSettingsDraft,
@@ -91,6 +92,7 @@ const Toggle = ({
 export default function SettingsPage() {
   const dispatch = useDispatch<AppDispatch>();
   const { settings, saveSettings } = useAdminCatalog();
+  const { displayName } = useAdminIdentity();
   const form = useSelector((state: RootState) => state.adminUi.settingsDraft);
 
   useEffect(() => {
@@ -144,11 +146,12 @@ export default function SettingsPage() {
               <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/20">
                 Admin Name
               </label>
-              <input
-                value={form.adminName}
-                onChange={(event) => updateField("adminName", event.target.value)}
-                className="h-10 rounded-xl border border-white/5 bg-white/5 px-4 text-xs text-white outline-none"
-              />
+              <div className="flex h-10 items-center rounded-xl border border-white/5 bg-white/[0.03] px-4 text-xs font-bold text-white">
+                {displayName}
+              </div>
+              <p className="text-[10px] text-white/25">
+                Synced from the authenticated account.
+              </p>
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/20">
@@ -235,7 +238,7 @@ export default function SettingsPage() {
             <p className="text-[10px] font-bold uppercase tracking-widest text-white/25">
               Admin identity
             </p>
-            <p className="mt-1 text-xs text-white/60">{settings.adminName}</p>
+            <p className="mt-1 text-xs text-white/60">{displayName}</p>
           </div>
         </SettingsSection>
       </div>

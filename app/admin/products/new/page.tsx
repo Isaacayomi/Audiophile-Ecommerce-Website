@@ -5,6 +5,7 @@ import { useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
+import toast from "react-hot-toast";
 import {
   FiArrowLeft,
   FiChevronDown,
@@ -20,6 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { categories as storefrontCategories } from "../../../lib/products";
 import { formatCurrency, slugify } from "../../_lib/catalog";
 import { useAdminCatalog } from "../../_components/AdminCatalogProvider";
+import { useDelayedBoolean } from "../../_components/useDelayedBoolean";
 import type { AppDispatch, RootState } from "../../../store/store";
 import {
   mergeAdminProductForm,
@@ -29,7 +31,12 @@ import {
   setAdminProductIsUploadingImage,
   setAdminProductSaveMode,
 } from "../../../store/adminProductForm/adminProductFormSlice";
-import type { AdminProductFormValues, CatalogStatus, Category } from "../../../type";
+import type {
+  AdminProductFormValues,
+  CatalogStatus,
+  Category,
+  SectionCardProps,
+} from "../../../type";
 
 const SectionCard = ({
   title,
@@ -37,13 +44,7 @@ const SectionCard = ({
   icon,
   children,
   className = "",
-}: {
-  title: string;
-  description: string;
-  icon: ReactNode;
-  children: ReactNode;
-  className?: string;
-}) => (
+}: SectionCardProps) => (
   <motion.section
     initial={{ opacity: 0, y: 14 }}
     animate={{ opacity: 1, y: 0 }}
@@ -80,11 +81,17 @@ export default function NewProduct() {
     useAdminCatalog();
 
   const form = useSelector((state: RootState) => state.adminProductForm.form);
-  const saveMode = useSelector((state: RootState) => state.adminProductForm.saveMode);
-  const isSaving = useSelector((state: RootState) => state.adminProductForm.isSaving);
+  const saveMode = useSelector(
+    (state: RootState) => state.adminProductForm.saveMode,
+  );
+  const isSaving = useSelector(
+    (state: RootState) => state.adminProductForm.isSaving,
+  );
   const isUploadingImage = useSelector(
     (state: RootState) => state.adminProductForm.isUploadingImage,
   );
+  const isSavingSpinnerVisible = useDelayedBoolean(isSaving);
+  const isSyncingSpinnerVisible = useDelayedBoolean(isSyncing);
 
   const hasPreviewImage = Boolean(form.image.trim());
 
@@ -127,7 +134,11 @@ export default function NewProduct() {
     key: K,
     value: AdminProductFormValues[K],
   ) => {
-    dispatch(mergeAdminProductForm({ [key]: value } as Partial<AdminProductFormValues>));
+    dispatch(
+      mergeAdminProductForm({
+        [key]: value,
+      } as Partial<AdminProductFormValues>),
+    );
   };
 
   const handleImageUpload = (file: File | null) => {
@@ -184,6 +195,11 @@ export default function NewProduct() {
       });
 
       if (saved) {
+        toast.success(
+          modeToSave === "Live"
+            ? "Product published. Redirecting to the product catalog..."
+            : "Draft saved. Redirecting to the product catalog...",
+        );
         router.push("/admin/products");
       }
     } finally {
@@ -224,7 +240,9 @@ export default function NewProduct() {
             disabled={isSyncing}
             className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-white/5 bg-white/5 px-4 text-xs font-bold text-white/60 transition-all hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
           >
-            <FiRefreshCw className={isSyncing ? "animate-spin" : ""} />
+            <FiRefreshCw
+              className={isSyncingSpinnerVisible ? "animate-spin" : ""}
+            />
             Sync Catalog
           </button>
           <button
@@ -238,7 +256,7 @@ export default function NewProduct() {
                 : "border-white/5 bg-white/5 text-white/60 hover:bg-white/10 hover:text-white"
             }`}
           >
-            {isSaving && saveMode === "Draft" ? (
+            {isSaving && saveMode === "Draft" && isSavingSpinnerVisible ? (
               <FiRefreshCw className="animate-spin" />
             ) : null}
             {isSaving && saveMode === "Draft"
@@ -252,7 +270,7 @@ export default function NewProduct() {
             disabled={isSaving}
             className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#D87D4A] px-8 text-xs font-bold text-white shadow-lg shadow-[rgba(216,125,74,0.2)] transition-all hover:bg-[#FBAF85] disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {isSaving && saveMode === "Live" ? (
+            {isSaving && saveMode === "Live" && isSavingSpinnerVisible ? (
               <FiRefreshCw className="animate-spin" />
             ) : (
               <FiSave />
@@ -285,7 +303,9 @@ export default function NewProduct() {
               <FieldLabel>Short Name</FieldLabel>
               <input
                 value={form.shortName}
-                onChange={(event) => updateField("shortName", event.target.value)}
+                onChange={(event) =>
+                  updateField("shortName", event.target.value)
+                }
                 placeholder="e.g. XX99 MK II"
                 className="rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/20 outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/[0.08]"
               />
@@ -301,7 +321,11 @@ export default function NewProduct() {
                   className="w-full appearance-none rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-white outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/[0.08] cursor-pointer"
                 >
                   {storefrontCategories.map((item) => (
-                    <option key={item.slug} value={item.slug} className="bg-[#0F172A]">
+                    <option
+                      key={item.slug}
+                      value={item.slug}
+                      className="bg-[#0F172A]"
+                    >
                       {item.label}
                     </option>
                   ))}
@@ -342,7 +366,9 @@ export default function NewProduct() {
             <textarea
               rows={5}
               value={form.description}
-              onChange={(event) => updateField("description", event.target.value)}
+              onChange={(event) =>
+                updateField("description", event.target.value)
+              }
               className="resize-none rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/20 outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/[0.08]"
             />
           </div>
@@ -465,11 +491,15 @@ export default function NewProduct() {
                 <input
                   type="checkbox"
                   checked={form.featured}
-                  onChange={(event) => updateField("featured", event.target.checked)}
+                  onChange={(event) =>
+                    updateField("featured", event.target.checked)
+                  }
                   className="h-4 w-4 rounded border-white/20 bg-white/5 text-[#D87D4A]"
                 />
                 <div>
-                  <p className="text-xs font-bold text-white">Feature on dashboard</p>
+                  <p className="text-xs font-bold text-white">
+                    Feature on dashboard
+                  </p>
                   <p className="mt-0.5 text-[10px] text-white/20 uppercase tracking-widest">
                     Surface this product more prominently in the admin overview
                   </p>

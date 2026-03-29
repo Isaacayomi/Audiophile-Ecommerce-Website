@@ -18,6 +18,7 @@ import {
 } from "react-icons/fi";
 import { formatCurrency, getAdminImageSource } from "./_lib/catalog";
 import { useAdminCatalog } from "./_components/AdminCatalogProvider";
+import { useAdminIdentity } from "./_components/useAdminIdentity";
 
 const MetricCard = ({
   title,
@@ -85,11 +86,11 @@ export default function AdminDashboard() {
   const {
     products,
     orders,
-    settings,
     lastSyncedAt,
     syncCatalog,
     isSyncing,
   } = useAdminCatalog();
+  const { displayName } = useAdminIdentity();
 
   const liveProducts = products.filter((product) => product.status === "Live");
   const lowStockProducts = products.filter((product) => product.stock <= 15);
@@ -110,7 +111,7 @@ export default function AdminDashboard() {
             Admin Dashboard
           </h1>
           <p className="mt-1 text-sm text-white/40">
-            Welcome back, {settings.adminName}. Here is a live view of the
+            Welcome back, {displayName}. Here is a live view of the
             Audiophile catalog and storefront status.
           </p>
         </div>

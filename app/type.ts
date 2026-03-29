@@ -157,6 +157,14 @@ export type AdminProductFilterState = {
   category: "all" | Category;
 };
 
+export type SectionCardProps = {
+  title: string;
+  description: string;
+  icon: ReactNode;
+  children: ReactNode;
+  className?: string;
+};
+
 export type AdminSettingsDraft = AdminSettings;
 
 export type CatalogImageSet = ResponsiveImageSet;

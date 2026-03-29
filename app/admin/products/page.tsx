@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import {
@@ -11,12 +12,14 @@ import {
   FiFilter,
   FiPlus,
   FiSearch,
+  FiRefreshCw,
   FiTrash2,
 } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { categories as storefrontCategories } from "../../lib/products";
 import { formatCurrency, getAdminImageSource } from "../_lib/catalog";
 import { useAdminCatalog } from "../_components/AdminCatalogProvider";
+import { useDelayedBoolean } from "../_components/useDelayedBoolean";
 import type { AppDispatch, RootState } from "../../store/store";
 import {
   setAdminProductCategory,
@@ -30,10 +33,25 @@ const statusClasses = {
   Hidden: "bg-rose-500/10 text-rose-400",
 } as const;
 
+type PendingCatalogAction =
+  | {
+      type: PendingCatalogActionType;
+      slug: string;
+    }
+  | null;
+
+type PendingCatalogActionType = "edit" | "copy" | "delete";
+
 export default function ProductManagement() {
+  const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const { products, deleteProduct, duplicateProduct } = useAdminCatalog();
-  const query = useSelector((state: RootState) => state.adminUi.productFilter.query);
+  const [pendingAction, setPendingAction] =
+    useState<PendingCatalogAction>(null);
+  const showPendingActionSpinner = useDelayedBoolean(Boolean(pendingAction));
+  const query = useSelector(
+    (state: RootState) => state.adminUi.productFilter.query,
+  );
   const category = useSelector(
     (state: RootState) => state.adminUi.productFilter.category,
   );
@@ -53,6 +71,40 @@ export default function ProductManagement() {
     });
   }, [products, query, category]);
 
+  const isPendingAction = (type: PendingCatalogActionType, slug: string) =>
+    pendingAction?.type === type && pendingAction.slug === slug;
+
+  const isActionBusy = (type: PendingCatalogActionType, slug: string) =>
+    isPendingAction(type, slug) && showPendingActionSpinner;
+
+  const handleEdit = (slug: string) => {
+    if (pendingAction) return;
+    setPendingAction({ type: "edit", slug });
+    router.push(`/admin/products/new?edit=${slug}`);
+  };
+
+  const handleCopy = async (slug: string) => {
+    if (pendingAction) return;
+    setPendingAction({ type: "copy", slug });
+
+    try {
+      await duplicateProduct(slug);
+    } finally {
+      setPendingAction(null);
+    }
+  };
+
+  const handleDelete = async (slug: string) => {
+    if (pendingAction) return;
+    setPendingAction({ type: "delete", slug });
+
+    try {
+      await deleteProduct(slug);
+    } finally {
+      setPendingAction(null);
+    }
+  };
+
   return (
     <div className="space-y-8 pb-20">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -61,7 +113,8 @@ export default function ProductManagement() {
             Product Catalog
           </h1>
           <p className="mt-1 text-sm text-white/40">
-            Manage Audiophile headphones, speakers, and earphones from one place.
+            Manage Audiophile headphones, speakers, and earphones from one
+            place.
           </p>
         </div>
 
@@ -80,7 +133,9 @@ export default function ProductManagement() {
           <input
             type="text"
             value={query}
-            onChange={(event) => dispatch(setAdminProductQuery(event.target.value))}
+            onChange={(event) =>
+              dispatch(setAdminProductQuery(event.target.value))
+            }
             placeholder="Search products or slugs"
             className="h-11 w-full rounded-xl border border-white/5 bg-white/5 pl-10 pr-4 text-sm text-white placeholder:text-white/20 outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/[0.08]"
           />
@@ -93,7 +148,9 @@ export default function ProductManagement() {
               value={category}
               onChange={(event) =>
                 dispatch(
-                  setAdminProductCategory(event.target.value as "all" | Category),
+                  setAdminProductCategory(
+                    event.target.value as "all" | Category,
+                  ),
                 )
               }
               className="bg-transparent outline-none"
@@ -171,25 +228,50 @@ export default function ProductManagement() {
             </div>
 
             <div className="mt-4 flex gap-2">
-              <Link
-                href={`/admin/products/new?edit=${product.slug}`}
-                className="inline-flex flex-1 items-center justify-center rounded-xl bg-white/5 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-white/70 hover:bg-white/10 hover:text-white"
-              >
-                Edit
-              </Link>
               <button
                 type="button"
-                onClick={() => duplicateProduct(product.slug)}
-                className="inline-flex items-center justify-center rounded-xl bg-white/5 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-white/50 hover:bg-emerald-500/10 hover:text-emerald-400"
+                onClick={() => handleEdit(product.slug)}
+                disabled={Boolean(pendingAction)}
+                className="inline-flex flex-1 items-center justify-center rounded-xl bg-white/5 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-white/70 hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Copy
+                {isActionBusy("edit", product.slug) ? (
+                  <>
+                    <FiRefreshCw className="mr-2 animate-spin" size={12} />
+                    Opening...
+                  </>
+                ) : (
+                  "Edit"
+                )}
               </button>
               <button
                 type="button"
-                onClick={() => deleteProduct(product.slug)}
-                className="inline-flex items-center justify-center rounded-xl bg-white/5 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-white/50 hover:bg-rose-500/10 hover:text-rose-400"
+                onClick={() => handleCopy(product.slug)}
+                disabled={Boolean(pendingAction)}
+                className="inline-flex items-center justify-center rounded-xl bg-white/5 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-white/50 hover:bg-emerald-500/10 hover:text-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Delete
+                {isActionBusy("copy", product.slug) ? (
+                  <>
+                    <FiRefreshCw className="mr-2 animate-spin" size={12} />
+                    Copying...
+                  </>
+                ) : (
+                  "Copy"
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={() => handleDelete(product.slug)}
+                disabled={Boolean(pendingAction)}
+                className="inline-flex items-center justify-center rounded-xl bg-white/5 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-white/50 hover:bg-rose-500/10 hover:text-rose-400 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isActionBusy("delete", product.slug) ? (
+                  <>
+                    <FiRefreshCw className="mr-2 animate-spin" size={12} />
+                    Deleting...
+                  </>
+                ) : (
+                  "Delete"
+                )}
               </button>
             </div>
           </motion.article>
@@ -273,28 +355,44 @@ export default function ProductManagement() {
                 </td>
                 <td className="rounded-r-2xl px-6 py-4 text-right">
                   <div className="flex items-center justify-end gap-2">
-                    <Link
-                      href={`/admin/products/new?edit=${product.slug}`}
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-white/20 transition-all hover:bg-[#D87D4A]/20 hover:text-[#D87D4A]"
-                      aria-label={`Edit ${product.name}`}
-                    >
-                      <FiEdit2 size={16} />
-                    </Link>
                     <button
                       type="button"
-                      onClick={() => duplicateProduct(product.slug)}
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-white/20 transition-all hover:bg-emerald-500/20 hover:text-emerald-400"
-                      aria-label={`Duplicate ${product.name}`}
+                      onClick={() => handleEdit(product.slug)}
+                      disabled={Boolean(pendingAction)}
+                      className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-white/20 transition-all hover:bg-[#D87D4A]/20 hover:text-[#D87D4A] disabled:cursor-not-allowed disabled:opacity-60"
+                      aria-label={`Edit ${product.name}`}
                     >
-                      <FiCopy size={16} />
+                      {isActionBusy("edit", product.slug) ? (
+                        <FiRefreshCw size={16} className="animate-spin" />
+                      ) : (
+                        <FiEdit2 size={16} />
+                      )}
                     </button>
                     <button
                       type="button"
-                      onClick={() => deleteProduct(product.slug)}
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-white/20 transition-all hover:bg-rose-500/20 hover:text-rose-400"
+                      onClick={() => handleCopy(product.slug)}
+                      disabled={Boolean(pendingAction)}
+                      className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-white/20 transition-all hover:bg-emerald-500/20 hover:text-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
+                      aria-label={`Duplicate ${product.name}`}
+                    >
+                      {isActionBusy("copy", product.slug) ? (
+                        <FiRefreshCw size={16} className="animate-spin" />
+                      ) : (
+                        <FiCopy size={16} />
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(product.slug)}
+                      disabled={Boolean(pendingAction)}
+                      className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-white/20 transition-all hover:bg-rose-500/20 hover:text-rose-400 disabled:cursor-not-allowed disabled:opacity-60"
                       aria-label={`Delete ${product.name}`}
                     >
-                      <FiTrash2 size={16} />
+                      {isActionBusy("delete", product.slug) ? (
+                        <FiRefreshCw size={16} className="animate-spin" />
+                      ) : (
+                        <FiTrash2 size={16} />
+                      )}
                     </button>
                   </div>
                 </td>

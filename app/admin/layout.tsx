@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -18,7 +18,9 @@ import {
   FiSettings,
 } from "react-icons/fi";
 import { AdminCatalogProvider } from "./_components/AdminCatalogProvider";
+import { useAdminIdentity } from "./_components/useAdminIdentity";
 import { toggleAdminSidebar } from "../store/adminUi/adminUiSlice";
+import { mergeAdminSettings } from "../store/adminCatalog/adminCatalogSlice";
 import type { AppDispatch, RootState } from "../store/store";
 
 export default function AdminLayout({
@@ -28,14 +30,25 @@ export default function AdminLayout({
 }) {
   const pathname = usePathname();
   const dispatch = useDispatch<AppDispatch>();
+  const { displayName, initials, isLoaded } = useAdminIdentity();
   const isSidebarOpen = useSelector(
     (state: RootState) => state.adminUi.sidebar.isOpen,
   );
 
+  useEffect(() => {
+    if (!isLoaded) return;
+
+    dispatch(mergeAdminSettings({ adminName: displayName }));
+  }, [dispatch, displayName, isLoaded]);
+
   const navItems = [
     { label: "Dashboard", href: "/admin", icon: <FiLayout /> },
     { label: "Products", href: "/admin/products", icon: <FiBox /> },
-    { label: "Add Product", href: "/admin/products/new", icon: <FiPlusSquare /> },
+    {
+      label: "Add Product",
+      href: "/admin/products/new",
+      icon: <FiPlusSquare />,
+    },
     { label: "Settings", href: "/admin/settings", icon: <FiSettings /> },
   ];
 
@@ -144,14 +157,6 @@ export default function AdminLayout({
               >
                 <FiMenu size={20} />
               </button>
-              <div className="relative hidden sm:block">
-                <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
-                <input
-                  type="text"
-                  placeholder="Search products, orders..."
-                  className="h-10 w-64 rounded-xl border border-white/5 bg-white/5 pl-10 pr-4 text-sm text-white placeholder:text-white/20 transition-all focus:border-[#D87D4A]/50 focus:bg-white/[0.08] focus:outline-none"
-                />
-              </div>
             </div>
 
             <div className="flex items-center gap-3 sm:gap-6">
@@ -164,11 +169,11 @@ export default function AdminLayout({
 
               <div className="group flex cursor-pointer items-center gap-3 pl-1">
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#D87D4A] to-[#FBAF85] text-sm font-bold text-white shadow-lg shadow-[rgba(216,125,74,0.2)]">
-                  JD
+                  {initials}
                 </div>
                 <div className="hidden md:block">
                   <p className="text-xs font-bold text-white group-hover:text-[#D87D4A] transition-colors">
-                    John Doe
+                    {displayName}
                   </p>
                   <p className="text-[10px] font-bold uppercase tracking-widest text-white/30">
                     Store Admin
