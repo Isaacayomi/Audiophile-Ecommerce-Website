@@ -57,7 +57,9 @@ export const getCategoryProducts = async (
   }
 
   return data
-    .map((item) => normalizeProduct(item as Partial<Product> & Record<string, unknown>))
+    .map((item) =>
+      normalizeProduct(item as Partial<Product> & Record<string, unknown>),
+    )
     .filter((product) => product.category === category)
     .sort((a, b) => a.categoryOrder - b.categoryOrder);
 };
