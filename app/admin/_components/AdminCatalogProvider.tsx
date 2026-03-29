@@ -1,25 +1,36 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo } from "react";
 import toast from "react-hot-toast";
 import {
   ADMIN_CATALOG_STORAGE_KEY,
   ADMIN_SETTINGS_STORAGE_KEY,
-  AdminOrder,
-  AdminProduct,
-  AdminSettings,
-  defaultSettings,
-  fallbackOrders,
   fallbackProducts,
   mapStorefrontProductToAdmin,
   makeStorefrontPath,
-  normalizeAdminProducts,
   slugify,
   stampAdminProduct,
   toCatalogInput,
 } from "../_lib/catalog";
 import { API_BASE_URL, categories as storefrontCategories } from "../../lib/products";
-import type { CatalogInput } from "../../lib/catalog-types";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "../../store/store";
+import {
+  mergeAdminSettings,
+  removeAdminProduct,
+  setAdminHydrated,
+  setAdminLastSyncedAt,
+  setAdminProducts,
+  setAdminSettings,
+  setAdminSyncing,
+  upsertAdminProduct,
+} from "../../store/adminCatalog/adminCatalogSlice";
+import type {
+  AdminOrder,
+  AdminProduct,
+  AdminSettings,
+  CatalogInput,
+} from "../../type";
 
 type AdminCatalogContextValue = {
   products: AdminProduct[];
@@ -115,30 +126,31 @@ export function AdminCatalogProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [products, setProducts] = useState<AdminProduct[]>(fallbackProducts);
-  const [orders] = useState<AdminOrder[]>(fallbackOrders);
-  const [settings, setSettings] = useState<AdminSettings>(defaultSettings);
-  const [isHydrated, setIsHydrated] = useState(false);
-  const [isSyncing, setIsSyncing] = useState(false);
-  const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
-
-  const applyRecords = (records: AdminProduct[]) => {
-    setProducts(normalizeAdminProducts(records));
-    setLastSyncedAt(new Date().toISOString());
-  };
+  const dispatch = useDispatch<AppDispatch>();
+  const products = useSelector((state: RootState) => state.adminCatalog.products);
+  const orders = useSelector((state: RootState) => state.adminCatalog.orders);
+  const settings = useSelector((state: RootState) => state.adminCatalog.settings);
+  const isHydrated = useSelector(
+    (state: RootState) => state.adminCatalog.isHydrated,
+  );
+  const isSyncing = useSelector((state: RootState) => state.adminCatalog.isSyncing);
+  const lastSyncedAt = useSelector(
+    (state: RootState) => state.adminCatalog.lastSyncedAt,
+  );
 
   const syncCatalog = async () => {
-    setIsSyncing(true);
+    dispatch(setAdminSyncing(true));
 
     try {
       // The API is the source of truth, so sync just refreshes from it.
       const records = await loadRemoteProducts();
-      applyRecords(records.length ? records : fallbackProducts);
+      dispatch(setAdminProducts(records.length ? records : fallbackProducts));
+      dispatch(setAdminLastSyncedAt(new Date().toISOString()));
       toast.success("Catalog refreshed");
     } catch {
       toast.error("Catalog sync is unavailable right now");
     } finally {
-      setIsSyncing(false);
+      dispatch(setAdminSyncing(false));
     }
   };
 
@@ -147,28 +159,29 @@ export function AdminCatalogProvider({
     const storedSettings = readStorage<AdminSettings>(ADMIN_SETTINGS_STORAGE_KEY);
 
     if (storedProducts?.length) {
-      setProducts(normalizeAdminProducts(storedProducts));
+      dispatch(setAdminProducts(storedProducts));
     }
 
     if (storedSettings) {
-      setSettings(storedSettings);
+      dispatch(setAdminSettings(storedSettings));
     }
 
     void (async () => {
       try {
-        setIsSyncing(true);
+        dispatch(setAdminSyncing(true));
         const records = await loadRemoteProducts();
-        applyRecords(records.length ? records : fallbackProducts);
+        dispatch(setAdminProducts(records.length ? records : fallbackProducts));
+        dispatch(setAdminLastSyncedAt(new Date().toISOString()));
       } catch {
         if (!storedProducts?.length) {
-          setProducts(normalizeAdminProducts(fallbackProducts));
+          dispatch(setAdminProducts(fallbackProducts));
         }
       } finally {
-        setIsHydrated(true);
-        setIsSyncing(false);
+        dispatch(setAdminHydrated(true));
+        dispatch(setAdminSyncing(false));
       }
     })();
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (!isHydrated) return;
@@ -206,12 +219,7 @@ export function AdminCatalogProvider({
         },
       );
       const record = "product" in data ? data.product : data.record;
-
-      setProducts((current) => {
-        const next = current.filter((item) => item.slug !== record.slug);
-        next.unshift(stampAdminProduct(record));
-        return normalizeAdminProducts(next);
-      });
+      dispatch(upsertAdminProduct(stampAdminProduct(record)));
       toast.success("Product saved");
       return true;
     } catch {
@@ -248,7 +256,7 @@ export function AdminCatalogProvider({
       });
 
       if (data.deleted) {
-        setProducts((current) => current.filter((product) => product.slug !== slug));
+        dispatch(removeAdminProduct(slug));
         toast.success("Product removed");
       }
     } catch {
@@ -257,7 +265,7 @@ export function AdminCatalogProvider({
   };
 
   const saveSettings = (next: Partial<AdminSettings>) => {
-    setSettings((current) => ({ ...current, ...next }));
+    dispatch(mergeAdminSettings(next));
     toast.success("Settings saved");
   };
 

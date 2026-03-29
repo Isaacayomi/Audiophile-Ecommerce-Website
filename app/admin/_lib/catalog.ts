@@ -1,26 +1,11 @@
-import type { CatalogInput, CatalogRecord } from "../../lib/catalog-types";
-import type { Category, Product } from "../../type";
-
-export type AdminStatus = CatalogRecord["status"];
-export type AdminProduct = CatalogRecord;
-
-export type AdminOrder = {
-  id: string;
-  customer: string;
-  product: string;
-  status: "Delivered" | "In Transit" | "Pending";
-  amount: string;
-  time: string;
-};
-
-export type AdminSettings = {
-  storeName: string;
-  adminName: string;
-  supportEmail: string;
-  catalogSyncEnabled: boolean;
-  emailAlertsEnabled: boolean;
-  storefrontNotes: string;
-};
+import type {
+  AdminOrder,
+  AdminProduct,
+  AdminSettings,
+  CatalogInput,
+  Category,
+  Product,
+} from "../../type";
 
 export const ADMIN_CATALOG_STORAGE_KEY = "audiophile-admin-catalog-v1";
 export const ADMIN_SETTINGS_STORAGE_KEY = "audiophile-admin-settings-v1";

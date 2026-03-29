@@ -19,8 +19,7 @@ import {
 import { categories as storefrontCategories } from "../../../lib/products";
 import { formatCurrency, slugify } from "../../_lib/catalog";
 import { useAdminCatalog } from "../../_components/AdminCatalogProvider";
-import type { Category } from "../../../type";
-import type { CatalogStatus } from "../../../lib/catalog-types";
+import type { CatalogStatus, Category } from "../../../type";
 
 type SaveMode = CatalogStatus;
 
