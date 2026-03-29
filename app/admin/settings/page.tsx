@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   FiBell,
@@ -12,8 +12,15 @@ import {
   FiShield,
   FiUser,
 } from "react-icons/fi";
+import { useDispatch, useSelector } from "react-redux";
 import { defaultSettings } from "../_lib/catalog";
 import { useAdminCatalog } from "../_components/AdminCatalogProvider";
+import type { AppDispatch, RootState } from "../../store/store";
+import {
+  mergeAdminSettingsDraft,
+  resetAdminSettingsDraft,
+  setAdminSettingsDraft,
+} from "../../store/adminUi/adminUiSlice";
 
 const SettingsSection = ({
   title,
@@ -82,26 +89,24 @@ const Toggle = ({
 );
 
 export default function SettingsPage() {
+  const dispatch = useDispatch<AppDispatch>();
   const { settings, saveSettings } = useAdminCatalog();
-  const [form, setForm] = useState(settings);
+  const form = useSelector((state: RootState) => state.adminUi.settingsDraft);
 
   useEffect(() => {
-    // Keep the form in sync if the shared admin profile changes elsewhere.
-    setForm(settings);
-  }, [settings]);
+    dispatch(setAdminSettingsDraft(settings));
+  }, [dispatch, settings]);
 
   const updateField = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
-    setForm((current) => ({ ...current, [key]: value }));
+    dispatch(mergeAdminSettingsDraft({ [key]: value } as Partial<typeof form>));
   };
 
   const handleSave = () => {
-    // The settings page persists to localStorage through the shared admin
-    // provider, so these values are available across the dashboard after save.
     saveSettings(form);
   };
 
   const handleRestoreDefaults = () => {
-    setForm(defaultSettings);
+    dispatch(resetAdminSettingsDraft());
     saveSettings(defaultSettings);
   };
 
@@ -230,7 +235,7 @@ export default function SettingsPage() {
             <p className="text-[10px] font-bold uppercase tracking-widest text-white/25">
               Admin identity
             </p>
-            <p className="mt-1 text-xs text-white/60">{form.adminName}</p>
+            <p className="mt-1 text-xs text-white/60">{settings.adminName}</p>
           </div>
         </SettingsSection>
       </div>

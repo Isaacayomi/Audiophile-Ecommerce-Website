@@ -1,7 +1,7 @@
 "use client";
 
 import type { FormEvent, ReactNode } from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
@@ -16,37 +16,20 @@ import {
   FiSettings,
   FiUploadCloud,
 } from "react-icons/fi";
+import { useDispatch, useSelector } from "react-redux";
 import { categories as storefrontCategories } from "../../../lib/products";
 import { formatCurrency, slugify } from "../../_lib/catalog";
 import { useAdminCatalog } from "../../_components/AdminCatalogProvider";
-import type { CatalogStatus, Category } from "../../../type";
-
-type SaveMode = CatalogStatus;
-
-type ProductFormState = {
-  name: string;
-  shortName: string;
-  category: Category;
-  price: string;
-  stock: string;
-  status: SaveMode;
-  featured: boolean;
-  description: string;
-  image: string;
-};
-
-const createEmptyForm = (): ProductFormState => ({
-  name: "",
-  shortName: "",
-  category: "headphones",
-  price: "2999",
-  stock: "25",
-  status: "Draft",
-  featured: false,
-  description:
-    "Write a concise Audiophile description that highlights sound, design, and build quality.",
-  image: "/assets/product-xx99-mark-two-headphones/desktop/image-product.jpg",
-});
+import type { AppDispatch, RootState } from "../../../store/store";
+import {
+  mergeAdminProductForm,
+  resetAdminProductForm,
+  setAdminProductForm,
+  setAdminProductIsSaving,
+  setAdminProductIsUploadingImage,
+  setAdminProductSaveMode,
+} from "../../../store/adminProductForm/adminProductFormSlice";
+import type { AdminProductFormValues, CatalogStatus, Category } from "../../../type";
 
 const SectionCard = ({
   title,
@@ -92,14 +75,17 @@ export default function NewProduct() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const editSlug = searchParams.get("edit");
+  const dispatch = useDispatch<AppDispatch>();
   const { getProductBySlug, upsertProduct, syncCatalog, isSyncing } =
     useAdminCatalog();
 
-  const [form, setForm] = useState<ProductFormState>(createEmptyForm());
-  const [saveMode, setSaveMode] = useState<SaveMode>("Draft");
-  const pendingSubmitMode = useRef<SaveMode>("Draft");
-  const [isSaving, setIsSaving] = useState(false);
-  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const form = useSelector((state: RootState) => state.adminProductForm.form);
+  const saveMode = useSelector((state: RootState) => state.adminProductForm.saveMode);
+  const isSaving = useSelector((state: RootState) => state.adminProductForm.isSaving);
+  const isUploadingImage = useSelector(
+    (state: RootState) => state.adminProductForm.isUploadingImage,
+  );
+
   const hasPreviewImage = Boolean(form.image.trim());
 
   useEffect(() => {
@@ -111,20 +97,21 @@ export default function NewProduct() {
 
     if (!product) return;
 
-    setForm({
-      name: product.name,
-      shortName: product.shortName,
-      category: product.category,
-      price: String(product.price),
-      stock: String(product.stock),
-      status: product.status,
-      featured: product.featured,
-      description: product.description,
-      image: product.image,
-    });
-    setSaveMode(product.status);
-    pendingSubmitMode.current = product.status;
-  }, [editSlug, getProductBySlug]);
+    dispatch(
+      setAdminProductForm({
+        name: product.name,
+        shortName: product.shortName,
+        category: product.category,
+        price: String(product.price),
+        stock: String(product.stock),
+        status: product.status,
+        featured: product.featured,
+        description: product.description,
+        image: product.image,
+      }),
+    );
+    dispatch(setAdminProductSaveMode(product.status));
+  }, [dispatch, editSlug, getProductBySlug]);
 
   const productSlug = useMemo(
     () => slugify(form.name || "new-product"),
@@ -136,11 +123,11 @@ export default function NewProduct() {
     [form.category, productSlug],
   );
 
-  const updateField = <K extends keyof ProductFormState>(
+  const updateField = <K extends keyof AdminProductFormValues>(
     key: K,
-    value: ProductFormState[K],
+    value: AdminProductFormValues[K],
   ) => {
-    setForm((current) => ({ ...current, [key]: value }));
+    dispatch(mergeAdminProductForm({ [key]: value } as Partial<AdminProductFormValues>));
   };
 
   const handleImageUpload = (file: File | null) => {
@@ -148,7 +135,7 @@ export default function NewProduct() {
 
     // We convert the selected image into a data URL so the admin preview and
     // local catalog can show it immediately without a separate upload backend.
-    setIsUploadingImage(true);
+    dispatch(setAdminProductIsUploadingImage(true));
     const reader = new FileReader();
 
     reader.onload = () => {
@@ -156,11 +143,11 @@ export default function NewProduct() {
       if (result) {
         updateField("image", result);
       }
-      setIsUploadingImage(false);
+      dispatch(setAdminProductIsUploadingImage(false));
     };
 
     reader.onerror = () => {
-      setIsUploadingImage(false);
+      dispatch(setAdminProductIsUploadingImage(false));
     };
 
     reader.readAsDataURL(file);
@@ -173,8 +160,11 @@ export default function NewProduct() {
       return;
     }
 
-    const modeToSave = pendingSubmitMode.current;
-    setIsSaving(true);
+    const nativeEvent = event.nativeEvent as SubmitEvent;
+    const submitter = nativeEvent.submitter as HTMLButtonElement | null;
+    const modeToSave =
+      (submitter?.dataset.mode as CatalogStatus | undefined) ?? saveMode;
+    dispatch(setAdminProductIsSaving(true));
 
     // The dashboard keeps the same catalog data shape across pages, so saving
     // here immediately updates the Products screen and the Dashboard overview.
@@ -197,8 +187,12 @@ export default function NewProduct() {
         router.push("/admin/products");
       }
     } finally {
-      setIsSaving(false);
+      dispatch(setAdminProductIsSaving(false));
     }
+  };
+
+  const setVisibilityMode = (mode: CatalogStatus) => {
+    dispatch(setAdminProductSaveMode(mode));
   };
 
   return (
@@ -235,10 +229,8 @@ export default function NewProduct() {
           </button>
           <button
             type="submit"
-            onClick={() => {
-              pendingSubmitMode.current = "Draft";
-              setSaveMode("Draft");
-            }}
+            data-mode="Draft"
+            onClick={() => dispatch(setAdminProductSaveMode("Draft"))}
             disabled={isSaving}
             className={`inline-flex h-10 items-center justify-center gap-2 rounded-xl border px-6 text-xs font-bold transition-all disabled:cursor-not-allowed disabled:opacity-70 ${
               saveMode === "Draft"
@@ -246,28 +238,26 @@ export default function NewProduct() {
                 : "border-white/5 bg-white/5 text-white/60 hover:bg-white/10 hover:text-white"
             }`}
           >
-            {isSaving && pendingSubmitMode.current === "Draft" ? (
+            {isSaving && saveMode === "Draft" ? (
               <FiRefreshCw className="animate-spin" />
             ) : null}
-            {isSaving && pendingSubmitMode.current === "Draft"
+            {isSaving && saveMode === "Draft"
               ? "Saving draft..."
               : "Save Draft"}
           </button>
           <button
             type="submit"
-            onClick={() => {
-              pendingSubmitMode.current = "Live";
-              setSaveMode("Live");
-            }}
+            data-mode="Live"
+            onClick={() => dispatch(setAdminProductSaveMode("Live"))}
             disabled={isSaving}
             className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#D87D4A] px-8 text-xs font-bold text-white shadow-lg shadow-[rgba(216,125,74,0.2)] transition-all hover:bg-[#FBAF85] disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {isSaving && pendingSubmitMode.current === "Live" ? (
+            {isSaving && saveMode === "Live" ? (
               <FiRefreshCw className="animate-spin" />
             ) : (
               <FiSave />
             )}
-            {isSaving && pendingSubmitMode.current === "Live"
+            {isSaving && saveMode === "Live"
               ? "Publishing..."
               : "Publish to Store"}
           </button>
@@ -437,7 +427,7 @@ export default function NewProduct() {
             icon={<FiSettings />}
           >
             <div className="space-y-4">
-              {(["Live", "Draft", "Hidden"] as const).map((mode) => (
+              {(["Live", "Draft", "Hidden"] as CatalogStatus[]).map((mode) => (
                 <label
                   key={mode}
                   className="flex cursor-pointer items-center gap-4 rounded-xl border border-white/5 bg-white/[0.02] p-3 transition-all hover:bg-white/[0.05]"
@@ -447,7 +437,7 @@ export default function NewProduct() {
                       type="radio"
                       name="status"
                       checked={saveMode === mode}
-                      onChange={() => setSaveMode(mode)}
+                      onChange={() => setVisibilityMode(mode)}
                       className="peer absolute h-full w-full opacity-0"
                     />
                     <div className="h-2 w-2 rounded-full bg-[#D87D4A] opacity-0 transition-opacity peer-checked:opacity-100" />
@@ -503,7 +493,7 @@ export default function NewProduct() {
               </Link>
               <button
                 type="button"
-                onClick={() => setForm(createEmptyForm())}
+                onClick={() => dispatch(resetAdminProductForm())}
                 className="flex w-full items-center justify-between rounded-xl bg-white/5 px-4 py-3 text-xs font-bold text-white transition-all hover:bg-white/10"
               >
                 Reset form

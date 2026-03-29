@@ -148,7 +148,38 @@ export interface AdminSettings {
   storefrontNotes: string;
 }
 
+export type AdminSidebarState = {
+  isOpen: boolean;
+};
+
+export type AdminProductFilterState = {
+  query: string;
+  category: "all" | Category;
+};
+
+export type AdminSettingsDraft = AdminSettings;
+
 export type CatalogImageSet = ResponsiveImageSet;
+
+export type AdminProductFormValues = {
+  name: string;
+  shortName: string;
+  category: Category;
+  price: string;
+  stock: string;
+  status: CatalogStatus;
+  featured: boolean;
+  description: string;
+  image: string;
+};
+
+export type AdminProductFormState = {
+  form: AdminProductFormValues;
+  saveMode: CatalogStatus;
+  pendingSubmitMode: CatalogStatus;
+  isSaving: boolean;
+  isUploadingImage: boolean;
+};
 
 export type CartQuantityBadgeProps = {
   count: number;

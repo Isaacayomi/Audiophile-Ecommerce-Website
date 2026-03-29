@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -13,9 +13,15 @@ import {
   FiSearch,
   FiTrash2,
 } from "react-icons/fi";
+import { useDispatch, useSelector } from "react-redux";
 import { categories as storefrontCategories } from "../../lib/products";
 import { formatCurrency, getAdminImageSource } from "../_lib/catalog";
 import { useAdminCatalog } from "../_components/AdminCatalogProvider";
+import type { AppDispatch, RootState } from "../../store/store";
+import {
+  setAdminProductCategory,
+  setAdminProductQuery,
+} from "../../store/adminUi/adminUiSlice";
 import type { Category } from "../../type";
 
 const statusClasses = {
@@ -25,9 +31,12 @@ const statusClasses = {
 } as const;
 
 export default function ProductManagement() {
+  const dispatch = useDispatch<AppDispatch>();
   const { products, deleteProduct, duplicateProduct } = useAdminCatalog();
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState<"all" | Category>("all");
+  const query = useSelector((state: RootState) => state.adminUi.productFilter.query);
+  const category = useSelector(
+    (state: RootState) => state.adminUi.productFilter.category,
+  );
 
   const filteredProducts = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -71,7 +80,7 @@ export default function ProductManagement() {
           <input
             type="text"
             value={query}
-            onChange={(event) => setQuery(event.target.value)}
+            onChange={(event) => dispatch(setAdminProductQuery(event.target.value))}
             placeholder="Search products or slugs"
             className="h-11 w-full rounded-xl border border-white/5 bg-white/5 pl-10 pr-4 text-sm text-white placeholder:text-white/20 outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/[0.08]"
           />
@@ -83,7 +92,9 @@ export default function ProductManagement() {
             <select
               value={category}
               onChange={(event) =>
-                setCategory(event.target.value as "all" | Category)
+                dispatch(
+                  setAdminProductCategory(event.target.value as "all" | Category),
+                )
               }
               className="bg-transparent outline-none"
             >

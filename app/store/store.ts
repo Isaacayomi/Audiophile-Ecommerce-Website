@@ -5,6 +5,8 @@ import checkoutReducer from "./uiState/checkoutSlice";
 import orderCompletionReducer from "./uiState/orderCompletionSlice";
 import cartValueReducer from "./uiState/cartValueslice";
 import adminCatalogReducer from "./adminCatalog/adminCatalogSlice";
+import adminUiReducer from "./adminUi/adminUiSlice";
+import adminProductFormReducer from "./adminProductForm/adminProductFormSlice";
 
 export const store = configureStore({
   // Each key here becomes a top-level key in RootState.
@@ -15,6 +17,8 @@ export const store = configureStore({
     orderCompletion: orderCompletionReducer,
     cartValue: cartValueReducer,
     adminCatalog: adminCatalogReducer,
+    adminUi: adminUiReducer,
+    adminProductForm: adminProductFormReducer,
   },
 });
 
