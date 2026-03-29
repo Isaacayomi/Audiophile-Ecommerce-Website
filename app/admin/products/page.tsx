@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import {
-  FiBox,
   FiCopy,
   FiEdit2,
   FiExternalLink,
@@ -15,7 +14,7 @@ import {
   FiTrash2,
 } from "react-icons/fi";
 import { categories as storefrontCategories } from "../../lib/products";
-import { formatCurrency } from "../_lib/catalog";
+import { formatCurrency, getAdminImageSource } from "../_lib/catalog";
 import { useAdminCatalog } from "../_components/AdminCatalogProvider";
 import type { Category } from "../../type";
 
@@ -102,10 +101,6 @@ export default function ProductManagement() {
               ))}
             </select>
           </div>
-          <button className="flex h-11 items-center gap-2 rounded-xl border border-white/5 bg-white/5 px-4 text-xs font-bold text-white/60 transition-all hover:bg-white/10 hover:text-white">
-            <FiBox size={14} />
-            Export
-          </button>
         </div>
       </div>
 
@@ -120,12 +115,18 @@ export default function ProductManagement() {
           >
             <div className="flex items-start gap-4">
               <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-black/50">
-                <Image
-                  src={product.image}
-                  alt={product.name}
-                  fill
-                  className="object-cover"
-                />
+                {getAdminImageSource(product) ? (
+                  <Image
+                    src={getAdminImageSource(product)}
+                    alt={product.name}
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center bg-white/[0.03] text-[8px] font-bold uppercase tracking-widest text-white/20">
+                    No image
+                  </div>
+                )}
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-start justify-between gap-3">
@@ -208,12 +209,18 @@ export default function ProductManagement() {
                 <td className="rounded-l-2xl px-6 py-4">
                   <div className="flex items-center gap-4">
                     <div className="relative h-12 w-12 overflow-hidden rounded-xl border border-white/5 bg-black">
-                      <Image
-                        src={product.image}
-                        alt={product.name}
-                        fill
-                        className="object-cover"
-                      />
+                      {getAdminImageSource(product) ? (
+                        <Image
+                          src={getAdminImageSource(product)}
+                          alt={product.name}
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center bg-white/[0.03] text-[8px] font-bold uppercase tracking-widest text-white/20">
+                          No image
+                        </div>
+                      )}
                     </div>
                     <div className="min-w-0">
                       <p className="truncate text-xs font-bold text-white group-hover:text-[#D87D4A]">

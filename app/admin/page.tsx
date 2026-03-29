@@ -16,7 +16,7 @@ import {
   FiShoppingBag,
   FiTruck,
 } from "react-icons/fi";
-import { formatCurrency } from "./_lib/catalog";
+import { formatCurrency, getAdminImageSource } from "./_lib/catalog";
 import { useAdminCatalog } from "./_components/AdminCatalogProvider";
 
 const MetricCard = ({
@@ -192,12 +192,18 @@ export default function AdminDashboard() {
                 >
                   <div className="relative overflow-hidden rounded-2xl border border-white/5 bg-black/30">
                     <div className="relative aspect-[16/10] w-full">
-                      <Image
-                        src={product.image}
-                        alt={product.name}
-                        fill
-                        className="object-cover"
-                      />
+                      {getAdminImageSource(product) ? (
+                        <Image
+                          src={getAdminImageSource(product)}
+                          alt={product.name}
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center bg-white/[0.03] text-[10px] font-bold uppercase tracking-widest text-white/20">
+                          No image
+                        </div>
+                      )}
                     </div>
                   </div>
 

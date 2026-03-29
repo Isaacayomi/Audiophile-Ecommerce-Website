@@ -15,6 +15,7 @@ import {
   makeStorefrontPath,
   normalizeAdminProducts,
   slugify,
+  stampAdminProduct,
   toCatalogInput,
 } from "../_lib/catalog";
 import { API_BASE_URL, categories as storefrontCategories } from "../../lib/products";
@@ -79,7 +80,7 @@ const loadRemoteProducts = async () => {
     const data = await apiJson<{ products: AdminProduct[] }>("/products");
 
     if (Array.isArray(data.products)) {
-      return data.products;
+      return data.products.map((product) => stampAdminProduct(product));
     }
   } catch {
     // Fall through to the category-based loader below.
@@ -181,6 +182,9 @@ export function AdminCatalogProvider({
 
   const upsertProduct = async (product: CatalogInput) => {
     const cleanedSlug = product.slug || slugify(product.name);
+    const categoryLabel =
+      storefrontCategories.find((item) => item.slug === product.category)?.label ??
+      product.category.charAt(0).toUpperCase() + product.category.slice(1);
     const payload: CatalogInput = {
       ...product,
       slug: cleanedSlug,
@@ -191,15 +195,21 @@ export function AdminCatalogProvider({
       const method = products.some((item) => item.slug === cleanedSlug) ? "PUT" : "POST";
       const endpoint =
         method === "POST" ? "/products" : `/products/${cleanedSlug}`;
-      const data = await apiJson<{ product: AdminProduct } | { record: AdminProduct }>(endpoint, {
-        method,
-        body: JSON.stringify(payload),
-      });
+      const data = await apiJson<{ product: AdminProduct } | { record: AdminProduct }>(
+        endpoint,
+        {
+          method,
+          body: JSON.stringify({
+            ...payload,
+            categoryLabel,
+          }),
+        },
+      );
       const record = "product" in data ? data.product : data.record;
 
       setProducts((current) => {
         const next = current.filter((item) => item.slug !== record.slug);
-        next.unshift(record);
+        next.unshift(stampAdminProduct(record));
         return normalizeAdminProducts(next);
       });
       toast.success("Product saved");

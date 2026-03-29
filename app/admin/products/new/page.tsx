@@ -98,8 +98,10 @@ export default function NewProduct() {
 
   const [form, setForm] = useState<ProductFormState>(createEmptyForm());
   const [saveMode, setSaveMode] = useState<SaveMode>("Draft");
-  const pendingSaveMode = useRef<SaveMode>("Draft");
+  const pendingSubmitMode = useRef<SaveMode>("Draft");
+  const [isSaving, setIsSaving] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const hasPreviewImage = Boolean(form.image.trim());
 
   useEffect(() => {
     // When we open this screen with `?edit=slug`, we hydrate the fields from
@@ -122,7 +124,7 @@ export default function NewProduct() {
       image: product.image,
     });
     setSaveMode(product.status);
-    pendingSaveMode.current = product.status;
+    pendingSubmitMode.current = product.status;
   }, [editSlug, getProductBySlug]);
 
   const productSlug = useMemo(
@@ -172,24 +174,31 @@ export default function NewProduct() {
       return;
     }
 
+    const modeToSave = pendingSubmitMode.current;
+    setIsSaving(true);
+
     // The dashboard keeps the same catalog data shape across pages, so saving
     // here immediately updates the Products screen and the Dashboard overview.
-    const saved = await upsertProduct({
-      slug: productSlug,
-      name: form.name.trim(),
-      shortName: form.shortName.trim() || form.name.trim(),
-      category: form.category,
-      price: Number(form.price),
-      stock: Number(form.stock),
-      status: pendingSaveMode.current,
-      featured: form.featured,
-      image: form.image.trim(),
-      description: form.description.trim(),
-      storefrontPath,
-    });
+    try {
+      const saved = await upsertProduct({
+        slug: productSlug,
+        name: form.name.trim(),
+        shortName: form.shortName.trim() || form.name.trim(),
+        category: form.category,
+        price: Number(form.price),
+        stock: Number(form.stock),
+        status: modeToSave,
+        featured: form.featured,
+        image: form.image.trim(),
+        description: form.description.trim(),
+        storefrontPath,
+      });
 
-    if (saved) {
-      router.push("/admin/products");
+      if (saved) {
+        router.push("/admin/products");
+      }
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -228,27 +237,40 @@ export default function NewProduct() {
           <button
             type="submit"
             onClick={() => {
-              pendingSaveMode.current = "Draft";
+              pendingSubmitMode.current = "Draft";
               setSaveMode("Draft");
             }}
-            className={`h-10 rounded-xl border px-6 text-xs font-bold transition-all ${
+            disabled={isSaving}
+            className={`inline-flex h-10 items-center justify-center gap-2 rounded-xl border px-6 text-xs font-bold transition-all disabled:cursor-not-allowed disabled:opacity-70 ${
               saveMode === "Draft"
                 ? "border-white/10 bg-white/10 text-white"
                 : "border-white/5 bg-white/5 text-white/60 hover:bg-white/10 hover:text-white"
             }`}
           >
-            Save Draft
+            {isSaving && pendingSubmitMode.current === "Draft" ? (
+              <FiRefreshCw className="animate-spin" />
+            ) : null}
+            {isSaving && pendingSubmitMode.current === "Draft"
+              ? "Saving draft..."
+              : "Save Draft"}
           </button>
           <button
             type="submit"
             onClick={() => {
-              pendingSaveMode.current = "Live";
+              pendingSubmitMode.current = "Live";
               setSaveMode("Live");
             }}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#D87D4A] px-8 text-xs font-bold text-white shadow-lg shadow-[rgba(216,125,74,0.2)] transition-all hover:bg-[#FBAF85]"
+            disabled={isSaving}
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#D87D4A] px-8 text-xs font-bold text-white shadow-lg shadow-[rgba(216,125,74,0.2)] transition-all hover:bg-[#FBAF85] disabled:cursor-not-allowed disabled:opacity-70"
           >
-            <FiSave />
-            Publish to Store
+            {isSaving && pendingSubmitMode.current === "Live" ? (
+              <FiRefreshCw className="animate-spin" />
+            ) : (
+              <FiSave />
+            )}
+            {isSaving && pendingSubmitMode.current === "Live"
+              ? "Publishing..."
+              : "Publish to Store"}
           </button>
         </div>
       </header>
@@ -395,11 +417,17 @@ export default function NewProduct() {
               <div className="mt-4 overflow-hidden rounded-xl border border-white/5 bg-white/5">
                 {/* This preview is intentionally lightweight so uploaded images
                 can be tested immediately in the admin workflow. */}
-                <img
-                  src={form.image}
-                  alt={form.name || "Product preview"}
-                  className="h-40 w-full object-cover"
-                />
+                {hasPreviewImage ? (
+                  <img
+                    src={form.image}
+                    alt={form.name || "Product preview"}
+                    className="h-40 w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-40 w-full items-center justify-center text-[10px] font-bold uppercase tracking-widest text-white/20">
+                    No image selected
+                  </div>
+                )}
               </div>
             </div>
           </SectionCard>
@@ -438,7 +466,7 @@ export default function NewProduct() {
                         ? "Visible to customers"
                         : mode === "Draft"
                           ? "Saved and ready to publish"
-                          : "Not shown on the storefront"}
+                          : "Hidden means this item stays in the admin catalog but is not shown on the storefront"}
                     </p>
                   </div>
                 </label>

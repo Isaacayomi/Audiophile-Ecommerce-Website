@@ -180,9 +180,12 @@ export const slugify = (value: string) =>
 export const normalizeAdminProducts = (products: AdminProduct[]) =>
   products
     .slice()
-    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+    .sort((a, b) =>
+      (b.updatedAt ?? "").localeCompare(a.updatedAt ?? ""),
+    )
     .map((product, index) => ({
       ...product,
+      updatedAt: product.updatedAt ?? seedTime,
       featured: index === 0 ? true : product.featured,
     }));
 
@@ -215,6 +218,10 @@ const stockForCategory = (category: Category) => {
 const imageForProduct = (product: Product) =>
   product.productImage.desktop || product.categoryImage.desktop || "";
 
+export const getAdminImageSource = (
+  product: Pick<AdminProduct, "image" | "productImage" | "categoryImage">,
+) => product.image || product.productImage.desktop || product.categoryImage.desktop || "";
+
 export const mapStorefrontProductToAdmin = (product: Product): AdminProduct => ({
   slug: product.slug,
   name: product.name,
@@ -237,4 +244,9 @@ export const mapStorefrontProductToAdmin = (product: Product): AdminProduct => (
   storefrontPath: `/${product.category}/${product.slug}`,
   isNew: product.isNew,
   updatedAt: new Date().toISOString(),
+});
+
+export const stampAdminProduct = (product: AdminProduct): AdminProduct => ({
+  ...product,
+  updatedAt: product.updatedAt ?? new Date().toISOString(),
 });
