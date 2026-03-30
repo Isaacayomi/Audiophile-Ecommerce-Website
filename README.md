@@ -93,8 +93,8 @@ This project is open-source.
 
 ## Author Info
 
--   LinkedIn: [Your LinkedIn Profile](https://www.linkedin.com/in/yourusername)
--   X (formerly Twitter): [Your X Profile](https://x.com/yourusername)
+-   LinkedIn: [Isaac Ayomide Okunlola](https://www.linkedin.com/in/isaac-ayomide-okunlola-3568b7275/)
+-   X (formerly Twitter): [Prime-codes](https://x.com/_devPRIME)
 
 ---
 
