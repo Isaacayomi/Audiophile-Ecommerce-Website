@@ -19,6 +19,7 @@ import {
 } from "react-icons/fi";
 import { AdminCatalogProvider } from "./_components/AdminCatalogProvider";
 import { Skeleton } from "./_components/Skeleton";
+import { SidebarSkeleton } from "./_components/SidebarSkeleton";
 import { useAdminIdentity } from "./_components/useAdminIdentity";
 import { toggleAdminSidebar } from "../store/adminUi/adminUiSlice";
 import { mergeAdminSettings } from "../store/adminCatalog/adminCatalogSlice";
@@ -73,80 +74,84 @@ export default function AdminLayout({
             isSidebarOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
-          <div className="flex h-full flex-col px-4 py-8">
-            <div className="mb-10 flex items-center gap-3 px-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#D87D4A] text-white shadow-[0_0_15px_rgba(216,125,74,0.4)]">
-                <FiBox className="text-lg" />
+          {isLoaded ? (
+            <div className="flex h-full flex-col px-4 py-8">
+              <div className="mb-10 flex items-center gap-3 px-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#D87D4A] text-white shadow-[0_0_15px_rgba(216,125,74,0.4)]">
+                  <FiBox className="text-lg" />
+                </div>
+                <div>
+                  <span className="block text-xl font-bold tracking-tight text-white">
+                    Audiophile
+                  </span>
+                  <span className="block text-[10px] font-bold uppercase tracking-[0.25em] text-white/30">
+                    Admin
+                  </span>
+                </div>
               </div>
-              <div>
-                <span className="block text-xl font-bold tracking-tight text-white">
-                  Audiophile
-                </span>
-                <span className="block text-[10px] font-bold uppercase tracking-[0.25em] text-white/30">
-                  Admin
-                </span>
-              </div>
-            </div>
 
-            <nav className="flex-1 space-y-1">
-              <p className="mb-4 px-3 text-[10px] font-bold uppercase tracking-[0.2em] text-white/30">
-                Main Menu
-              </p>
-              {navItems.map((item) => {
-                const isActive = pathname === item.href;
+              <nav className="flex-1 space-y-1">
+                <p className="mb-4 px-3 text-[10px] font-bold uppercase tracking-[0.2em] text-white/30">
+                  Main Menu
+                </p>
+                {navItems.map((item) => {
+                  const isActive = pathname === item.href;
 
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => dispatch(toggleAdminSidebar())}
-                    className={`group flex items-center rounded-xl px-4 py-3 transition-all duration-200 ${
-                      isActive
-                        ? "bg-white/10 text-white"
-                        : "text-white/50 hover:bg-white/5 hover:text-white"
-                    }`}
-                  >
-                    <span
-                      className={`text-lg transition-colors duration-200 ${
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => dispatch(toggleAdminSidebar())}
+                      className={`group flex items-center rounded-xl px-4 py-3 transition-all duration-200 ${
                         isActive
-                          ? "text-[#D87D4A]"
-                          : "group-hover:text-[#D87D4A]"
+                          ? "bg-white/10 text-white"
+                          : "text-white/50 hover:bg-white/5 hover:text-white"
                       }`}
                     >
-                      {item.icon}
-                    </span>
-                    <span className="ml-3 text-sm font-semibold">
-                      {item.label}
-                    </span>
-                    {isActive && (
-                      <motion.div
-                        layoutId="sidebar-active-pill"
-                        className="ml-auto h-1.5 w-1.5 rounded-full bg-[#D87D4A]"
-                      />
-                    )}
-                  </Link>
-                );
-              })}
-            </nav>
+                      <span
+                        className={`text-lg transition-colors duration-200 ${
+                          isActive
+                            ? "text-[#D87D4A]"
+                            : "group-hover:text-[#D87D4A]"
+                        }`}
+                      >
+                        {item.icon}
+                      </span>
+                      <span className="ml-3 text-sm font-semibold">
+                        {item.label}
+                      </span>
+                      {isActive && (
+                        <motion.div
+                          layoutId="sidebar-active-pill"
+                          className="ml-auto h-1.5 w-1.5 rounded-full bg-[#D87D4A]"
+                        />
+                      )}
+                    </Link>
+                  );
+                })}
+              </nav>
 
-            <div className="mt-auto space-y-1 border-t border-white/5 pt-6">
-              <Link
-                href="/"
-                className="group flex items-center rounded-xl px-4 py-3 text-white/50 transition-all hover:bg-white/5 hover:text-white"
-              >
-                <span className="text-lg transition-colors group-hover:text-[#D87D4A]">
-                  <FiHome />
-                </span>
-                <span className="ml-3 text-sm font-semibold">Storefront</span>
-              </Link>
-              <button className="group flex w-full items-center rounded-xl px-4 py-3 text-rose-400/70 transition-all hover:bg-rose-400/10 hover:text-rose-400">
-                <span className="text-lg transition-transform group-hover:scale-110">
-                  <FiLogOut />
-                </span>
-                <span className="ml-3 text-sm font-semibold">Logout</span>
-              </button>
+              <div className="mt-auto space-y-1 border-t border-white/5 pt-6">
+                <Link
+                  href="/"
+                  className="group flex items-center rounded-xl px-4 py-3 text-white/50 transition-all hover:bg-white/5 hover:text-white"
+                >
+                  <span className="text-lg transition-colors group-hover:text-[#D87D4A]">
+                    <FiHome />
+                  </span>
+                  <span className="ml-3 text-sm font-semibold">Storefront</span>
+                </Link>
+                <button className="group flex w-full items-center rounded-xl px-4 py-3 text-rose-400/70 transition-all hover:bg-rose-400/10 hover:text-rose-400">
+                  <span className="text-lg transition-transform group-hover:scale-110">
+                    <FiLogOut />
+                  </span>
+                  <span className="ml-3 text-sm font-semibold">Logout</span>
+                </button>
+              </div>
             </div>
-          </div>
+          ) : (
+            <SidebarSkeleton />
+          )}
         </aside>
 
         <div className="flex min-h-screen flex-1 flex-col lg:ml-64">

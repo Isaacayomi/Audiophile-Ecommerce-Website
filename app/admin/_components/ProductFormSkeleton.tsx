@@ -21,7 +21,7 @@ export function ProductFormSkeleton() {
       </header>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2 rounded-2xl border border-white/5 bg-white/[0.02] p-6 space-y-8">
+        <div className="space-y-8 rounded-2xl border border-white/5 bg-white/5 p-6 lg:col-span-2">
           <div className="flex gap-4 mb-6">
             <Skeleton className="h-10 w-10 shrink-0" />
             <div className="space-y-2">
@@ -45,7 +45,7 @@ export function ProductFormSkeleton() {
 
         <div className="space-y-6">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="rounded-2xl border border-white/5 bg-white/[0.02] p-6 space-y-4">
+            <div key={i} className="space-y-4 rounded-2xl border border-white/5 bg-white/5 p-6">
               <div className="flex gap-4 mb-4">
                 <Skeleton className="h-10 w-10 shrink-0" />
                 <div className="space-y-2">

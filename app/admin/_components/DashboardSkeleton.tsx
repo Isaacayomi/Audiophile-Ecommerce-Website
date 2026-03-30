@@ -18,7 +18,7 @@ export function DashboardSkeleton() {
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="rounded-2xl border border-white/5 bg-white/[0.03] p-6 space-y-4">
+          <div key={i} className="space-y-4 rounded-2xl border border-white/5 bg-white/5 p-6">
             <Skeleton variant="circle" className="h-12 w-12" />
             <div className="space-y-2">
               <Skeleton className="h-3 w-20" />
@@ -30,8 +30,8 @@ export function DashboardSkeleton() {
       </div>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-        <div className="lg:col-span-2 rounded-2xl border border-white/5 bg-white/[0.03] p-6">
-          <div className="flex justify-between items-start mb-8">
+        <div className="rounded-2xl border border-white/5 bg-white/5 p-6 lg:col-span-2">
+          <div className="mb-8 flex items-start justify-between">
             <div className="space-y-2">
               <Skeleton className="h-5 w-32" />
               <Skeleton className="h-3 w-48" />
@@ -40,14 +40,14 @@ export function DashboardSkeleton() {
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="rounded-2xl border border-white/5 bg-white/[0.02] p-4 space-y-4">
-                <Skeleton className="aspect-[16/10] w-full" />
+              <div key={i} className="space-y-4 rounded-2xl border border-white/5 bg-white/5 p-4">
+                <Skeleton className="aspect-video w-full" />
                 <div className="flex justify-between">
-                   <div className="space-y-2 flex-1">
-                      <Skeleton className="h-4 w-3/4" />
-                      <Skeleton className="h-3 w-1/2" />
-                   </div>
-                   <Skeleton className="h-5 w-12" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-3 w-1/2" />
+                  </div>
+                  <Skeleton className="h-5 w-12" />
                 </div>
                 <Skeleton className="h-12 w-full rounded-xl" />
               </div>
@@ -55,7 +55,7 @@ export function DashboardSkeleton() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-6">
+        <div className="rounded-2xl border border-white/5 bg-white/5 p-6">
           <Skeleton className="h-5 w-32 mb-2" />
           <Skeleton className="h-3 w-48 mb-6" />
           <div className="space-y-5">

@@ -8,8 +8,8 @@ interface SkeletonProps {
 }
 
 export function Skeleton({ className = "", variant = "rect" }: SkeletonProps) {
-  const baseClasses = "relative overflow-hidden bg-white/5";
-  
+  const baseClasses = "relative overflow-hidden bg-white/10";
+
   const variantClasses = {
     rect: "rounded-xl",
     circle: "rounded-full",
@@ -26,7 +26,7 @@ export function Skeleton({ className = "", variant = "rect" }: SkeletonProps) {
           duration: 1.5,
           ease: "linear",
         }}
-        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"
+        className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent"
       />
     </div>
   );

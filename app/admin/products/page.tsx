@@ -133,7 +133,7 @@ export default function ProductManagement() {
         </Link>
       </header>
 
-      <div className="flex flex-col gap-4 rounded-2xl border border-white/5 bg-white/[0.02] p-4 lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex flex-col gap-4 rounded-2xl border border-white/5 bg-white/2 p-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="relative flex-1">
           <FiSearch className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
           <input
@@ -143,7 +143,7 @@ export default function ProductManagement() {
               dispatch(setAdminProductQuery(event.target.value))
             }
             placeholder="Search products or slugs"
-            className="h-11 w-full rounded-xl border border-white/5 bg-white/5 pl-10 pr-4 text-sm text-white placeholder:text-white/20 outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/[0.08]"
+            className="h-11 w-full rounded-xl border border-white/5 bg-white/5 pl-10 pr-4 text-sm text-white placeholder:text-white/20 outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/8"
           />
         </div>
 
@@ -185,7 +185,7 @@ export default function ProductManagement() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
-            className="rounded-2xl border border-white/5 bg-white/[0.03] p-4"
+            className="rounded-2xl border border-white/5 bg-white/3 p-4"
           >
             <div className="flex items-start gap-4">
               <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-black/50">
@@ -197,7 +197,7 @@ export default function ProductManagement() {
                     className="object-cover"
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-white/[0.03] text-[8px] font-bold uppercase tracking-widest text-white/20">
+                  <div className="flex h-full w-full items-center justify-center bg-white/3 text-[8px] font-bold uppercase tracking-widest text-white/20">
                     No image
                   </div>
                 )}
@@ -303,7 +303,7 @@ export default function ProductManagement() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.06 }}
-                className="group bg-white/[0.02] transition-colors hover:bg-white/[0.05]"
+                className="group bg-white/2 transition-colors hover:bg-white/5"
               >
                 <td className="rounded-l-2xl px-6 py-4">
                   <div className="flex items-center gap-4">
@@ -316,7 +316,7 @@ export default function ProductManagement() {
                           className="object-cover"
                         />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-white/[0.03] text-[8px] font-bold uppercase tracking-widest text-white/20">
+                        <div className="flex h-full w-full items-center justify-center bg-white/3 text-[8px] font-bold uppercase tracking-widest text-white/20">
                           No image
                         </div>
                       )}
@@ -409,7 +409,7 @@ export default function ProductManagement() {
       </div>
 
       {filteredProducts.length === 0 && (
-        <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.02] p-10 text-center">
+        <div className="rounded-2xl border border-dashed border-white/10 bg-white/2 p-10 text-center">
           <p className="text-sm font-bold text-white">No products found</p>
           <p className="mt-2 text-sm text-white/40">
             Try another search term or add a new product to the catalog.

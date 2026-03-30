@@ -50,7 +50,7 @@ const SectionCard = ({
     initial={{ opacity: 0, y: 14 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-    className={`rounded-2xl border border-white/5 bg-white/[0.02] p-6 ${className}`}
+    className={`rounded-2xl border border-white/5 bg-white/2 p-6 ${className}`}
   >
     <div className="mb-6 flex items-start gap-4">
       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#D87D4A]/10 text-[#D87D4A]">
@@ -306,7 +306,7 @@ export default function NewProduct() {
                 value={form.name}
                 onChange={(event) => updateField("name", event.target.value)}
                 placeholder="e.g. XX99 Mark II Headphones"
-                className="rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/20 outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/[0.08]"
+                className="rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/20 outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/8"
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -317,7 +317,7 @@ export default function NewProduct() {
                   updateField("shortName", event.target.value)
                 }
                 placeholder="e.g. XX99 MK II"
-                className="rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/20 outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/[0.08]"
+                className="rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/20 outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/8"
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -328,7 +328,7 @@ export default function NewProduct() {
                   onChange={(event) =>
                     updateField("category", event.target.value as Category)
                   }
-                  className="w-full appearance-none rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-white outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/[0.08] cursor-pointer"
+                  className="w-full appearance-none rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-white outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/8 cursor-pointer"
                 >
                   {storefrontCategories.map((item) => (
                     <option
@@ -349,7 +349,7 @@ export default function NewProduct() {
                 type="number"
                 value={form.price}
                 onChange={(event) => updateField("price", event.target.value)}
-                className="rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/20 outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/[0.08]"
+                className="rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/20 outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/8"
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -358,7 +358,7 @@ export default function NewProduct() {
                 type="number"
                 value={form.stock}
                 onChange={(event) => updateField("stock", event.target.value)}
-                className="rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/20 outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/[0.08]"
+                className="rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/20 outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/8"
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -379,7 +379,7 @@ export default function NewProduct() {
               onChange={(event) =>
                 updateField("description", event.target.value)
               }
-              className="resize-none rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/20 outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/[0.08]"
+              className="resize-none rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/20 outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/8"
             />
           </div>
         </SectionCard>
@@ -390,7 +390,7 @@ export default function NewProduct() {
             description="Upload an image for the admin catalog preview."
             icon={<FiImage />}
           >
-            <div className="group relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-white/5 bg-white/[0.01] p-8 text-center transition-all hover:border-[#D87D4A]/40 hover:bg-[#D87D4A]/5">
+            <div className="group relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-white/5 bg-white/1 p-8 text-center transition-all hover:border-[#D87D4A]/40 hover:bg-[#D87D4A]/5">
               <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-white/5 text-white/20 transition-all group-hover:bg-[#D87D4A]/20 group-hover:text-[#D87D4A]">
                 <FiUploadCloud size={24} />
               </div>
@@ -424,7 +424,7 @@ export default function NewProduct() {
               <input
                 value={form.image}
                 onChange={(event) => updateField("image", event.target.value)}
-                className="rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-white outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/[0.08]"
+                className="rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-white outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/8"
               />
             </div>
 
@@ -466,7 +466,7 @@ export default function NewProduct() {
               {(["Live", "Draft", "Hidden"] as CatalogStatus[]).map((mode) => (
                 <label
                   key={mode}
-                  className="flex cursor-pointer items-center gap-4 rounded-xl border border-white/5 bg-white/[0.02] p-3 transition-all hover:bg-white/[0.05]"
+                  className="flex cursor-pointer items-center gap-4 rounded-xl border border-white/5 bg-white/2 p-3 transition-all hover:bg-white/5"
                 >
                   <div className="relative flex h-5 w-5 items-center justify-center rounded-full border-2 border-[#D87D4A]">
                     <input
@@ -497,7 +497,7 @@ export default function NewProduct() {
                 </label>
               ))}
 
-              <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-white/5 bg-white/[0.02] p-3 transition-all hover:bg-white/[0.05]">
+              <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-white/5 bg-white/8 p-3 transition-all hover:bg-white/10">
                 <input
                   type="checkbox"
                   checked={form.featured}
@@ -539,7 +539,7 @@ export default function NewProduct() {
                 Reset form
                 <FiRefreshCw />
               </button>
-              <div className="rounded-xl border border-white/5 bg-white/[0.02] px-4 py-3">
+              <div className="rounded-xl border border-white/5 bg-white/2 px-4 py-3">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-white/25">
                   Current save target
                 </p>

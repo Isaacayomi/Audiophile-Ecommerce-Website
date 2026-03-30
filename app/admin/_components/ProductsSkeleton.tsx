@@ -13,14 +13,14 @@ export function ProductsSkeleton() {
         <Skeleton className="h-11 w-40" />
       </header>
 
-      <div className="flex flex-col gap-4 rounded-2xl border border-white/5 bg-white/[0.02] p-4 lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex flex-col gap-4 rounded-2xl border border-white/5 bg-white/5 p-4 lg:flex-row lg:items-center lg:justify-between">
         <Skeleton className="h-11 flex-1 max-w-md" />
         <Skeleton className="h-11 w-48" />
       </div>
 
       <div className="space-y-4 md:hidden">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="rounded-2xl border border-white/5 bg-white/[0.03] p-4">
+          <div key={i} className="rounded-2xl border border-white/5 bg-white/5 p-4">
             <div className="flex gap-4">
               <Skeleton className="h-16 w-16 shrink-0 rounded-xl" />
               <div className="flex-1 space-y-3">
@@ -42,7 +42,7 @@ export function ProductsSkeleton() {
       </div>
 
       <div className="hidden md:block">
-        <div className="w-full bg-white/[0.02] rounded-2xl border border-white/5">
+        <div className="w-full rounded-2xl border border-white/5 bg-white/5">
           <div className="border-b border-white/5 px-6 py-4 flex gap-4">
             <Skeleton className="h-4 w-1/4" />
             <Skeleton className="h-4 w-1/6" />
