@@ -18,6 +18,7 @@ import {
   FiSettings,
 } from "react-icons/fi";
 import { AdminCatalogProvider } from "./_components/AdminCatalogProvider";
+import { Skeleton } from "./_components/Skeleton";
 import { useAdminIdentity } from "./_components/useAdminIdentity";
 import { toggleAdminSidebar } from "../store/adminUi/adminUiSlice";
 import { mergeAdminSettings } from "../store/adminCatalog/adminCatalogSlice";
@@ -168,17 +169,29 @@ export default function AdminLayout({
               <div className="hidden h-8 w-px bg-white/5 sm:block" />
 
               <div className="group flex cursor-pointer items-center gap-3 pl-1">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#D87D4A] to-[#FBAF85] text-sm font-bold text-white shadow-lg shadow-[rgba(216,125,74,0.2)]">
-                  {initials}
-                </div>
-                <div className="hidden md:block">
-                  <p className="text-xs font-bold text-white group-hover:text-[#D87D4A] transition-colors">
-                    {displayName}
-                  </p>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-white/30">
-                    Store Admin
-                  </p>
-                </div>
+                {isLoaded ? (
+                  <>
+                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#D87D4A] to-[#FBAF85] text-sm font-bold text-white shadow-lg shadow-[rgba(216,125,74,0.2)]">
+                      {initials}
+                    </div>
+                    <div className="hidden md:block">
+                      <p className="text-xs font-bold text-white group-hover:text-[#D87D4A] transition-colors">
+                        {displayName}
+                      </p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-white/30">
+                        Store Admin
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <Skeleton variant="rect" className="h-9 w-9 rounded-xl" />
+                    <div className="hidden md:block space-y-1">
+                      <Skeleton className="h-3 w-20" />
+                      <Skeleton className="h-2 w-16" />
+                    </div>
+                  </>
+                )}
                 <FiChevronDown className="text-white/30 transition-colors group-hover:text-white" />
               </div>
             </div>

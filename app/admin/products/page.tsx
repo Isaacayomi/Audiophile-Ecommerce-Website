@@ -26,6 +26,7 @@ import {
   setAdminProductQuery,
 } from "../../store/adminUi/adminUiSlice";
 import type { Category } from "../../type";
+import { ProductsSkeleton } from "../_components/ProductsSkeleton";
 
 const statusClasses = {
   Live: "bg-emerald-500/10 text-emerald-400",
@@ -33,21 +34,26 @@ const statusClasses = {
   Hidden: "bg-rose-500/10 text-rose-400",
 } as const;
 
-type PendingCatalogAction =
-  | {
-      type: PendingCatalogActionType;
-      slug: string;
-    }
-  | null;
+type PendingCatalogAction = {
+  type: PendingCatalogActionType;
+  slug: string;
+} | null;
 
 type PendingCatalogActionType = "edit" | "copy" | "delete";
 
 export default function ProductManagement() {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
-  const { products, deleteProduct, duplicateProduct } = useAdminCatalog();
+  const { products, deleteProduct, duplicateProduct, isHydrated } =
+    useAdminCatalog();
+
   const [pendingAction, setPendingAction] =
     useState<PendingCatalogAction>(null);
+
+  if (!isHydrated) {
+    return <ProductsSkeleton />;
+  }
+
   const showPendingActionSpinner = useDelayedBoolean(Boolean(pendingAction));
   const query = useSelector(
     (state: RootState) => state.adminUi.productFilter.query,

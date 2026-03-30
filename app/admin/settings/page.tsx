@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { defaultSettings } from "../_lib/catalog";
 import { useAdminCatalog } from "../_components/AdminCatalogProvider";
 import { useAdminIdentity } from "../_components/useAdminIdentity";
+import { SettingsSkeleton } from "../_components/SettingsSkeleton";
 import type { AppDispatch, RootState } from "../../store/store";
 import {
   mergeAdminSettingsDraft,
@@ -91,13 +92,19 @@ const Toggle = ({
 
 export default function SettingsPage() {
   const dispatch = useDispatch<AppDispatch>();
-  const { settings, saveSettings } = useAdminCatalog();
+  const { settings, saveSettings, isHydrated } = useAdminCatalog();
   const { displayName } = useAdminIdentity();
   const form = useSelector((state: RootState) => state.adminUi.settingsDraft);
 
   useEffect(() => {
-    dispatch(setAdminSettingsDraft(settings));
-  }, [dispatch, settings]);
+    if (isHydrated) {
+      dispatch(setAdminSettingsDraft(settings));
+    }
+  }, [dispatch, settings, isHydrated]);
+
+  if (!isHydrated) {
+    return <SettingsSkeleton />;
+  }
 
   const updateField = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
     dispatch(mergeAdminSettingsDraft({ [key]: value } as Partial<typeof form>));

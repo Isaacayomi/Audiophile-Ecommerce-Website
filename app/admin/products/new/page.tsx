@@ -22,6 +22,7 @@ import { categories as storefrontCategories } from "../../../lib/products";
 import { formatCurrency, slugify } from "../../_lib/catalog";
 import { useAdminCatalog } from "../../_components/AdminCatalogProvider";
 import { useDelayedBoolean } from "../../_components/useDelayedBoolean";
+import { ProductFormSkeleton } from "../../_components/ProductFormSkeleton";
 import type { AppDispatch, RootState } from "../../../store/store";
 import {
   mergeAdminProductForm,
@@ -77,8 +78,13 @@ export default function NewProduct() {
   const searchParams = useSearchParams();
   const editSlug = searchParams.get("edit");
   const dispatch = useDispatch<AppDispatch>();
-  const { getProductBySlug, upsertProduct, syncCatalog, isSyncing } =
-    useAdminCatalog();
+  const {
+    getProductBySlug,
+    upsertProduct,
+    syncCatalog,
+    isSyncing,
+    isHydrated,
+  } = useAdminCatalog();
 
   const form = useSelector((state: RootState) => state.adminProductForm.form);
   const saveMode = useSelector(
@@ -98,7 +104,7 @@ export default function NewProduct() {
   useEffect(() => {
     // When we open this screen with `?edit=slug`, we hydrate the fields from
     // the shared admin catalog instead of forcing a separate edit page.
-    if (!editSlug) return;
+    if (!editSlug || !isHydrated) return;
 
     const product = getProductBySlug(editSlug);
 
@@ -118,7 +124,7 @@ export default function NewProduct() {
       }),
     );
     dispatch(setAdminProductSaveMode(product.status));
-  }, [dispatch, editSlug, getProductBySlug]);
+  }, [dispatch, editSlug, getProductBySlug, isHydrated]);
 
   const productSlug = useMemo(
     () => slugify(form.name || "new-product"),
@@ -129,6 +135,10 @@ export default function NewProduct() {
     () => `/${form.category}/${productSlug}`,
     [form.category, productSlug],
   );
+
+  if (!isHydrated) {
+    return <ProductFormSkeleton />;
+  }
 
   const updateField = <K extends keyof AdminProductFormValues>(
     key: K,

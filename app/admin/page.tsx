@@ -19,6 +19,7 @@ import {
 import { formatCurrency, getAdminImageSource } from "./_lib/catalog";
 import { useAdminCatalog } from "./_components/AdminCatalogProvider";
 import { useAdminIdentity } from "./_components/useAdminIdentity";
+import { DashboardSkeleton } from "./_components/DashboardSkeleton";
 
 const MetricCard = ({
   title,
@@ -89,8 +90,13 @@ export default function AdminDashboard() {
     lastSyncedAt,
     syncCatalog,
     isSyncing,
+    isHydrated,
   } = useAdminCatalog();
   const { displayName } = useAdminIdentity();
+
+  if (!isHydrated) {
+    return <DashboardSkeleton />;
+  }
 
   const liveProducts = products.filter((product) => product.status === "Live");
   const lowStockProducts = products.filter((product) => product.stock <= 15);
