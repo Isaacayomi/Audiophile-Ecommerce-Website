@@ -172,6 +172,7 @@ export const normalizeAdminProducts = (products: AdminProduct[]) =>
       ...product,
       updatedAt: product.updatedAt ?? seedTime,
       featured: index === 0 ? true : product.featured,
+      storefrontPath: `/${product.category}/${product.slug}`,
     }));
 
 export const toCatalogInput = (product: AdminProduct): CatalogInput => ({
@@ -192,7 +193,9 @@ export const makeStorefrontPath = (
   category: Category,
   slug: string,
   storefrontPath?: string,
-) => storefrontPath || `/${category}/${slug}`;
+) => storefrontPath && storefrontPath === `/${category}/${slug}`
+  ? storefrontPath
+  : `/${category}/${slug}`;
 
 const stockForCategory = (category: Category) => {
   if (category === "speakers") return 12;
