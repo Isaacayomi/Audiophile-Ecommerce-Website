@@ -50,43 +50,55 @@ const fetchJson = async <T,>(path: string): Promise<T> => {
 export const getCategoryProducts = async (
   category: string,
 ): Promise<Product[]> => {
-  const data = await fetchJson<unknown>(`/products/category/${category}`);
+  try {
+    const data = await fetchJson<unknown>(`/products/category/${category}`);
 
-  if (!Array.isArray(data)) {
-    throw new Error("Unexpected category response shape");
+    if (!Array.isArray(data)) {
+      throw new Error("Unexpected category response shape");
+    }
+
+    return data
+      .map((item) =>
+        normalizeProduct(item as Partial<Product> & Record<string, unknown>),
+      )
+      .filter((product) => product.category === category)
+      .sort((a, b) => a.categoryOrder - b.categoryOrder);
+  } catch {
+    return [];
   }
-
-  return data
-    .map((item) =>
-      normalizeProduct(item as Partial<Product> & Record<string, unknown>),
-    )
-    .filter((product) => product.category === category)
-    .sort((a, b) => a.categoryOrder - b.categoryOrder);
 };
 
-export const getProductBySlug = async (slug: string): Promise<Product> => {
-  const data = await fetchJson<unknown>(`/product/${slug}`);
+export const getProductBySlug = async (slug: string): Promise<Product | null> => {
+  try {
+    const data = await fetchJson<unknown>(`/product/${slug}`);
 
-  if (!data || typeof data !== "object" || !("product" in data)) {
-    throw new Error("Unexpected product response shape");
+    if (!data || typeof data !== "object" || !("product" in data)) {
+      throw new Error("Unexpected product response shape");
+    }
+
+    return normalizeProduct(
+      (data as { product: Partial<Product> & Record<string, unknown> }).product,
+    );
+  } catch {
+    return null;
   }
-
-  return normalizeProduct(
-    (data as { product: Partial<Product> & Record<string, unknown> }).product,
-  );
 };
 
 export const getProduct = async (
   category: string,
   slug: string,
-): Promise<Product> => {
-  const data = await fetchJson<unknown>(`/product/${category}/${slug}`);
+): Promise<Product | null> => {
+  try {
+    const data = await fetchJson<unknown>(`/product/${category}/${slug}`);
 
-  if (!data || typeof data !== "object" || !("product" in data)) {
-    throw new Error("Unexpected product response shape");
+    if (!data || typeof data !== "object" || !("product" in data)) {
+      throw new Error("Unexpected product response shape");
+    }
+
+    return normalizeProduct(
+      (data as { product: Partial<Product> & Record<string, unknown> }).product,
+    );
+  } catch {
+    return null;
   }
-
-  return normalizeProduct(
-    (data as { product: Partial<Product> & Record<string, unknown> }).product,
-  );
 };
