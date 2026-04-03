@@ -162,6 +162,50 @@ const buildLocalProductRecord = (
   };
 };
 
+const syncRemoteProduct = async (
+  product: CatalogInput,
+  categoryLabel: string,
+  existingProducts: AdminProduct[],
+): Promise<AdminProduct | null> => {
+  const cleanedSlug = product.slug || slugify(product.name);
+  const payload: CatalogInput = {
+    ...product,
+    slug: cleanedSlug,
+    storefrontPath: makeStorefrontPath(
+      product.category,
+      cleanedSlug,
+      product.storefrontPath,
+    ),
+  };
+
+  const method = existingProducts.some((item) => item.slug === cleanedSlug)
+    ? "PUT"
+    : "POST";
+  const endpoint = method === "POST" ? "/products" : `/products/${cleanedSlug}`;
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), 8000);
+
+  try {
+    const data = await apiJson<{ product: AdminProduct } | { record: AdminProduct }>(
+      endpoint,
+      {
+        method,
+        signal: controller.signal,
+        body: JSON.stringify({
+          ...payload,
+          categoryLabel,
+        }),
+      },
+    );
+
+    return "product" in data ? data.product : data.record;
+  } catch {
+    return null;
+  } finally {
+    window.clearTimeout(timeout);
+  }
+};
+
 export function AdminCatalogProvider({
   children,
 }: {
@@ -245,34 +289,27 @@ export function AdminCatalogProvider({
       storefrontPath: makeStorefrontPath(product.category, cleanedSlug, product.storefrontPath),
     };
 
-    try {
-      const method = products.some((item) => item.slug === cleanedSlug) ? "PUT" : "POST";
-      const endpoint =
-        method === "POST" ? "/products" : `/products/${cleanedSlug}`;
-      const data = await apiJson<{ product: AdminProduct } | { record: AdminProduct }>(
-        endpoint,
-        {
-          method,
-          body: JSON.stringify({
-            ...payload,
-            categoryLabel,
-          }),
-        },
-      );
-      const record = "product" in data ? data.product : data.record;
-      dispatch(upsertAdminProduct(stampAdminProduct(record)));
-      showSaveToast("Product saved");
-      return true;
-    } catch {
-      const existing = products.find((item) => item.slug === cleanedSlug);
-      const localRecord = buildLocalProductRecord(payload, categoryLabel, existing);
+    const existing = products.find((item) => item.slug === cleanedSlug);
+    const localRecord = buildLocalProductRecord(payload, categoryLabel, existing);
 
-      // If the remote API is unavailable, keep the product in the local admin
-      // catalog so drafts and live items can still be edited and revisited.
-      dispatch(upsertAdminProduct(stampAdminProduct(localRecord)));
-      showSaveToast("Product saved locally");
-      return true;
-    }
+    // Save immediately in the local catalog so Draft/Publish never waits on
+    // the remote API to give the user visible feedback.
+    dispatch(upsertAdminProduct(stampAdminProduct(localRecord)));
+    showSaveToast("Product saved");
+
+    void (async () => {
+      const remoteRecord = await syncRemoteProduct(
+        payload,
+        categoryLabel,
+        products,
+      );
+
+      if (remoteRecord) {
+        dispatch(upsertAdminProduct(stampAdminProduct(remoteRecord)));
+      }
+    })();
+
+    return true;
   };
 
   const duplicateProduct = async (slug: string) => {
