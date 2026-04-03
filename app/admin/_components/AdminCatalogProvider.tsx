@@ -121,6 +121,14 @@ const normalizeCopySlug = (current: AdminProduct[], baseSlug: string) => {
   return nextSlug;
 };
 
+const SAVE_TOAST_DELAY_MS = 3500;
+
+const showSaveToast = (message: string) => {
+  window.setTimeout(() => {
+    toast.success(message);
+  }, SAVE_TOAST_DELAY_MS);
+};
+
 const getFallbackTemplate = (category: CatalogInput["category"]) =>
   fallbackProducts.find((product) => product.category === category) ??
   fallbackProducts[0];
@@ -253,7 +261,7 @@ export function AdminCatalogProvider({
       );
       const record = "product" in data ? data.product : data.record;
       dispatch(upsertAdminProduct(stampAdminProduct(record)));
-      toast.success("Product saved");
+      showSaveToast("Product saved");
       return true;
     } catch {
       const existing = products.find((item) => item.slug === cleanedSlug);
@@ -262,7 +270,7 @@ export function AdminCatalogProvider({
       // If the remote API is unavailable, keep the product in the local admin
       // catalog so drafts and live items can still be edited and revisited.
       dispatch(upsertAdminProduct(stampAdminProduct(localRecord)));
-      toast.success("Product saved locally");
+      showSaveToast("Product saved locally");
       return true;
     }
   };

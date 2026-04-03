@@ -162,7 +162,7 @@ export default function NewProduct() {
 
     try {
       const image = await new Promise<HTMLImageElement>((resolve, reject) => {
-        const element = new Image();
+        const element = new window.Image();
         element.onload = () => resolve(element);
         element.onerror = reject;
         element.src = objectUrl;

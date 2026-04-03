@@ -49,11 +49,6 @@ export default function ProductManagement() {
 
   const [pendingAction, setPendingAction] =
     useState<PendingCatalogAction>(null);
-
-  if (!isHydrated) {
-    return <ProductsSkeleton />;
-  }
-
   const showPendingActionSpinner = useDelayedBoolean(Boolean(pendingAction));
   const query = useSelector(
     (state: RootState) => state.adminUi.productFilter.query,
@@ -110,6 +105,10 @@ export default function ProductManagement() {
       setPendingAction(null);
     }
   };
+
+  if (!isHydrated) {
+    return <ProductsSkeleton />;
+  }
 
   return (
     <div className="space-y-8 pb-20">
