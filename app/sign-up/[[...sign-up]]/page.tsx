@@ -6,7 +6,7 @@ export default function SignUpPage() {
       <SignUp
         path="/sign-up"
         routing="path"
-        forceRedirectUrl="/checkout?auth=sign_in_success"
+        fallbackRedirectUrl="/"
       />
     </div>
   );

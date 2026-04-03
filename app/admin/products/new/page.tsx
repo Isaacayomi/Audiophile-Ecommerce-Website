@@ -1,7 +1,7 @@
 "use client";
 
-import type { FormEvent, ReactNode } from "react";
-import { useEffect, useMemo } from "react";
+import type { DragEvent, FormEvent, ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
@@ -77,6 +77,8 @@ export default function NewProduct() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const editSlug = searchParams.get("edit");
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
+  const dragDepthRef = useRef(0);
   const dispatch = useDispatch<AppDispatch>();
   const {
     getProductBySlug,
@@ -96,6 +98,8 @@ export default function NewProduct() {
   const isUploadingImage = useSelector(
     (state: RootState) => state.adminProductForm.isUploadingImage,
   );
+  const [isDraggingImage, setIsDraggingImage] = useState(false);
+  const [selectedImageName, setSelectedImageName] = useState("");
   const isSavingSpinnerVisible = useDelayedBoolean(isSaving);
   const isSyncingSpinnerVisible = useDelayedBoolean(isSyncing);
 
@@ -154,6 +158,13 @@ export default function NewProduct() {
   const handleImageUpload = (file: File | null) => {
     if (!file) return;
 
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file.");
+      return;
+    }
+
+    setSelectedImageName(file.name);
+
     // We convert the selected image into a data URL so the admin preview and
     // local catalog can show it immediately without a separate upload backend.
     dispatch(setAdminProductIsUploadingImage(true));
@@ -172,6 +183,32 @@ export default function NewProduct() {
     };
 
     reader.readAsDataURL(file);
+  };
+
+  const openImagePicker = () => {
+    imageInputRef.current?.click();
+  };
+
+  const handleDrop = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    dragDepthRef.current = 0;
+    setIsDraggingImage(false);
+    handleImageUpload(event.dataTransfer.files?.[0] ?? null);
+  };
+
+  const handleDragEnter = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    dragDepthRef.current += 1;
+    setIsDraggingImage(true);
+  };
+
+  const handleDragLeave = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    dragDepthRef.current = Math.max(0, dragDepthRef.current - 1);
+
+    if (dragDepthRef.current === 0) {
+      setIsDraggingImage(false);
+    }
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -390,28 +427,70 @@ export default function NewProduct() {
             description="Upload an image for the admin catalog preview."
             icon={<FiImage />}
           >
-            <div className="group relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-white/5 bg-white/1 p-8 text-center transition-all hover:border-[#D87D4A]/40 hover:bg-[#D87D4A]/5">
+            <div
+              role="button"
+              tabIndex={0}
+              aria-label="Upload product image by dragging and dropping or browsing files"
+              onClick={openImagePicker}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  openImagePicker();
+                }
+              }}
+              onDragEnter={handleDragEnter}
+              onDragOver={(event) => {
+                event.preventDefault();
+                event.dataTransfer.dropEffect = "copy";
+                setIsDraggingImage(true);
+              }}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              className={`group relative flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 text-center transition-all outline-none ${
+                isDraggingImage
+                  ? "border-[#D87D4A] bg-[#D87D4A]/10"
+                  : "border-white/5 bg-white/[0.01] hover:border-[#D87D4A]/40 hover:bg-[#D87D4A]/5"
+              }`}
+            >
               <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-white/5 text-white/20 transition-all group-hover:bg-[#D87D4A]/20 group-hover:text-[#D87D4A]">
                 <FiUploadCloud size={24} />
               </div>
               <p className="text-xs font-bold text-white/40 group-hover:text-white">
-                Upload or paste an image
+                {isDraggingImage ? "Drop the image here" : "Drag and drop an image"}
               </p>
               <p className="mt-1 text-[9px] font-bold uppercase tracking-widest text-white/10">
-                The selected image is stored locally in the admin catalog
+                Or click to browse. The selected image is stored locally in the admin catalog.
               </p>
             </div>
 
             <div className="mt-4 flex flex-col gap-2">
               <FieldLabel>Upload Image</FieldLabel>
               <input
+                ref={imageInputRef}
                 type="file"
                 accept="image/*"
                 onChange={(event) =>
                   handleImageUpload(event.target.files?.[0] ?? null)
                 }
-                className="rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-white file:mr-4 file:rounded-lg file:border-0 file:bg-[#D87D4A] file:px-3 file:py-1.5 file:text-[10px] file:font-bold file:uppercase file:tracking-widest file:text-white"
+                className="hidden"
               />
+              <input
+                value={
+                  isUploadingImage
+                    ? "Processing..."
+                    : selectedImageName || (hasPreviewImage ? "Image ready" : "No file selected")
+                }
+                readOnly
+                placeholder={isUploadingImage ? "Processing image..." : "No file selected"}
+                className="rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/25 outline-none"
+              />
+              <button
+                type="button"
+                onClick={openImagePicker}
+                className="inline-flex h-10 items-center justify-center rounded-xl border border-white/5 bg-white/5 px-4 text-xs font-bold text-white/70 transition-all hover:bg-white/10 hover:text-white"
+              >
+                Browse files
+              </button>
               <p className="text-[10px] text-white/25">
                 {isUploadingImage
                   ? "Processing image..."
@@ -533,7 +612,10 @@ export default function NewProduct() {
               </Link>
               <button
                 type="button"
-                onClick={() => dispatch(resetAdminProductForm())}
+                onClick={() => {
+                  dispatch(resetAdminProductForm());
+                  setSelectedImageName("");
+                }}
                 className="flex w-full items-center justify-between rounded-xl bg-white/5 px-4 py-3 text-xs font-bold text-white transition-all hover:bg-white/10"
               >
                 Reset form

@@ -2,6 +2,8 @@ import { cartValueState } from "@/app/type";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import toast from "react-hot-toast";
 
+export const CART_STORAGE_KEY = "audiophile.cartValue";
+
 const initialState: cartValueState = {
   value: 0,
   selectedValue: 1,
@@ -44,6 +46,11 @@ export const increaseValueSlice = createSlice({
 
       state.value += quantity;
       state.selectedValue = 1;
+    },
+    hydrateCartValue: (state, action: PayloadAction<cartValueState>) => {
+      state.value = action.payload.value;
+      state.selectedValue = action.payload.selectedValue ?? 1;
+      state.items = action.payload.items ?? [];
     },
     increaseCartItemQuantity: (state, action: PayloadAction<string>) => {
       // Increment one cart row and keep global badge count in sync.
@@ -91,6 +98,7 @@ export const {
   increaseValue,
   decreaseValue,
   addToCartValue,
+  hydrateCartValue,
   increaseCartItemQuantity,
   decreaseCartItemQuantity,
   removeCartItem,
