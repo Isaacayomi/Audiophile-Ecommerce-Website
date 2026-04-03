@@ -94,7 +94,7 @@ const HomeFeaturedSections = () => {
           </h2>
 
           <Link
-            href="/earphones/yx1-earphones"
+            href="/earphones/yx1-wireless-earphones"
             className={secondaryButtonClass}
           >
             See Product

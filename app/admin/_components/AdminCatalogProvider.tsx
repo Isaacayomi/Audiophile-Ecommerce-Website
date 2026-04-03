@@ -15,6 +15,7 @@ import {
 import { API_BASE_URL, categories as storefrontCategories } from "../../lib/products";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../store/store";
+import { removeAllCartItems } from "../../store/uiState/cartValueslice";
 import {
   mergeAdminSettings,
   removeAdminProduct,
@@ -270,6 +271,7 @@ export function AdminCatalogProvider({
   const products = useSelector((state: RootState) => state.adminCatalog.products);
   const orders = useSelector((state: RootState) => state.adminCatalog.orders);
   const settings = useSelector((state: RootState) => state.adminCatalog.settings);
+  const cartItems = useSelector((state: RootState) => state.cartValue.items);
   const isHydrated = useSelector(
     (state: RootState) => state.adminCatalog.isHydrated,
   );
@@ -300,6 +302,7 @@ export function AdminCatalogProvider({
 
   useEffect(() => {
     let cancelled = false;
+    let hydrateTimer: number | null = null;
     const storedProducts = readStorage<AdminProduct[]>(ADMIN_CATALOG_STORAGE_KEY);
     const storedSettings = readStorage<AdminSettings>(ADMIN_SETTINGS_STORAGE_KEY);
     const localProducts = storedProducts?.length
@@ -316,7 +319,13 @@ export function AdminCatalogProvider({
       dispatch(setAdminSettings(storedSettings));
     }
 
-    dispatch(setAdminHydrated(true));
+    // Keep the admin in its skeleton state for a brief moment so the shimmer
+    // is visible instead of flashing straight to the loaded page.
+    hydrateTimer = window.setTimeout(() => {
+      if (!cancelled) {
+        dispatch(setAdminHydrated(true));
+      }
+    }, 700);
 
     void (async () => {
       try {
@@ -343,6 +352,9 @@ export function AdminCatalogProvider({
 
     return () => {
       cancelled = true;
+      if (hydrateTimer) {
+        window.clearTimeout(hydrateTimer);
+      }
     };
   }, [dispatch]);
 
@@ -422,6 +434,11 @@ export function AdminCatalogProvider({
     // Remove the item from the local catalog first so the admin UI stays responsive
     // even when the remote catalog service is slow or temporarily unavailable.
     dispatch(removeAdminProduct(slug));
+
+    if (cartItems.length > 0) {
+      dispatch(removeAllCartItems());
+    }
+
     toast.success("Product removed");
 
     try {

@@ -54,7 +54,7 @@ const HeroSection = () => {
 
               <RhythmItem variant="pop">
                 <Link
-                  href="/headphones/xx99-mark-two-headphones"
+                  href="/headphones/xx99-mark-ii-headphones"
                   className="inline-flex h-12 w-40 items-center justify-center bg-brand text-label font-bold uppercase tracking-copy text-white transition-colors hover:bg-brand-hover"
                 >
                   See Product
