@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "./products";
+import { fallbackProducts } from "../admin/_lib/catalog";
 import type { Category, Product, ResponsiveImageSet } from "../type";
 
 const normalizeImageSet = (
@@ -47,46 +48,94 @@ const fetchJson = async <T,>(path: string): Promise<T> => {
   return (await res.json()) as T;
 };
 
+const toStorefrontProduct = (product: (typeof fallbackProducts)[number]): Product => ({
+  slug: product.slug,
+  category: product.category,
+  categoryLabel: product.categoryLabel,
+  shortName: product.shortName,
+  name: product.name,
+  isNew: product.isNew,
+  price: product.price,
+  image: product.image,
+  description: product.description,
+  features: product.features,
+  includes: product.includes,
+  categoryImage: product.categoryImage,
+  productImage: product.productImage,
+  gallery: product.gallery,
+  others: product.others,
+  categoryOrder: product.categoryOrder,
+});
+
 export const getCategoryProducts = async (
   category: string,
 ): Promise<Product[]> => {
-  const data = await fetchJson<unknown>(`/products/category/${category}`);
+  try {
+    const data = await fetchJson<unknown>(`/products/category/${category}`);
 
-  if (!Array.isArray(data)) {
-    throw new Error("Unexpected category response shape");
+    if (!Array.isArray(data)) {
+      throw new Error("Unexpected category response shape");
+    }
+
+    return data
+      .map((item) =>
+        normalizeProduct(item as Partial<Product> & Record<string, unknown>),
+      )
+      .filter((product) => product.category === category)
+      .sort((a, b) => a.categoryOrder - b.categoryOrder);
+  } catch {
+    return fallbackProducts
+      .filter((product) => product.category === category)
+      .map(toStorefrontProduct)
+      .sort((a, b) => a.categoryOrder - b.categoryOrder);
   }
-
-  return data
-    .map((item) =>
-      normalizeProduct(item as Partial<Product> & Record<string, unknown>),
-    )
-    .filter((product) => product.category === category)
-    .sort((a, b) => a.categoryOrder - b.categoryOrder);
 };
 
 export const getProductBySlug = async (slug: string): Promise<Product> => {
-  const data = await fetchJson<unknown>(`/product/${slug}`);
+  try {
+    const data = await fetchJson<unknown>(`/product/${slug}`);
 
-  if (!data || typeof data !== "object" || !("product" in data)) {
-    throw new Error("Unexpected product response shape");
+    if (!data || typeof data !== "object" || !("product" in data)) {
+      throw new Error("Unexpected product response shape");
+    }
+
+    return normalizeProduct(
+      (data as { product: Partial<Product> & Record<string, unknown> }).product,
+    );
+  } catch {
+    const fallback = fallbackProducts.find((product) => product.slug === slug);
+
+    if (!fallback) {
+      throw new Error("Product not found");
+    }
+
+    return toStorefrontProduct(fallback);
   }
-
-  return normalizeProduct(
-    (data as { product: Partial<Product> & Record<string, unknown> }).product,
-  );
 };
 
 export const getProduct = async (
   category: string,
   slug: string,
 ): Promise<Product> => {
-  const data = await fetchJson<unknown>(`/product/${category}/${slug}`);
+  try {
+    const data = await fetchJson<unknown>(`/product/${category}/${slug}`);
 
-  if (!data || typeof data !== "object" || !("product" in data)) {
-    throw new Error("Unexpected product response shape");
+    if (!data || typeof data !== "object" || !("product" in data)) {
+      throw new Error("Unexpected product response shape");
+    }
+
+    return normalizeProduct(
+      (data as { product: Partial<Product> & Record<string, unknown> }).product,
+    );
+  } catch {
+    const fallback = fallbackProducts.find(
+      (product) => product.category === category && product.slug === slug,
+    );
+
+    if (!fallback) {
+      throw new Error("Product not found");
+    }
+
+    return toStorefrontProduct(fallback);
   }
-
-  return normalizeProduct(
-    (data as { product: Partial<Product> & Record<string, unknown> }).product,
-  );
 };

@@ -45,3 +45,5 @@ next-env.d.ts
 
 # local Stripe documentation notes
 /stripe-integration-notes.txt
+/ADMIN_DASHBOARD_NOTES.txt
+/test-checklist.txt
