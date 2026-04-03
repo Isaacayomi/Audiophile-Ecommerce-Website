@@ -47,47 +47,46 @@ const fetchJson = async <T,>(path: string): Promise<T> => {
   return (await res.json()) as T;
 };
 
-const fetchProducts = async (): Promise<Product[]> => {
-  const data = await fetchJson<unknown>("/products");
-
-  if (!Array.isArray(data)) {
-    throw new Error("Unexpected products response shape");
-  }
-
-  return data.map((item) =>
-    normalizeProduct(item as Partial<Product> & Record<string, unknown>),
-  );
-};
-
 export const getCategoryProducts = async (
   category: string,
 ): Promise<Product[]> => {
-  return (await fetchProducts())
+  const data = await fetchJson<unknown>(`/products/category/${category}`);
+
+  if (!Array.isArray(data)) {
+    throw new Error("Unexpected category response shape");
+  }
+
+  return data
+    .map((item) =>
+      normalizeProduct(item as Partial<Product> & Record<string, unknown>),
+    )
     .filter((product) => product.category === category)
     .sort((a, b) => a.categoryOrder - b.categoryOrder);
 };
 
 export const getProductBySlug = async (slug: string): Promise<Product> => {
-  const product = (await fetchProducts()).find((item) => item.slug === slug);
+  const data = await fetchJson<unknown>(`/product/${slug}`);
 
-  if (!product) {
-    throw new Error("Product not found");
+  if (!data || typeof data !== "object" || !("product" in data)) {
+    throw new Error("Unexpected product response shape");
   }
 
-  return product;
+  return normalizeProduct(
+    (data as { product: Partial<Product> & Record<string, unknown> }).product,
+  );
 };
 
 export const getProduct = async (
   category: string,
   slug: string,
 ): Promise<Product> => {
-  const product = (await fetchProducts()).find(
-    (item) => item.category === category && item.slug === slug,
-  );
+  const data = await fetchJson<unknown>(`/product/${category}/${slug}`);
 
-  if (!product) {
-    throw new Error("Product not found");
+  if (!data || typeof data !== "object" || !("product" in data)) {
+    throw new Error("Unexpected product response shape");
   }
 
-  return product;
+  return normalizeProduct(
+    (data as { product: Partial<Product> & Record<string, unknown> }).product,
+  );
 };
