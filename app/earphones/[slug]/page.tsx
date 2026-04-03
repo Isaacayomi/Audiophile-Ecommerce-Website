@@ -22,7 +22,7 @@ const EarphoneProductPage = async ({
 
   // Fetch the exact product for this route and let Next show a 404 if it does not exist.
   const product = await getProduct("earphones", slug).catch(() => null);
-  return <StorefrontProductView product={product} />;
+  return <StorefrontProductView slug={slug} product={product} />;
 };
 
 export default EarphoneProductPage;

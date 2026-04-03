@@ -121,6 +121,35 @@ const normalizeCopySlug = (current: AdminProduct[], baseSlug: string) => {
   return nextSlug;
 };
 
+const mergeAdminProducts = (
+  baseProducts: AdminProduct[],
+  incomingProducts: AdminProduct[],
+) => {
+  const merged = new Map<string, AdminProduct>();
+
+  for (const product of baseProducts) {
+    merged.set(product.slug, product);
+  }
+
+  for (const product of incomingProducts) {
+    const existing = merged.get(product.slug);
+
+    if (!existing) {
+      merged.set(product.slug, product);
+      continue;
+    }
+
+    const existingUpdatedAt = existing.updatedAt ?? "";
+    const incomingUpdatedAt = product.updatedAt ?? "";
+    merged.set(
+      product.slug,
+      incomingUpdatedAt > existingUpdatedAt ? product : existing,
+    );
+  }
+
+  return Array.from(merged.values());
+};
+
 const SAVE_TOAST_DELAY_MS = 3500;
 
 const showSaveToast = (message: string) => {
@@ -229,7 +258,11 @@ export function AdminCatalogProvider({
     try {
       // The API is the source of truth, so sync just refreshes from it.
       const records = await loadRemoteProducts();
-      dispatch(setAdminProducts(records.length ? records : fallbackProducts));
+      dispatch(
+        setAdminProducts(
+          records.length ? mergeAdminProducts(products, records) : products,
+        ),
+      );
       dispatch(setAdminLastSyncedAt(new Date().toISOString()));
       toast.success("Catalog refreshed");
     } catch {
@@ -255,7 +288,15 @@ export function AdminCatalogProvider({
       try {
         dispatch(setAdminSyncing(true));
         const records = await loadRemoteProducts();
-        dispatch(setAdminProducts(records.length ? records : fallbackProducts));
+        dispatch(
+          setAdminProducts(
+            records.length
+              ? mergeAdminProducts(storedProducts?.length ? storedProducts : fallbackProducts, records)
+              : storedProducts?.length
+                ? storedProducts
+                : fallbackProducts,
+          ),
+        );
         dispatch(setAdminLastSyncedAt(new Date().toISOString()));
       } catch {
         if (!storedProducts?.length) {

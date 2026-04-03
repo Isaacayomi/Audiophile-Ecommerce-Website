@@ -84,6 +84,7 @@ export interface Product {
   name: string;
   isNew?: boolean;
   price: number;
+  image?: string;
   description: string;
   features: string[];
   includes: ProductInclude[];

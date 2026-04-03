@@ -12,6 +12,12 @@ import {
 } from "../store/uiState/cartValueslice";
 import { toast } from "react-hot-toast";
 
+const getCartImageSource = (product: Product) =>
+  product.image ||
+  product.productImage.desktop ||
+  product.categoryImage.desktop ||
+  `/assets/cart/image-${product.slug}.jpg`;
+
 const formatPrice = (price: number) =>
   new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -89,7 +95,7 @@ const ProductPurchaseCard = ({ product }: { product: Product }) => {
                   name: product.name,
                   shortName: product.shortName,
                   price: product.price,
-                  image: `/assets/cart/image-${product.slug}.jpg`,
+                  image: getCartImageSource(product),
                   quantity,
                 }),
               );

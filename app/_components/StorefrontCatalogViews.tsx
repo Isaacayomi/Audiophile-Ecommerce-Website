@@ -31,6 +31,7 @@ const toStorefrontProduct = (product: AdminProduct): Product => ({
   name: product.name,
   isNew: product.isNew,
   price: product.price,
+  image: product.image,
   description: product.description,
   features: product.features,
   includes: product.includes,
@@ -93,8 +94,10 @@ export function StorefrontCategoryView({
 }
 
 export function StorefrontProductView({
+  slug,
   product,
 }: {
+  slug: string;
   product: Product | null;
 }) {
   const [resolvedProduct, setResolvedProduct] = useState<Product | null>(product);
@@ -106,14 +109,14 @@ export function StorefrontProductView({
     const localMatch = readLocalAdminProducts()
       .filter((entry) => entry.status === "Live")
       .map(toStorefrontProduct)
-      .find((entry) => entry.slug === product?.slug);
+      .find((entry) => entry.slug === slug);
 
     if (localMatch) {
       setResolvedProduct(localMatch);
     }
 
     setHasCheckedLocalCatalog(true);
-  }, [product]);
+  }, [product, slug]);
 
   const content = useMemo(() => {
     if (resolvedProduct) {

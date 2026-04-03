@@ -6,7 +6,6 @@ import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { RhythmGroup, RhythmItem } from "../_components/ui/Rhythm";
-import { API_BASE_URL } from "../lib/products";
 import { RootState } from "../store/store";
 import {
   calculateCheckoutTotals,
@@ -60,19 +59,16 @@ const CheckoutForm = () => {
     try {
       const customer = normalizeCheckoutFormValues(values);
 
-      const response = await fetch(
-        `${API_BASE_URL}/payments/create-checkout-session`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            customer,
-            cartItems,
-          }),
+      const response = await fetch("/api/checkout-session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({
+          customer,
+          cartItems,
+        }),
+      });
 
       const payload = (await response.json()) as {
         detail?: string;
