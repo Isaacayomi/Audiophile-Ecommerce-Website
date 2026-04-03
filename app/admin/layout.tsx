@@ -160,11 +160,6 @@ export default function AdminLayout({
             </div>
 
             <div className="flex items-center gap-3 sm:gap-6">
-              <button className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-white/60 transition-all hover:bg-white/10 hover:text-white">
-                <FiBell size={18} />
-                <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-[#F97316] ring-2 ring-[#0F172A]" />
-              </button>
-
               <div className="hidden h-8 w-px bg-white/5 sm:block" />
 
               <div className="group flex cursor-pointer items-center gap-3 pl-1">
@@ -179,7 +174,6 @@ export default function AdminLayout({
                     Store Admin
                   </p>
                 </div>
-                <FiChevronDown className="text-white/30 transition-colors group-hover:text-white" />
               </div>
             </div>
           </header>
