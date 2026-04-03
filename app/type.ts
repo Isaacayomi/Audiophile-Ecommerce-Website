@@ -163,6 +163,7 @@ export type SectionCardProps = {
   icon: ReactNode;
   children: ReactNode;
   className?: string;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 export type AdminSettingsDraft = AdminSettings;
