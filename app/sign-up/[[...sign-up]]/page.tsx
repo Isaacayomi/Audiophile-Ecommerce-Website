@@ -1,13 +1,5 @@
-import { SignUp } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
 
 export default function SignUpPage() {
-  return (
-    <div className="mx-auto flex min-h-[calc(100vh-12rem)] max-w-6xl items-center justify-center px-6 py-16">
-      <SignUp
-        path="/sign-up"
-        routing="path"
-        forceRedirectUrl="/checkout?auth=sign_in_success"
-      />
-    </div>
-  );
+  redirect("/sign-in");
 }
