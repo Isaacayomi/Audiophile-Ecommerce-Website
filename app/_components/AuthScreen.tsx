@@ -78,7 +78,7 @@ export default function AuthScreen() {
             type="button"
             onClick={startGoogleAuth}
             disabled={!signInState.isLoaded || isSubmitting}
-            className="mt-6 inline-flex h-12 w-full items-center justify-center gap-3 rounded-xl bg-[#D87D4A] px-4 text-sm font-bold text-white transition-colors hover:bg-[#FBAF85] disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-6 inline-flex h-12 w-full items-center justify-center gap-3 rounded-xl bg-[#D87D4A] px-4 text-sm font-bold text-white transition-colors hover:bg-[#FBAF85] disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
           >
             <FcGoogle className="text-xl" />
             {isSubmitting ? "Redirecting..." : "Continue with Google"}

@@ -142,7 +142,9 @@ export default function AdminLayout({
                 <span className="text-lg transition-transform group-hover:scale-110">
                   <FiLogOut />
                 </span>
-                <span className="ml-3 text-sm font-semibold">Logout</span>
+                <Link href="/" className="ml-3 text-sm font-semibold">
+                  Logout
+                </Link>
               </button>
             </div>
           </div>
