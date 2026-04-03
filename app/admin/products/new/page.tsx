@@ -155,7 +155,46 @@ export default function NewProduct() {
     );
   };
 
-  const handleImageUpload = (file: File | null) => {
+  const readOptimizedImage = async (file: File) => {
+    // We shrink large uploads before storing them so the publish request stays
+    // small enough for the catalog API and localStorage-backed admin state.
+    const objectUrl = URL.createObjectURL(file);
+
+    try {
+      const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const element = new Image();
+        element.onload = () => resolve(element);
+        element.onerror = reject;
+        element.src = objectUrl;
+      });
+
+      const maxDimension = 1400;
+      const scale = Math.min(
+        1,
+        maxDimension / Math.max(image.width || 1, image.height || 1),
+      );
+      const width = Math.max(1, Math.round(image.width * scale));
+      const height = Math.max(1, Math.round(image.height * scale));
+      const canvas = document.createElement("canvas");
+
+      canvas.width = width;
+      canvas.height = height;
+
+      const context = canvas.getContext("2d");
+
+      if (!context) {
+        throw new Error("Canvas context unavailable");
+      }
+
+      context.drawImage(image, 0, 0, width, height);
+
+      return canvas.toDataURL("image/jpeg", 0.86);
+    } finally {
+      URL.revokeObjectURL(objectUrl);
+    }
+  };
+
+  const handleImageUpload = async (file: File | null) => {
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
@@ -168,27 +207,26 @@ export default function NewProduct() {
     // We convert the selected image into a data URL so the admin preview and
     // local catalog can show it immediately without a separate upload backend.
     dispatch(setAdminProductIsUploadingImage(true));
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      const result = typeof reader.result === "string" ? reader.result : "";
+    try {
+      const result = await readOptimizedImage(file);
       if (result) {
         updateField("image", result);
       }
+    } catch {
+      toast.error("Unable to process that image.");
+    } finally {
       dispatch(setAdminProductIsUploadingImage(false));
-    };
-
-    reader.onerror = () => {
-      dispatch(setAdminProductIsUploadingImage(false));
-    };
-
-    reader.readAsDataURL(file);
+    }
   };
 
+  // Clicking the drop zone opens the hidden file picker so users can choose
+  // an image with either drag-and-drop or the native browser dialog.
   const openImagePicker = () => {
     imageInputRef.current?.click();
   };
 
+  // The drag handlers only control the visual state and then reuse the same
+  // upload pipeline as the file picker.
   const handleDrop = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     dragDepthRef.current = 0;
@@ -452,6 +490,7 @@ export default function NewProduct() {
                   : "border-white/5 bg-white/[0.01] hover:border-[#D87D4A]/40 hover:bg-[#D87D4A]/5"
               }`}
             >
+              {/* This block acts as the interactive drop target for uploads. */}
               <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-white/5 text-white/20 transition-all group-hover:bg-[#D87D4A]/20 group-hover:text-[#D87D4A]">
                 <FiUploadCloud size={24} />
               </div>
@@ -474,6 +513,7 @@ export default function NewProduct() {
                 }
                 className="hidden"
               />
+              {/* We keep a small readout here so the admin can see which file was selected. */}
               <input
                 value={
                   isUploadingImage
