@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
@@ -25,10 +25,16 @@ const CheckoutForm = () => {
   // Live Redux cart state powers the summary list and is sent to FastAPI when payment starts.
   const cartItems = useSelector((state: RootState) => state.cartValue.items);
   const [isRedirectingToCheckout, setIsRedirectingToCheckout] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Totals are derived once from the cart so the sidebar stays in sync with the current order.
+  const visibleCartItems = isMounted ? cartItems : [];
   const { subtotal, shipping, vat, grandTotal } =
-    calculateCheckoutTotals(cartItems);
+    calculateCheckoutTotals(visibleCartItems);
 
   // React Hook Form manages field values, validation, and submit state for the customer details form.
   const {
@@ -276,13 +282,17 @@ const CheckoutForm = () => {
           </h2>
 
           {/* Summary rows mirror the current cart so the order review matches the payload FastAPI sends to Stripe. */}
-          {cartItems.length === 0 ? (
+          {!isMounted ? (
+            <p className="text-copy leading-copy font-medium text-black/50">
+              Loading your cart...
+            </p>
+          ) : visibleCartItems.length === 0 ? (
             <p className="text-copy leading-copy font-medium text-black/50">
               Your cart is empty.
             </p>
           ) : (
             <div className="grid gap-6">
-              {cartItems.map((item) => (
+              {visibleCartItems.map((item) => (
                 <div key={item.slug} className="flex items-center gap-4">
                   <Image
                     src={item.image}
@@ -332,7 +342,9 @@ const CheckoutForm = () => {
           <button
             type="submit"
             disabled={
-              isSubmitting || isRedirectingToCheckout || cartItems.length === 0
+              isSubmitting ||
+              isRedirectingToCheckout ||
+              visibleCartItems.length === 0
             }
             className="mt-8 inline-flex h-12 w-full items-center justify-center bg-brand text-label font-bold uppercase tracking-copy text-white transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50"
           >

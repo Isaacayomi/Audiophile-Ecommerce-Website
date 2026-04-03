@@ -126,14 +126,14 @@ export default function AdminDashboard() {
           <button
             onClick={syncCatalog}
             disabled={isSyncing}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-white/5 bg-white/5 px-4 text-xs font-bold text-white/70 transition-all hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border border-white/5 bg-white/5 px-4 text-xs font-bold text-white/70 transition-all hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
           >
             <FiRefreshCw className={isSyncing ? "animate-spin" : ""} />
             {isSyncing ? "Syncing" : "Sync Catalog"}
           </button>
           <Link
             href="/admin/products/new"
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#D87D4A] px-6 text-xs font-bold text-white shadow-lg shadow-[rgba(216,125,74,0.2)] transition-all hover:bg-[#FBAF85]"
+            className="inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#D87D4A] px-6 text-xs font-bold text-white shadow-lg shadow-[rgba(216,125,74,0.2)] transition-all hover:bg-[#FBAF85]"
           >
             <FiPlusSquare />
             Add Product

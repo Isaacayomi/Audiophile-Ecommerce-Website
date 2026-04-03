@@ -237,7 +237,7 @@ export default function ProductManagement() {
                 type="button"
                 onClick={() => handleEdit(product.slug)}
                 disabled={Boolean(pendingAction)}
-                className="inline-flex flex-1 items-center justify-center rounded-xl bg-white/5 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-white/70 hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex flex-1 cursor-pointer items-center justify-center rounded-xl bg-white/5 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-white/70 hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isActionBusy("edit", product.slug) ? (
                   <>
@@ -252,7 +252,7 @@ export default function ProductManagement() {
                 type="button"
                 onClick={() => handleCopy(product.slug)}
                 disabled={Boolean(pendingAction)}
-                className="inline-flex items-center justify-center rounded-xl bg-white/5 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-white/50 hover:bg-emerald-500/10 hover:text-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex cursor-pointer items-center justify-center rounded-xl bg-white/5 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-white/50 hover:bg-emerald-500/10 hover:text-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isActionBusy("copy", product.slug) ? (
                   <>
@@ -267,7 +267,7 @@ export default function ProductManagement() {
                 type="button"
                 onClick={() => handleDelete(product.slug)}
                 disabled={Boolean(pendingAction)}
-                className="inline-flex items-center justify-center rounded-xl bg-white/5 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-white/50 hover:bg-rose-500/10 hover:text-rose-400 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex cursor-pointer items-center justify-center rounded-xl bg-white/5 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-white/50 hover:bg-rose-500/10 hover:text-rose-400 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isActionBusy("delete", product.slug) ? (
                   <>
@@ -364,7 +364,7 @@ export default function ProductManagement() {
                       type="button"
                       onClick={() => handleEdit(product.slug)}
                       disabled={Boolean(pendingAction)}
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-white/20 transition-all hover:bg-[#D87D4A]/20 hover:text-[#D87D4A] disabled:cursor-not-allowed disabled:opacity-60"
+                      className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl bg-white/5 text-white/20 transition-all hover:bg-[#D87D4A]/20 hover:text-[#D87D4A] disabled:cursor-not-allowed disabled:opacity-60"
                       aria-label={`Edit ${product.name}`}
                     >
                       {isActionBusy("edit", product.slug) ? (
@@ -377,7 +377,7 @@ export default function ProductManagement() {
                       type="button"
                       onClick={() => handleCopy(product.slug)}
                       disabled={Boolean(pendingAction)}
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-white/20 transition-all hover:bg-emerald-500/20 hover:text-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl bg-white/5 text-white/20 transition-all hover:bg-emerald-500/20 hover:text-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
                       aria-label={`Duplicate ${product.name}`}
                     >
                       {isActionBusy("copy", product.slug) ? (
@@ -390,7 +390,7 @@ export default function ProductManagement() {
                       type="button"
                       onClick={() => handleDelete(product.slug)}
                       disabled={Boolean(pendingAction)}
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-white/20 transition-all hover:bg-rose-500/20 hover:text-rose-400 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl bg-white/5 text-white/20 transition-all hover:bg-rose-500/20 hover:text-rose-400 disabled:cursor-not-allowed disabled:opacity-60"
                       aria-label={`Delete ${product.name}`}
                     >
                       {isActionBusy("delete", product.slug) ? (

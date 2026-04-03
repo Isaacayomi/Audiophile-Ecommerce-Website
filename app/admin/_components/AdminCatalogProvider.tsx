@@ -375,17 +375,28 @@ export function AdminCatalogProvider({
   };
 
   const deleteProduct = async (slug: string) => {
+    const existing = products.find((product) => product.slug === slug);
+
+    if (!existing) {
+      toast.error("Product not found");
+      return;
+    }
+
+    // Remove the item from the local catalog first so the admin UI stays responsive
+    // even when the remote catalog service is slow or temporarily unavailable.
+    dispatch(removeAdminProduct(slug));
+    toast.success("Product removed");
+
     try {
       const data = await apiJson<{ deleted: boolean }>(`/products/${slug}`, {
         method: "DELETE",
       });
 
-      if (data.deleted) {
-        dispatch(removeAdminProduct(slug));
-        toast.success("Product removed");
+      if (!data.deleted) {
+        throw new Error("Remote delete was not confirmed");
       }
     } catch {
-      toast.error("Unable to delete product");
+      console.warn("Remote product delete failed after local removal.");
     }
   };
 
