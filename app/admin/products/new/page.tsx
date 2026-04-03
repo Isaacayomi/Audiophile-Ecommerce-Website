@@ -19,7 +19,7 @@ import {
 } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { categories as storefrontCategories } from "../../../lib/products";
-import { formatCurrency, slugify } from "../../_lib/catalog";
+import { formatCurrency, getAdminImageSource, slugify } from "../../_lib/catalog";
 import { useAdminCatalog } from "../../_components/AdminCatalogProvider";
 import { useDelayedBoolean } from "../../_components/useDelayedBoolean";
 import { ProductFormSkeleton } from "../../_components/ProductFormSkeleton";
@@ -100,38 +100,52 @@ export default function NewProduct() {
   );
   const [isDraggingImage, setIsDraggingImage] = useState(false);
   const [selectedImageName, setSelectedImageName] = useState("");
+  const [previewImage, setPreviewImage] = useState("");
   const [formErrors, setFormErrors] = useState<
     Partial<Record<keyof AdminProductFormValues | "submit", string>>
   >({});
   const isSavingSpinnerVisible = useDelayedBoolean(isSaving);
   const isSyncingSpinnerVisible = useDelayedBoolean(isSyncing);
 
-  const hasPreviewImage = Boolean(form.image.trim());
+  const existingProduct = useMemo(() => {
+    if (!editSlug || !isHydrated) return null;
+
+    return getProductBySlug(editSlug) ?? null;
+  }, [editSlug, getProductBySlug, isHydrated]);
+  const existingProductImage = existingProduct
+    ? getAdminImageSource(existingProduct)
+    : "";
+  const hasPreviewImage = Boolean(form.image.trim() || existingProductImage.trim());
 
   useEffect(() => {
     // When we open this screen with `?edit=slug`, we hydrate the fields from
     // the shared admin catalog instead of forcing a separate edit page.
-    if (!editSlug || !isHydrated) return;
-
-    const product = getProductBySlug(editSlug);
-
-    if (!product) return;
+    if (!existingProduct) return;
 
     dispatch(
       setAdminProductForm({
-        name: product.name,
-        shortName: product.shortName,
-        category: product.category,
-        price: String(product.price),
-        stock: String(product.stock),
-        status: product.status,
-        featured: product.featured,
-        description: product.description,
-        image: product.image,
+        name: existingProduct.name,
+        shortName: existingProduct.shortName,
+        category: existingProduct.category,
+        price: String(existingProduct.price),
+        stock: String(existingProduct.stock),
+        status: existingProduct.status,
+        featured: existingProduct.featured,
+        description: existingProduct.description,
+        image: existingProduct.image || getAdminImageSource(existingProduct),
       }),
     );
-    dispatch(setAdminProductSaveMode(product.status));
-  }, [dispatch, editSlug, getProductBySlug, isHydrated]);
+    dispatch(setAdminProductSaveMode(existingProduct.status));
+  }, [dispatch, existingProduct]);
+
+  useEffect(() => {
+    if (form.image.trim()) {
+      setPreviewImage(form.image.trim());
+      return;
+    }
+
+    setPreviewImage(existingProductImage.trim());
+  }, [existingProductImage, form.image]);
 
   const productSlug = useMemo(
     () => slugify(form.name || "new-product"),
@@ -221,6 +235,7 @@ export default function NewProduct() {
     try {
       const result = await readOptimizedImage(file);
       if (result) {
+        setPreviewImage(result);
         updateField("image", result);
       }
     } catch {
@@ -264,6 +279,7 @@ export default function NewProduct() {
     event.preventDefault();
 
     const nextErrors: Partial<Record<keyof AdminProductFormValues, string>> = {};
+    const resolvedImage = form.image.trim() || existingProductImage.trim() || "";
 
     if (!form.name.trim()) {
       nextErrors.name = "Product name is required.";
@@ -285,7 +301,7 @@ export default function NewProduct() {
       nextErrors.description = "Description is required.";
     }
 
-    if (!form.image.trim()) {
+    if (!resolvedImage) {
       nextErrors.image = "Product image is required.";
     }
 
@@ -313,7 +329,7 @@ export default function NewProduct() {
         stock: Number(form.stock),
         status: modeToSave,
         featured: form.featured,
-        image: form.image.trim(),
+        image: resolvedImage,
         description: form.description.trim(),
         storefrontPath,
       });
@@ -574,7 +590,8 @@ export default function NewProduct() {
                 value={
                   isUploadingImage
                     ? "Processing..."
-                    : selectedImageName || (hasPreviewImage ? "Image ready" : "No file selected")
+                    : selectedImageName ||
+                      (hasPreviewImage ? "Image ready" : "No file selected")
                 }
                 readOnly
                 placeholder={isUploadingImage ? "Processing image..." : "No file selected"}
@@ -622,7 +639,7 @@ export default function NewProduct() {
                 can be tested immediately in the admin workflow. */}
                 {hasPreviewImage ? (
                   <img
-                    src={form.image}
+                    src={previewImage || form.image || existingProductImage}
                     alt={form.name || "Product preview"}
                     className="h-40 w-full object-cover"
                   />

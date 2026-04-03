@@ -86,9 +86,33 @@ const apiJson = async <T,>(
   return (await res.json()) as T;
 };
 
+const fetchWithTimeout = async <T,>(
+  task: () => Promise<T>,
+  timeoutMs = 8000,
+) => {
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+  try {
+    return await Promise.race([
+      task(),
+      new Promise<T>((_, reject) => {
+        timeoutId = setTimeout(() => {
+          reject(new Error("Request timed out"));
+        }, timeoutMs);
+      }),
+    ]);
+  } finally {
+    if (timeoutId !== null) {
+      clearTimeout(timeoutId);
+    }
+  }
+};
+
 const loadRemoteProducts = async () => {
   try {
-    const data = await apiJson<{ products: AdminProduct[] }>("/products");
+    const data = await fetchWithTimeout(
+      () => apiJson<{ products: AdminProduct[] }>("/products"),
+    );
 
     if (Array.isArray(data.products)) {
       return data.products.map((product) => stampAdminProduct(product));
@@ -99,7 +123,9 @@ const loadRemoteProducts = async () => {
 
   const results = await Promise.allSettled(
     storefrontCategories.map(async ({ slug }) => {
-      const data = await apiJson<unknown>(`/products/category/${slug}`);
+      const data = await fetchWithTimeout(
+        () => apiJson<unknown>(`/products/category/${slug}`),
+      );
       return Array.isArray(data) ? data : [];
     }),
   );
@@ -273,40 +299,51 @@ export function AdminCatalogProvider({
   };
 
   useEffect(() => {
+    let cancelled = false;
     const storedProducts = readStorage<AdminProduct[]>(ADMIN_CATALOG_STORAGE_KEY);
     const storedSettings = readStorage<AdminSettings>(ADMIN_SETTINGS_STORAGE_KEY);
+    const localProducts = storedProducts?.length
+      ? storedProducts
+      : fallbackProducts;
 
     if (storedProducts?.length) {
       dispatch(setAdminProducts(storedProducts));
+    } else {
+      dispatch(setAdminProducts(fallbackProducts));
     }
 
     if (storedSettings) {
       dispatch(setAdminSettings(storedSettings));
     }
 
+    dispatch(setAdminHydrated(true));
+
     void (async () => {
       try {
         dispatch(setAdminSyncing(true));
         const records = await loadRemoteProducts();
+        if (cancelled) return;
+
         dispatch(
           setAdminProducts(
-            records.length
-              ? mergeAdminProducts(storedProducts?.length ? storedProducts : fallbackProducts, records)
-              : storedProducts?.length
-                ? storedProducts
-                : fallbackProducts,
+            records.length ? mergeAdminProducts(localProducts, records) : localProducts,
           ),
         );
         dispatch(setAdminLastSyncedAt(new Date().toISOString()));
       } catch {
-        if (!storedProducts?.length) {
-          dispatch(setAdminProducts(fallbackProducts));
+        if (!cancelled) {
+          dispatch(setAdminProducts(localProducts));
         }
       } finally {
-        dispatch(setAdminHydrated(true));
-        dispatch(setAdminSyncing(false));
+        if (!cancelled) {
+          dispatch(setAdminSyncing(false));
+        }
       }
     })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [dispatch]);
 
   useEffect(() => {

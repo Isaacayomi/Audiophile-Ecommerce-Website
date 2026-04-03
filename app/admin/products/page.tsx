@@ -141,7 +141,7 @@ export default function ProductManagement() {
             onChange={(event) =>
               dispatch(setAdminProductQuery(event.target.value))
             }
-            placeholder="Search products or slugs"
+            placeholder="Search products"
             className="h-11 w-full rounded-xl border border-white/5 bg-white/5 pl-10 pr-4 text-sm text-white placeholder:text-white/20 outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/8"
           />
         </div>
