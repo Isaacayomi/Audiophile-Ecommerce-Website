@@ -1,3 +1,5 @@
+"use client";
+
 import { ResponsivePictureProps } from "../type";
 
 const ResponsivePicture = ({

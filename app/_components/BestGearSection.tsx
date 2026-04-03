@@ -1,3 +1,5 @@
+"use client";
+
 import { BestGearSectionProps } from "../type";
 import ResponsivePicture from "./ResponsivePicture";
 import { RhythmGroup, RhythmItem } from "./ui/Rhythm";

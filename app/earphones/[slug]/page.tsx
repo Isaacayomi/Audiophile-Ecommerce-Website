@@ -1,6 +1,5 @@
-import ProductDetailLayout from "@/app/_components/ProductDetailLayout";
+import { StorefrontProductView } from "@/app/_components/StorefrontCatalogViews";
 import { getCategoryProducts, getProduct } from "@/app/lib/products.server";
-import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -23,12 +22,7 @@ const EarphoneProductPage = async ({
 
   // Fetch the exact product for this route and let Next show a 404 if it does not exist.
   const product = await getProduct("earphones", slug).catch(() => null);
-
-  if (!product) {
-    notFound();
-  }
-
-  return <ProductDetailLayout product={product} />;
+  return <StorefrontProductView product={product} />;
 };
 
 export default EarphoneProductPage;

@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import ResponsivePicture from "./ResponsivePicture";
 import ProductPurchaseCard from "./ProductPurchaseCard";
