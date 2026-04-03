@@ -100,6 +100,9 @@ export default function NewProduct() {
   );
   const [isDraggingImage, setIsDraggingImage] = useState(false);
   const [selectedImageName, setSelectedImageName] = useState("");
+  const [formErrors, setFormErrors] = useState<
+    Partial<Record<keyof AdminProductFormValues | "submit", string>>
+  >({});
   const isSavingSpinnerVisible = useDelayedBoolean(isSaving);
   const isSyncingSpinnerVisible = useDelayedBoolean(isSyncing);
 
@@ -148,6 +151,14 @@ export default function NewProduct() {
     key: K,
     value: AdminProductFormValues[K],
   ) => {
+    if (formErrors[key]) {
+      setFormErrors((current) => {
+        const next = { ...current };
+        delete next[key];
+        return next;
+      });
+    }
+
     dispatch(
       mergeAdminProductForm({
         [key]: value,
@@ -252,7 +263,34 @@ export default function NewProduct() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    const nextErrors: Partial<Record<keyof AdminProductFormValues, string>> = {};
+
     if (!form.name.trim()) {
+      nextErrors.name = "Product name is required.";
+    }
+
+    if (!form.shortName.trim()) {
+      nextErrors.shortName = "Short name is required.";
+    }
+
+    if (!form.price.trim() || Number.isNaN(Number(form.price)) || Number(form.price) <= 0) {
+      nextErrors.price = "Enter a valid price.";
+    }
+
+    if (!form.stock.trim() || Number.isNaN(Number(form.stock)) || Number(form.stock) < 0) {
+      nextErrors.stock = "Enter a valid stock quantity.";
+    }
+
+    if (!form.description.trim()) {
+      nextErrors.description = "Description is required.";
+    }
+
+    if (!form.image.trim()) {
+      nextErrors.image = "Product image is required.";
+    }
+
+    if (Object.keys(nextErrors).length > 0) {
+      setFormErrors(nextErrors);
       return;
     }
 
@@ -261,6 +299,7 @@ export default function NewProduct() {
     const modeToSave =
       (submitter?.dataset.mode as CatalogStatus | undefined) ?? saveMode;
     dispatch(setAdminProductIsSaving(true));
+    setFormErrors({});
 
     // The dashboard keeps the same catalog data shape across pages, so saving
     // here immediately updates the Products screen and the Dashboard overview.
@@ -323,7 +362,7 @@ export default function NewProduct() {
             type="button"
             onClick={syncCatalog}
             disabled={isSyncing}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-white/5 bg-white/5 px-4 text-xs font-bold text-white/60 transition-all hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-xl border border-white/5 bg-white/5 px-4 text-xs font-bold text-white/60 transition-all hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
           >
             <FiRefreshCw
               className={isSyncingSpinnerVisible ? "animate-spin" : ""}
@@ -335,7 +374,7 @@ export default function NewProduct() {
             data-mode="Draft"
             onClick={() => dispatch(setAdminProductSaveMode("Draft"))}
             disabled={isSaving}
-            className={`inline-flex h-10 items-center justify-center gap-2 rounded-xl border px-6 text-xs font-bold transition-all disabled:cursor-not-allowed disabled:opacity-70 ${
+            className={`inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-xl border px-6 text-xs font-bold transition-all disabled:cursor-not-allowed disabled:opacity-70 ${
               saveMode === "Draft"
                 ? "border-white/10 bg-white/10 text-white"
                 : "border-white/5 bg-white/5 text-white/60 hover:bg-white/10 hover:text-white"
@@ -353,7 +392,7 @@ export default function NewProduct() {
             data-mode="Live"
             onClick={() => dispatch(setAdminProductSaveMode("Live"))}
             disabled={isSaving}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#D87D4A] px-8 text-xs font-bold text-white shadow-lg shadow-[rgba(216,125,74,0.2)] transition-all hover:bg-[#FBAF85] disabled:cursor-not-allowed disabled:opacity-70"
+            className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#D87D4A] px-8 text-xs font-bold text-white shadow-lg shadow-[rgba(216,125,74,0.2)] transition-all hover:bg-[#FBAF85] disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isSaving && saveMode === "Live" && isSavingSpinnerVisible ? (
               <FiRefreshCw className="animate-spin" />
@@ -383,6 +422,9 @@ export default function NewProduct() {
                 placeholder="e.g. XX99 Mark II Headphones"
                 className="rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/20 outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/8"
               />
+              {formErrors.name ? (
+                <p className="text-xs font-medium text-rose-400">{formErrors.name}</p>
+              ) : null}
             </div>
             <div className="flex flex-col gap-2">
               <FieldLabel>Short Name</FieldLabel>
@@ -394,6 +436,9 @@ export default function NewProduct() {
                 placeholder="e.g. XX99 MK II"
                 className="rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/20 outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/8"
               />
+              {formErrors.shortName ? (
+                <p className="text-xs font-medium text-rose-400">{formErrors.shortName}</p>
+              ) : null}
             </div>
             <div className="flex flex-col gap-2">
               <FieldLabel>Category</FieldLabel>
@@ -426,6 +471,9 @@ export default function NewProduct() {
                 onChange={(event) => updateField("price", event.target.value)}
                 className="rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/20 outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/8"
               />
+              {formErrors.price ? (
+                <p className="text-xs font-medium text-rose-400">{formErrors.price}</p>
+              ) : null}
             </div>
             <div className="flex flex-col gap-2">
               <FieldLabel>Stock</FieldLabel>
@@ -435,6 +483,9 @@ export default function NewProduct() {
                 onChange={(event) => updateField("stock", event.target.value)}
                 className="rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/20 outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/8"
               />
+              {formErrors.stock ? (
+                <p className="text-xs font-medium text-rose-400">{formErrors.stock}</p>
+              ) : null}
             </div>
             <div className="flex flex-col gap-2">
               <FieldLabel>Storefront Slug</FieldLabel>
@@ -456,6 +507,11 @@ export default function NewProduct() {
               }
               className="resize-none rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/20 outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/8"
             />
+            {formErrors.description ? (
+              <p className="text-xs font-medium text-rose-400">
+                {formErrors.description}
+              </p>
+            ) : null}
           </div>
         </SectionCard>
 
@@ -545,6 +601,9 @@ export default function NewProduct() {
                 onChange={(event) => updateField("image", event.target.value)}
                 className="rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-white outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/8"
               />
+              {formErrors.image ? (
+                <p className="text-xs font-medium text-rose-400">{formErrors.image}</p>
+              ) : null}
             </div>
 
             <div className="mt-4 rounded-2xl border border-white/5 bg-black/20 p-4">
