@@ -359,17 +359,24 @@ export function AdminCatalogProvider({
       return;
     }
 
-    // Remove the item from the local catalog first so the admin UI stays responsive
-    // even when the remote catalog service is slow or temporarily unavailable.
-    dispatch(removeAdminProduct(slug));
-
     try {
       await deleteRemoteProduct(slug);
     } catch {
-      console.warn("Remote product delete failed after local removal.");
-      toast.error("Product removed locally, but the remote delete failed");
+      console.warn("Remote product delete failed.");
+      toast.error("Product could not be deleted on the backend");
       return;
     }
+
+    try {
+      await mutateStorefrontCatalogCache({
+        action: "remove",
+        slug,
+      });
+    } catch (error) {
+      console.warn("Failed to update the storefront catalog cache after delete.", error);
+    }
+
+    dispatch(removeAdminProduct(slug));
 
     try {
       await syncCatalog();

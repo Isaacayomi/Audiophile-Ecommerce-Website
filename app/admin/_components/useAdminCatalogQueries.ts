@@ -25,6 +25,26 @@ const apiJson = async <T,>(path: string, init?: RequestInit): Promise<T> => {
   return (await res.json()) as T;
 };
 
+const apiDelete = async (path: string, init?: RequestInit): Promise<Response> => {
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    ...init,
+    method: "DELETE",
+    headers: {
+      ...(init?.headers ?? {}),
+    },
+  });
+
+  if (res.status === 404 || res.status === 410) {
+    return res;
+  }
+
+  if (!res.ok) {
+    throw new Error(await res.text());
+  }
+
+  return res;
+};
+
 const fetchWithTimeout = async <T,>(
   task: () => Promise<T>,
   timeoutMs = 30000,
@@ -213,18 +233,33 @@ const deleteRemoteProduct = async (slug: string) => {
   let lastError: Error | null = null;
 
   for (const endpoint of endpoints) {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 15000);
+
     try {
-      const data = await apiJson<{ deleted?: boolean }>(endpoint, {
-        method: "DELETE",
+      const res = await apiDelete(endpoint, {
+        signal: controller.signal,
       });
 
-      if (data.deleted === false) {
-        throw new Error("Remote delete was not confirmed");
+      if (res.status === 404 || res.status === 410) {
+        return slug;
+      }
+
+      const contentType = res.headers.get("content-type") ?? "";
+
+      if (contentType.includes("application/json")) {
+        const data = (await res.json()) as { deleted?: boolean };
+
+        if (data.deleted === false) {
+          throw new Error("Remote delete was not confirmed");
+        }
       }
 
       return slug;
     } catch (error) {
       lastError = error instanceof Error ? error : new Error("Unable to delete product");
+    } finally {
+      window.clearTimeout(timeout);
     }
   }
 
