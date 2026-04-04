@@ -1,6 +1,5 @@
 import "server-only";
 
-import { fallbackProducts, toStorefrontProduct } from "../admin/_lib/catalog";
 import { resolveStorefrontSlugByValue } from "./storefrontRoutes";
 import type { Category, Product } from "../type";
 
@@ -14,12 +13,10 @@ const globalCache = globalThis as typeof globalThis & {
   __audiophileStorefrontCatalogCache?: StorefrontCatalogCacheState;
 };
 
-const seedProducts = fallbackProducts.map(toStorefrontProduct);
-
 const cache =
   globalCache.__audiophileStorefrontCatalogCache ??
   ({
-    products: seedProducts,
+    products: [],
     hydrated: false,
     updatedAt: Date.now(),
   } satisfies StorefrontCatalogCacheState);

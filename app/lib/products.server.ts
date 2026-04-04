@@ -7,7 +7,6 @@ import {
   getStorefrontCatalogSnapshot,
   getStorefrontCategorySnapshot,
   getStorefrontProductSnapshot,
-  isStorefrontCatalogHydrated,
   replaceStorefrontCatalogCache,
   upsertStorefrontCatalogProduct,
 } from "./storefrontCatalogCache";
@@ -220,11 +219,6 @@ export const getCategoryProducts = async (
   category: string,
 ): Promise<Product[]> => {
   const normalizedCategory = normalizeCategory(category);
-  const cachedProducts = getStorefrontCategorySnapshot(normalizedCategory);
-
-  if (isStorefrontCatalogHydrated() && cachedProducts.length > 0) {
-    return cachedProducts;
-  }
 
   try {
     const backendProducts = await fetchBackendCatalogProducts();
@@ -241,44 +235,37 @@ export const getCategoryProducts = async (
     // Fall through to the cached snapshot below.
   }
 
-  return cachedProducts;
+  return getStorefrontCategorySnapshot(normalizedCategory);
 };
 
 export const getProductBySlug = async (slug: string): Promise<Product | null> => {
-  const cachedProduct = getStorefrontProductSnapshot(slug);
-
-  if (cachedProduct) {
-    return cachedProduct;
-  }
-
   const canonicalSlug = resolveStorefrontSlugByValue(slug);
-
-  return tryFetchProduct([
+  const product = await tryFetchProduct([
     `/products/${canonicalSlug}`,
     `/product/${canonicalSlug}`,
-  ]).then(async (product) => {
-    if (product) {
-      upsertStorefrontCatalogProduct(product);
-      return product;
+  ]);
+
+  if (product) {
+    upsertStorefrontCatalogProduct(product);
+    return product;
+  }
+
+  try {
+    const backendProducts = await fetchBackendCatalogProducts();
+    const merged = mergeProducts(
+      getStorefrontCatalogSnapshot(),
+      backendProducts,
+    );
+
+    if (merged.length > 0) {
+      replaceStorefrontCatalogCache(merged);
+      return merged.find((item) => item.slug === canonicalSlug) ?? null;
     }
+  } catch {
+    // Fall through to the null return below.
+  }
 
-    try {
-      const backendProducts = await fetchBackendCatalogProducts();
-      const merged = mergeProducts(
-        getStorefrontCatalogSnapshot(),
-        backendProducts,
-      );
-
-      if (merged.length > 0) {
-        replaceStorefrontCatalogCache(merged);
-        return merged.find((item) => item.slug === canonicalSlug) ?? null;
-      }
-    } catch {
-      // Fall through to the null return below.
-    }
-
-    return null;
-  });
+  return getStorefrontProductSnapshot(slug);
 };
 
 export const getProduct = async (
@@ -286,11 +273,6 @@ export const getProduct = async (
   slug: string,
 ): Promise<Product | null> => {
   const normalizedCategory = normalizeCategory(category);
-  const cachedProduct = getStorefrontProductSnapshot(slug);
-
-  if (cachedProduct && cachedProduct.category === normalizedCategory) {
-    return cachedProduct;
-  }
 
   const product = await fetchProductByCategoryAndSlug(normalizedCategory, slug);
 
@@ -299,9 +281,9 @@ export const getProduct = async (
     return product;
   }
 
-  const categoryProducts = getStorefrontCategorySnapshot(normalizedCategory);
+  const categoryProductsFromBackend = await getCategoryProducts(normalizedCategory);
   const cachedMatch =
-    categoryProducts.find(
+    categoryProductsFromBackend.find(
       (item) => item.slug === resolveStorefrontSlug(normalizedCategory, slug),
     ) ?? null;
 
@@ -309,9 +291,8 @@ export const getProduct = async (
     return cachedMatch;
   }
 
-  const categoryProductsFromBackend = await getCategoryProducts(normalizedCategory);
   return (
-    categoryProductsFromBackend.find(
+    getStorefrontCategorySnapshot(normalizedCategory).find(
       (item) => item.slug === resolveStorefrontSlug(normalizedCategory, slug),
     ) ?? null
   );

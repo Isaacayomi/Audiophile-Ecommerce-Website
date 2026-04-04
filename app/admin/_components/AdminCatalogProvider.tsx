@@ -272,10 +272,8 @@ export function AdminCatalogProvider({
     // the remote API to give the user visible feedback.
     dispatch(upsertAdminProduct(stampAdminProduct(localRecord)));
 
-    let remoteRecord: AdminProduct = localRecord;
-
     try {
-      remoteRecord = await upsertRemoteProduct({
+      await upsertRemoteProduct({
         product: localRecord,
         existingProducts: products,
       });
@@ -283,15 +281,6 @@ export function AdminCatalogProvider({
       console.warn("Remote product save failed.", error);
       toast.error("Product saved locally, but the backend did not accept it yet");
       return false;
-    }
-
-    try {
-      await mutateStorefrontCatalogCache({
-        action: "upsert",
-        product: remoteRecord,
-      });
-    } catch (error) {
-      console.warn("Failed to prime the storefront catalog cache.", error);
     }
 
     try {
@@ -355,15 +344,6 @@ export function AdminCatalogProvider({
       console.warn("Remote product delete failed after local removal.");
       toast.error("Product removed locally, but the remote delete failed");
       return;
-    }
-
-    try {
-      await mutateStorefrontCatalogCache({
-        action: "remove",
-        slug,
-      });
-    } catch (error) {
-      console.warn("Failed to remove the product from the storefront cache.", error);
     }
 
     try {
