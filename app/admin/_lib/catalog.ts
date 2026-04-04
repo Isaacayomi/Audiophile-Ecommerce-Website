@@ -248,6 +248,24 @@ export const toStorefrontProduct = (product: AdminProduct): Product => {
   return storefrontProduct;
 };
 
+const sanitizeImageValue = (value: string | undefined) => {
+  if (!value) {
+    return value ?? "";
+  }
+
+  return value.startsWith("data:") ? "" : value;
+};
+
+export const sanitizeAdminProductForStorage = (
+  product: AdminProduct,
+): AdminProduct => ({
+  ...product,
+  image: sanitizeImageValue(product.image),
+});
+
+export const sanitizeAdminProductsForStorage = (products: AdminProduct[]) =>
+  products.map(sanitizeAdminProductForStorage);
+
 export const stampAdminProduct = (product: AdminProduct): AdminProduct => ({
   ...product,
   updatedAt: product.updatedAt ?? new Date().toISOString(),

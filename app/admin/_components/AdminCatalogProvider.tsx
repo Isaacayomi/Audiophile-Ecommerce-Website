@@ -13,6 +13,7 @@ import {
   ADMIN_SETTINGS_STORAGE_KEY,
   fallbackProducts,
   makeStorefrontPath,
+  sanitizeAdminProductsForStorage,
   slugify,
   stampAdminProduct,
   toCatalogInput,
@@ -71,7 +72,31 @@ const readStorage = <T,>(key: string): T | null => {
 
 const writeStorage = (key: string, value: unknown) => {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(key, JSON.stringify(value));
+
+  const writeValue = (nextValue: unknown) => {
+    window.localStorage.setItem(key, JSON.stringify(nextValue));
+  };
+
+  if (key === ADMIN_CATALOG_STORAGE_KEY && Array.isArray(value)) {
+    try {
+      writeValue(sanitizeAdminProductsForStorage(value as AdminProduct[]));
+      return;
+    } catch (error) {
+      console.warn("Catalog storage is too large; clearing persisted catalog.", error);
+      try {
+        window.localStorage.removeItem(key);
+      } catch {
+        // Ignore secondary storage failures.
+      }
+      return;
+    }
+  }
+
+  try {
+    writeValue(value);
+  } catch (error) {
+    console.warn(`Failed to persist ${key}.`, error);
+  }
 };
 
 const normalizeCopySlug = (current: AdminProduct[], baseSlug: string) => {
