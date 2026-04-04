@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { QueryClient } from "@tanstack/react-query";
 import type { AdminProduct } from "../../type";
-import { categories as storefrontCategories, API_BASE_URL } from "../../lib/products";
+import { API_BASE_URL } from "../../lib/products";
 import {
   mapStorefrontProductToAdmin,
   stampAdminProduct,
@@ -27,7 +27,7 @@ const apiJson = async <T,>(path: string, init?: RequestInit): Promise<T> => {
 
 const fetchWithTimeout = async <T,>(
   task: () => Promise<T>,
-  timeoutMs = 8000,
+  timeoutMs = 30000,
 ) => {
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
@@ -138,35 +138,15 @@ const normalizeWrittenProduct = (
   });
 };
 
-const loadProductsFromCategoryEndpoint = async (slug: string) => {
-  const results = await Promise.allSettled(
-    [
-      `/products/category/${slug}`,
-      `/product/category/${slug}`,
-    ].map((path) => fetchWithTimeout(() => apiJson<unknown>(path), 10000)),
-  );
-
-  const records = results.flatMap((result) =>
-    result.status === "fulfilled"
-      ? extractProductRecords(result.value)
-          .map((item) => normalizeRemoteProduct(item))
-          .filter((product): product is AdminProduct => Boolean(product))
-      : [],
-  );
-
-  return records;
-};
-
 const loadRemoteProducts = async () => {
-  const [catalogProducts, ...categoryProducts] = await Promise.allSettled([
+  const results = await Promise.allSettled([
     loadProductsFromCatalogEndpoint("/products"),
     loadProductsFromCatalogEndpoint("/product"),
-    ...storefrontCategories.map(({ slug }) => loadProductsFromCategoryEndpoint(slug)),
   ]);
 
   const merged = new Map<string, AdminProduct>();
 
-  for (const result of [catalogProducts, ...categoryProducts]) {
+  for (const result of results) {
     if (result.status !== "fulfilled") {
       continue;
     }
@@ -203,30 +183,29 @@ const syncRemoteProduct = async (
     method === "POST"
       ? ["/products", "/product"]
       : [`/products/${cleanedSlug}`, `/product/${cleanedSlug}`];
-  const controller = new AbortController();
-  const timeout = window.setTimeout(() => controller.abort(), 8000);
   const payload = buildRemoteProductPayload(product);
   let lastError: Error | null = null;
 
-  try {
-    for (const endpoint of endpoints) {
-      try {
-        const data = await apiJson<unknown>(endpoint, {
-          method,
-          signal: controller.signal,
-          body: JSON.stringify(payload),
-        });
+  for (const endpoint of endpoints) {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 15000);
 
-        return normalizeWrittenProduct(data, product);
-      } catch (error) {
-        lastError = error instanceof Error ? error : new Error("Unable to save product");
-      }
+    try {
+      const data = await apiJson<unknown>(endpoint, {
+        method,
+        signal: controller.signal,
+        body: JSON.stringify(payload),
+      });
+
+      return normalizeWrittenProduct(data, product);
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error("Unable to save product");
+    } finally {
+      window.clearTimeout(timeout);
     }
-
-    throw lastError ?? new Error("Unable to save product");
-  } finally {
-    window.clearTimeout(timeout);
   }
+
+  throw lastError ?? new Error("Unable to save product");
 };
 
 const deleteRemoteProduct = async (slug: string) => {

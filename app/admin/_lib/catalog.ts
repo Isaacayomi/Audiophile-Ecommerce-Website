@@ -234,6 +234,20 @@ export const mapStorefrontProductToAdmin = (product: Product): AdminProduct => (
   updatedAt: new Date().toISOString(),
 });
 
+export const toStorefrontProduct = (product: AdminProduct): Product => {
+  const {
+    stock: _stock,
+    status: _status,
+    featured: _featured,
+    storefrontPath: _storefrontPath,
+    image: _image,
+    updatedAt: _updatedAt,
+    ...storefrontProduct
+  } = product;
+
+  return storefrontProduct;
+};
+
 export const stampAdminProduct = (product: AdminProduct): AdminProduct => ({
   ...product,
   updatedAt: product.updatedAt ?? new Date().toISOString(),

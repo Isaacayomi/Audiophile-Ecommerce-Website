@@ -2,12 +2,19 @@ import { API_BASE_URL, categories as storefrontCategories } from "./products";
 import {
   resolveStorefrontSlug,
   resolveStorefrontSlugByValue,
-  storefrontCategoryProductSlugs,
 } from "./storefrontRoutes";
+import {
+  getStorefrontCatalogSnapshot,
+  getStorefrontCategorySnapshot,
+  getStorefrontProductSnapshot,
+  isStorefrontCatalogHydrated,
+  replaceStorefrontCatalogCache,
+  upsertStorefrontCatalogProduct,
+} from "./storefrontCatalogCache";
 import type { Category, Product, ResponsiveImageSet } from "../type";
 
-const REQUEST_TIMEOUT_MS = 5000;
-const CATEGORY_REQUEST_TIMEOUT_MS = 10000;
+const REQUEST_TIMEOUT_MS = 15000;
+const CATALOG_REQUEST_TIMEOUT_MS = 30000;
 
 const normalizeImageSet = (
   value?: Partial<ResponsiveImageSet>,
@@ -138,6 +145,22 @@ const extractProductRecords = (data: unknown): Array<Partial<Product> & Record<s
   return [];
 };
 
+const mergeProducts = (...groups: Product[][]) => {
+  const merged = new Map<string, Product>();
+
+  for (const group of groups) {
+    for (const product of group) {
+      if (!product.slug) {
+        continue;
+      }
+
+      merged.set(product.slug, product);
+    }
+  }
+
+  return Array.from(merged.values()).sort((a, b) => a.categoryOrder - b.categoryOrder);
+};
+
 const fetchProductByCategoryAndSlug = async (
   category: Category,
   slug: string,
@@ -164,45 +187,10 @@ const fetchProductByCategoryAndSlug = async (
   return null;
 };
 
-const fetchBackendCategoryProducts = async (category: Category): Promise<Product[]> => {
-  const settled = await Promise.allSettled(
-    [
-      `/products/category/${category}`,
-      `/product/category/${category}`,
-    ].map(async (path) => {
-      const data = await fetchJson<unknown>(path, CATEGORY_REQUEST_TIMEOUT_MS);
-      return extractProductRecords(data);
-    }),
-  );
-
-  const merged = new Map<string, Product>();
-
-  for (const result of settled) {
-    if (result.status !== "fulfilled") {
-      continue;
-    }
-
-    for (const item of result.value) {
-      const product = normalizeProduct(item);
-
-      if (product.category !== category || !product.slug) {
-        continue;
-      }
-
-      merged.set(product.slug, product);
-    }
-  }
-
-  return Array.from(merged.values()).sort((a, b) => a.categoryOrder - b.categoryOrder);
-};
-
 const fetchBackendCatalogProducts = async (): Promise<Product[]> => {
   const settled = await Promise.allSettled(
-    [
-      `/products`,
-      `/product`,
-    ].map(async (path) => {
-      const data = await fetchJson<unknown>(path, CATEGORY_REQUEST_TIMEOUT_MS);
+    ["/products", "/product"].map(async (path) => {
+      const data = await fetchJson<unknown>(path, CATALOG_REQUEST_TIMEOUT_MS);
       return extractProductRecords(data);
     }),
   );
@@ -228,68 +216,69 @@ const fetchBackendCatalogProducts = async (): Promise<Product[]> => {
   return Array.from(merged.values()).sort((a, b) => a.categoryOrder - b.categoryOrder);
 };
 
-const fetchFallbackCategoryProducts = async (
-  category: Category,
-): Promise<Product[]> => {
-  const slugs = storefrontCategoryProductSlugs[category] ?? [];
-  const settled = await Promise.allSettled(
-    slugs.map((slug) => fetchProductByCategoryAndSlug(category, slug)),
-  );
-
-  const merged = new Map<string, Product>();
-
-  for (const result of settled) {
-    if (result.status !== "fulfilled" || !result.value) {
-      continue;
-    }
-
-    merged.set(result.value.slug, result.value);
-  }
-
-  return Array.from(merged.values()).sort((a, b) => a.categoryOrder - b.categoryOrder);
-};
-
 export const getCategoryProducts = async (
   category: string,
 ): Promise<Product[]> => {
   const normalizedCategory = normalizeCategory(category);
-  const [catalogProducts, backendProducts] = await Promise.all([
-    fetchBackendCatalogProducts(),
-    fetchBackendCategoryProducts(normalizedCategory),
-  ]);
+  const cachedProducts = getStorefrontCategorySnapshot(normalizedCategory);
 
-  const merged = new Map<string, Product>();
+  if (isStorefrontCatalogHydrated() && cachedProducts.length > 0) {
+    return cachedProducts;
+  }
 
-  for (const product of catalogProducts) {
-    if (product.category !== normalizedCategory) {
-      continue;
+  try {
+    const backendProducts = await fetchBackendCatalogProducts();
+    const merged = mergeProducts(
+      getStorefrontCatalogSnapshot(),
+      backendProducts,
+    );
+
+    if (merged.length > 0) {
+      replaceStorefrontCatalogCache(merged);
+      return merged.filter((product) => product.category === normalizedCategory);
     }
-
-    merged.set(product.slug, product);
+  } catch {
+    // Fall through to the cached snapshot below.
   }
 
-  for (const product of backendProducts) {
-    if (product.category !== normalizedCategory) {
-      continue;
-    }
-
-    merged.set(product.slug, product);
-  }
-
-  if (merged.size > 0) {
-    return Array.from(merged.values()).sort((a, b) => a.categoryOrder - b.categoryOrder);
-  }
-
-  return fetchFallbackCategoryProducts(normalizedCategory);
+  return cachedProducts;
 };
 
 export const getProductBySlug = async (slug: string): Promise<Product | null> => {
+  const cachedProduct = getStorefrontProductSnapshot(slug);
+
+  if (cachedProduct) {
+    return cachedProduct;
+  }
+
   const canonicalSlug = resolveStorefrontSlugByValue(slug);
 
   return tryFetchProduct([
     `/products/${canonicalSlug}`,
     `/product/${canonicalSlug}`,
-  ]);
+  ]).then(async (product) => {
+    if (product) {
+      upsertStorefrontCatalogProduct(product);
+      return product;
+    }
+
+    try {
+      const backendProducts = await fetchBackendCatalogProducts();
+      const merged = mergeProducts(
+        getStorefrontCatalogSnapshot(),
+        backendProducts,
+      );
+
+      if (merged.length > 0) {
+        replaceStorefrontCatalogCache(merged);
+        return merged.find((item) => item.slug === canonicalSlug) ?? null;
+      }
+    } catch {
+      // Fall through to the null return below.
+    }
+
+    return null;
+  });
 };
 
 export const getProduct = async (
@@ -297,12 +286,33 @@ export const getProduct = async (
   slug: string,
 ): Promise<Product | null> => {
   const normalizedCategory = normalizeCategory(category);
+  const cachedProduct = getStorefrontProductSnapshot(slug);
+
+  if (cachedProduct && cachedProduct.category === normalizedCategory) {
+    return cachedProduct;
+  }
+
   const product = await fetchProductByCategoryAndSlug(normalizedCategory, slug);
 
   if (product) {
+    upsertStorefrontCatalogProduct(product);
     return product;
   }
 
-  const categoryProducts = await getCategoryProducts(normalizedCategory);
-  return categoryProducts.find((item) => item.slug === resolveStorefrontSlug(normalizedCategory, slug)) ?? null;
+  const categoryProducts = getStorefrontCategorySnapshot(normalizedCategory);
+  const cachedMatch =
+    categoryProducts.find(
+      (item) => item.slug === resolveStorefrontSlug(normalizedCategory, slug),
+    ) ?? null;
+
+  if (cachedMatch) {
+    return cachedMatch;
+  }
+
+  const categoryProductsFromBackend = await getCategoryProducts(normalizedCategory);
+  return (
+    categoryProductsFromBackend.find(
+      (item) => item.slug === resolveStorefrontSlug(normalizedCategory, slug),
+    ) ?? null
+  );
 };

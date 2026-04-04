@@ -31,6 +31,7 @@ import {
   upsertAdminProduct,
 } from "../../store/adminCatalog/adminCatalogSlice";
 import { useAdminCatalogQueries } from "./useAdminCatalogQueries";
+import { mutateStorefrontCatalogCache } from "./storefrontCatalogCache";
 import type {
   AdminOrder,
   AdminProduct,
@@ -183,7 +184,15 @@ export function AdminCatalogProvider({
     dispatch(setAdminSyncing(true));
 
     try {
-      await syncCatalog();
+      const refreshedProducts = await syncCatalog();
+      try {
+        await mutateStorefrontCatalogCache({
+          action: "replace",
+          products: refreshedProducts,
+        });
+      } catch (error) {
+        console.warn("Failed to prime the storefront catalog cache.", error);
+      }
       toast.success("Catalog refreshed");
     } catch {
       toast.error("Catalog sync is unavailable right now");
@@ -226,6 +235,12 @@ export function AdminCatalogProvider({
 
     dispatch(setAdminProducts(mergedProducts));
     dispatch(setAdminLastSyncedAt(new Date().toISOString()));
+    void mutateStorefrontCatalogCache({
+      action: "replace",
+      products: mergedProducts,
+    }).catch((error) => {
+      console.warn("Failed to prime the storefront catalog cache.", error);
+    });
   }, [dispatch, isHydrated, remoteProductsQuery.dataUpdatedAt]);
 
   useEffect(() => {
@@ -257,8 +272,10 @@ export function AdminCatalogProvider({
     // the remote API to give the user visible feedback.
     dispatch(upsertAdminProduct(stampAdminProduct(localRecord)));
 
+    let remoteRecord: AdminProduct = localRecord;
+
     try {
-      await upsertRemoteProduct({
+      remoteRecord = await upsertRemoteProduct({
         product: localRecord,
         existingProducts: products,
       });
@@ -266,6 +283,15 @@ export function AdminCatalogProvider({
       console.warn("Remote product save failed.", error);
       toast.error("Product saved locally, but the backend did not accept it yet");
       return false;
+    }
+
+    try {
+      await mutateStorefrontCatalogCache({
+        action: "upsert",
+        product: remoteRecord,
+      });
+    } catch (error) {
+      console.warn("Failed to prime the storefront catalog cache.", error);
     }
 
     try {
@@ -329,6 +355,15 @@ export function AdminCatalogProvider({
       console.warn("Remote product delete failed after local removal.");
       toast.error("Product removed locally, but the remote delete failed");
       return;
+    }
+
+    try {
+      await mutateStorefrontCatalogCache({
+        action: "remove",
+        slug,
+      });
+    } catch (error) {
+      console.warn("Failed to remove the product from the storefront cache.", error);
     }
 
     try {
