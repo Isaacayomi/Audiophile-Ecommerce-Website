@@ -1,18 +1,23 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useMemo } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react";
 import toast from "react-hot-toast";
 import {
   ADMIN_CATALOG_STORAGE_KEY,
   ADMIN_SETTINGS_STORAGE_KEY,
   fallbackProducts,
-  mapStorefrontProductToAdmin,
   makeStorefrontPath,
   slugify,
   stampAdminProduct,
   toCatalogInput,
 } from "../_lib/catalog";
-import { API_BASE_URL, categories as storefrontCategories } from "../../lib/products";
+import { categories as storefrontCategories } from "../../lib/products";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../store/store";
 import {
@@ -25,6 +30,7 @@ import {
   setAdminSyncing,
   upsertAdminProduct,
 } from "../../store/adminCatalog/adminCatalogSlice";
+import { useAdminCatalogQueries } from "./useAdminCatalogQueries";
 import type {
   AdminOrder,
   AdminProduct,
@@ -65,74 +71,6 @@ const readStorage = <T,>(key: string): T | null => {
 const writeStorage = (key: string, value: unknown) => {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(key, JSON.stringify(value));
-};
-
-const apiJson = async <T,>(
-  path: string,
-  init?: RequestInit,
-): Promise<T> => {
-  const res = await fetch(`${API_BASE_URL}${path}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...(init?.headers ?? {}),
-    },
-  });
-
-  if (!res.ok) {
-    throw new Error(await res.text());
-  }
-
-  return (await res.json()) as T;
-};
-
-const fetchWithTimeout = async <T,>(
-  task: () => Promise<T>,
-  timeoutMs = 8000,
-) => {
-  let timeoutId: ReturnType<typeof setTimeout> | null = null;
-
-  try {
-    return await Promise.race([
-      task(),
-      new Promise<T>((_, reject) => {
-        timeoutId = setTimeout(() => {
-          reject(new Error("Request timed out"));
-        }, timeoutMs);
-      }),
-    ]);
-  } finally {
-    if (timeoutId !== null) {
-      clearTimeout(timeoutId);
-    }
-  }
-};
-
-const loadRemoteProducts = async () => {
-  try {
-    const data = await fetchWithTimeout(
-      () => apiJson<{ products: AdminProduct[] }>("/products"),
-    );
-
-    if (Array.isArray(data.products)) {
-      return data.products.map((product) => stampAdminProduct(product));
-    }
-  } catch {
-    // Fall through to the category-based loader below.
-  }
-
-  const results = await Promise.allSettled(
-    storefrontCategories.map(async ({ slug }) => {
-      const data = await fetchWithTimeout(
-        () => apiJson<unknown>(`/products/category/${slug}`),
-      );
-      return Array.isArray(data) ? data : [];
-    }),
-  );
-
-  return results
-    .flatMap((result) => (result.status === "fulfilled" ? result.value : []))
-    .map((item) => mapStorefrontProductToAdmin(item as never));
 };
 
 const normalizeCopySlug = (current: AdminProduct[], baseSlug: string) => {
@@ -176,14 +114,6 @@ const mergeAdminProducts = (
   return Array.from(merged.values());
 };
 
-const SAVE_TOAST_DELAY_MS = 3500;
-
-const showSaveToast = (message: string) => {
-  window.setTimeout(() => {
-    toast.success(message);
-  }, SAVE_TOAST_DELAY_MS);
-};
-
 const getFallbackTemplate = (category: CatalogInput["category"]) =>
   fallbackProducts.find((product) => product.category === category) ??
   fallbackProducts[0];
@@ -217,50 +147,6 @@ const buildLocalProductRecord = (
   };
 };
 
-const syncRemoteProduct = async (
-  product: CatalogInput,
-  categoryLabel: string,
-  existingProducts: AdminProduct[],
-): Promise<AdminProduct | null> => {
-  const cleanedSlug = product.slug || slugify(product.name);
-  const payload: CatalogInput = {
-    ...product,
-    slug: cleanedSlug,
-    storefrontPath: makeStorefrontPath(
-      product.category,
-      cleanedSlug,
-      product.storefrontPath,
-    ),
-  };
-
-  const method = existingProducts.some((item) => item.slug === cleanedSlug)
-    ? "PUT"
-    : "POST";
-  const endpoint = method === "POST" ? "/products" : `/products/${cleanedSlug}`;
-  const controller = new AbortController();
-  const timeout = window.setTimeout(() => controller.abort(), 8000);
-
-  try {
-    const data = await apiJson<{ product: AdminProduct } | { record: AdminProduct }>(
-      endpoint,
-      {
-        method,
-        signal: controller.signal,
-        body: JSON.stringify({
-          ...payload,
-          categoryLabel,
-        }),
-      },
-    );
-
-    return "product" in data ? data.product : data.record;
-  } catch {
-    return null;
-  } finally {
-    window.clearTimeout(timeout);
-  }
-};
-
 export function AdminCatalogProvider({
   children,
 }: {
@@ -277,19 +163,27 @@ export function AdminCatalogProvider({
   const lastSyncedAt = useSelector(
     (state: RootState) => state.adminCatalog.lastSyncedAt,
   );
+  const productsRef = useRef(products);
+  useEffect(() => {
+    productsRef.current = products;
+  }, [products]);
+  const {
+    remoteProductsQuery,
+    syncCatalog,
+    upsertRemoteProduct,
+    deleteRemoteProduct,
+  } = useAdminCatalogQueries({
+    enabled: isHydrated,
+    onRemoteProductUpsert: (remoteRecord) => {
+      dispatch(upsertAdminProduct(stampAdminProduct(remoteRecord)));
+    },
+  });
 
-  const syncCatalog = async () => {
+  const handleSyncCatalog = async () => {
     dispatch(setAdminSyncing(true));
 
     try {
-      // The API is the source of truth, so sync just refreshes from it.
-      const records = await loadRemoteProducts();
-      dispatch(
-        setAdminProducts(
-          records.length ? mergeAdminProducts(products, records) : products,
-        ),
-      );
-      dispatch(setAdminLastSyncedAt(new Date().toISOString()));
+      await syncCatalog();
       toast.success("Catalog refreshed");
     } catch {
       toast.error("Catalog sync is unavailable right now");
@@ -299,12 +193,8 @@ export function AdminCatalogProvider({
   };
 
   useEffect(() => {
-    let cancelled = false;
     const storedProducts = readStorage<AdminProduct[]>(ADMIN_CATALOG_STORAGE_KEY);
     const storedSettings = readStorage<AdminSettings>(ADMIN_SETTINGS_STORAGE_KEY);
-    const localProducts = storedProducts?.length
-      ? storedProducts
-      : fallbackProducts;
 
     if (storedProducts?.length) {
       dispatch(setAdminProducts(storedProducts));
@@ -318,33 +208,25 @@ export function AdminCatalogProvider({
 
     dispatch(setAdminHydrated(true));
 
-    void (async () => {
-      try {
-        dispatch(setAdminSyncing(true));
-        const records = await loadRemoteProducts();
-        if (cancelled) return;
-
-        dispatch(
-          setAdminProducts(
-            records.length ? mergeAdminProducts(localProducts, records) : localProducts,
-          ),
-        );
-        dispatch(setAdminLastSyncedAt(new Date().toISOString()));
-      } catch {
-        if (!cancelled) {
-          dispatch(setAdminProducts(localProducts));
-        }
-      } finally {
-        if (!cancelled) {
-          dispatch(setAdminSyncing(false));
-        }
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
   }, [dispatch]);
+
+  useEffect(() => {
+    if (!isHydrated || remoteProductsQuery.dataUpdatedAt === 0) return;
+
+    const remoteProducts = remoteProductsQuery.data ?? [];
+
+    if (remoteProducts.length === 0) {
+      return;
+    }
+
+    const mergedProducts = mergeAdminProducts(
+      productsRef.current,
+      remoteProducts,
+    );
+
+    dispatch(setAdminProducts(mergedProducts));
+    dispatch(setAdminLastSyncedAt(new Date().toISOString()));
+  }, [dispatch, isHydrated, remoteProductsQuery.dataUpdatedAt]);
 
   useEffect(() => {
     if (!isHydrated) return;
@@ -361,6 +243,7 @@ export function AdminCatalogProvider({
     const categoryLabel =
       storefrontCategories.find((item) => item.slug === product.category)?.label ??
       product.category.charAt(0).toUpperCase() + product.category.slice(1);
+    const isPublished = product.status === "Live";
     const payload: CatalogInput = {
       ...product,
       slug: cleanedSlug,
@@ -373,21 +256,38 @@ export function AdminCatalogProvider({
     // Save immediately in the local catalog so Draft/Publish never waits on
     // the remote API to give the user visible feedback.
     dispatch(upsertAdminProduct(stampAdminProduct(localRecord)));
-    showSaveToast("Product saved");
 
-    void (async () => {
-      const remoteRecord = await syncRemoteProduct(
-        payload,
-        categoryLabel,
-        products,
+    try {
+      await upsertRemoteProduct({
+        product: localRecord,
+        existingProducts: products,
+      });
+    } catch (error) {
+      console.warn("Remote product save failed.", error);
+      toast.error("Product saved locally, but the backend did not accept it yet");
+      return false;
+    }
+
+    try {
+      await syncCatalog(
+        isPublished
+          ? {
+            waitForSlug: payload.slug,
+          }
+          : undefined,
       );
-
-      if (remoteRecord) {
-        dispatch(upsertAdminProduct(stampAdminProduct(remoteRecord)));
-      }
-    })();
-
-    return true;
+      toast.success(
+        isPublished ? "Product published and synced" : "Product saved and synced",
+      );
+      return true;
+    } catch {
+      toast.error(
+        isPublished
+          ? "Product published, but storefront sync is still catching up"
+          : "Product saved, but catalog sync is still catching up",
+      );
+      return false;
+    }
   };
 
   const duplicateProduct = async (slug: string) => {
@@ -422,18 +322,21 @@ export function AdminCatalogProvider({
     // Remove the item from the local catalog first so the admin UI stays responsive
     // even when the remote catalog service is slow or temporarily unavailable.
     dispatch(removeAdminProduct(slug));
-    toast.success("Product removed");
 
     try {
-      const data = await apiJson<{ deleted: boolean }>(`/products/${slug}`, {
-        method: "DELETE",
-      });
-
-      if (!data.deleted) {
-        throw new Error("Remote delete was not confirmed");
-      }
+      await deleteRemoteProduct(slug);
     } catch {
       console.warn("Remote product delete failed after local removal.");
+      toast.error("Product removed locally, but the remote delete failed");
+      return;
+    }
+
+    try {
+      await syncCatalog();
+      toast.success("Product removed and synced");
+    } catch {
+      toast.success("Product removed");
+      console.warn("Catalog sync failed after remote delete.");
     }
   };
 
@@ -453,14 +356,27 @@ export function AdminCatalogProvider({
       isHydrated,
       isSyncing,
       lastSyncedAt,
-      syncCatalog,
+      syncCatalog: handleSyncCatalog,
       upsertProduct,
       duplicateProduct,
       deleteProduct,
       saveSettings,
       getProductBySlug,
     }),
-    [products, orders, settings, isHydrated, isSyncing, lastSyncedAt],
+    [
+      products,
+      orders,
+      settings,
+      isHydrated,
+      isSyncing,
+      lastSyncedAt,
+      handleSyncCatalog,
+      upsertProduct,
+      duplicateProduct,
+      deleteProduct,
+      saveSettings,
+      getProductBySlug,
+    ],
   );
 
   return (

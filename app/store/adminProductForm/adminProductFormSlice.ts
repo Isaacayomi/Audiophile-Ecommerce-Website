@@ -11,7 +11,7 @@ const createEmptyAdminProductForm = (): AdminProductFormValues => ({
   category: "headphones",
   price: "2999",
   stock: "25",
-  status: "Draft",
+  status: "Live",
   featured: false,
   description:
     "Write a concise Audiophile description that highlights sound, design, and build quality.",
@@ -20,7 +20,7 @@ const createEmptyAdminProductForm = (): AdminProductFormValues => ({
 
 const createInitialState = (): AdminProductFormState => ({
   form: createEmptyAdminProductForm(),
-  saveMode: "Draft",
+  saveMode: "Live",
   isSaving: false,
   isUploadingImage: false,
 });
@@ -43,7 +43,7 @@ export const adminProductFormSlice = createSlice({
     },
     resetAdminProductForm: (state) => {
       state.form = createEmptyAdminProductForm();
-      state.saveMode = "Draft";
+      state.saveMode = "Live";
       state.isSaving = false;
       state.isUploadingImage = false;
     },

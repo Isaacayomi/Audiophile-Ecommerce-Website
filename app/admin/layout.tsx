@@ -54,7 +54,7 @@ export default function AdminLayout({
 
   return (
     <AdminCatalogProvider>
-      <div className="flex min-h-screen overflow-x-hidden bg-[#0F172A] font-manrope text-white selection:bg-[#D87D4A]/30">
+      <div className="flex min-h-screen overflow-x-hidden bg-[#0F172A] font-sans text-white selection:bg-[#D87D4A]/30">
         <AnimatePresence>
           {isSidebarOpen && (
             <motion.div

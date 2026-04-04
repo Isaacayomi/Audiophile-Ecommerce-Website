@@ -2,6 +2,7 @@ import ResponsivePicture from "./ResponsivePicture";
 import Link from "next/link";
 import CategoryCards from "./CategoryCards";
 import { RhythmGroup, RhythmItem } from "./ui/Rhythm";
+import { storefrontProductPaths } from "@/app/lib/storefrontRoutes";
 
 const HeroSection = () => {
   return (
@@ -54,7 +55,7 @@ const HeroSection = () => {
 
               <RhythmItem variant="pop">
                 <Link
-                  href="/headphones/xx99-mark-two-headphones"
+                  href={storefrontProductPaths.heroHeadphones}
                   className="inline-flex h-12 w-40 items-center justify-center bg-brand text-label font-bold uppercase tracking-copy text-white transition-colors hover:bg-brand-hover"
                 >
                   See Product

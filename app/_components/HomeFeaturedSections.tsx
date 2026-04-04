@@ -1,6 +1,7 @@
 import Link from "next/link";
 import ResponsivePicture from "./ResponsivePicture";
 import { RhythmGroup, RhythmItem } from "./ui/Rhythm";
+import { storefrontProductPaths } from "@/app/lib/storefrontRoutes";
 
 const secondaryButtonClass =
   "inline-flex h-12 items-center justify-center border border-black px-7.5 text-label font-bold uppercase tracking-copy text-black transition-colors hover:bg-black hover:text-white";
@@ -46,7 +47,7 @@ const HomeFeaturedSections = () => {
 
             <RhythmItem variant="pop">
               <Link
-                href="/speakers/zx9-speaker"
+                href={storefrontProductPaths.featuredSpeaker}
                 className="inline-flex h-12 items-center justify-center bg-black px-8 text-label font-bold uppercase tracking-copy text-white transition-colors hover:bg-brand-dark"
               >
                 See Product
@@ -71,7 +72,7 @@ const HomeFeaturedSections = () => {
             ZX7 Speaker
           </h2>
 
-          <Link href="/speakers/zx7-speaker" className={secondaryButtonClass}>
+          <Link href={storefrontProductPaths.featuredSpeakerSecondary} className={secondaryButtonClass}>
             See Product
           </Link>
         </div>
@@ -83,18 +84,18 @@ const HomeFeaturedSections = () => {
             mobileSrc="/assets/home/mobile/image-earphones-yx1.jpg"
             tabletSrc="/assets/home/tablet/image-earphones-yx1.jpg"
             desktopSrc="/assets/home/desktop/image-earphones-yx1.jpg"
-            alt="YX1 earphones"
+            alt="YX1 Wireless Earphones"
             imageClassName="h-50 object-cover md:h-full"
           />
         </RhythmItem>
 
         <RhythmItem className="rounded-lg bg-surface px-6 py-10.25 md:px-10.25 md:py-25.25 lg:px-23.75">
           <h2 className="mb-8 text-heading-md leading-heading font-bold uppercase tracking-banner text-black">
-            YX1 Earphones
+            YX1 Wireless Earphones
           </h2>
 
           <Link
-            href="/earphones/yx1-earphones"
+            href={storefrontProductPaths.featuredEarphones}
             className={secondaryButtonClass}
           >
             See Product

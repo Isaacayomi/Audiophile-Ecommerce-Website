@@ -34,7 +34,7 @@ export const calculateCheckoutTotals = (cartItems: CartItem[]) => {
     subtotal,
     shipping,
     vat,
-    grandTotal: subtotal + shipping,
+    grandTotal: subtotal + shipping + vat,
   };
 };
 
@@ -50,4 +50,3 @@ export const normalizeCheckoutFormValues = (
   city: values.city.trim(),
   country: values.country.trim(),
 });
-
