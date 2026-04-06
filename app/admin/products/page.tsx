@@ -34,11 +34,6 @@ const statusClasses = {
   Hidden: "bg-rose-500/10 text-rose-400",
 } as const;
 
-type PendingCatalogAction = {
-  type: PendingCatalogActionType;
-  slug: string;
-} | null;
-
 type PendingCatalogActionType = "edit" | "copy" | "delete";
 
 export default function ProductManagement() {
@@ -47,9 +42,12 @@ export default function ProductManagement() {
   const { products, deleteProduct, duplicateProduct, isHydrated } =
     useAdminCatalog();
 
-  const [pendingAction, setPendingAction] =
-    useState<PendingCatalogAction>(null);
-  const showPendingActionSpinner = useDelayedBoolean(Boolean(pendingAction));
+  const [pendingActions, setPendingActions] = useState<
+    Record<string, PendingCatalogActionType>
+  >({});
+  const showPendingActionSpinner = useDelayedBoolean(
+    Object.keys(pendingActions).length > 0,
+  );
   const query = useSelector(
     (state: RootState) => state.adminUi.productFilter.query,
   );
@@ -72,37 +70,62 @@ export default function ProductManagement() {
     });
   }, [products, query, category]);
 
-  const isPendingAction = (type: PendingCatalogActionType, slug: string) =>
-    pendingAction?.type === type && pendingAction.slug === slug;
+  const getPendingAction = (slug: string) => pendingActions[slug] ?? null;
 
   const isActionBusy = (type: PendingCatalogActionType, slug: string) =>
-    isPendingAction(type, slug) && showPendingActionSpinner;
+    getPendingAction(slug) === type && showPendingActionSpinner;
+
+  const setPendingAction = (slug: string, type: PendingCatalogActionType) => {
+    setPendingActions((current) => {
+      if (current[slug] === type) {
+        return current;
+      }
+
+      return {
+        ...current,
+        [slug]: type,
+      };
+    });
+  };
+
+  const clearPendingAction = (slug: string) => {
+    setPendingActions((current) => {
+      if (!(slug in current)) {
+        return current;
+      }
+
+      const next = { ...current };
+      delete next[slug];
+      return next;
+    });
+  };
+
+  const isRowBusy = (slug: string) => Boolean(getPendingAction(slug));
 
   const handleEdit = (slug: string) => {
-    if (pendingAction) return;
-    setPendingAction({ type: "edit", slug });
+    if (isRowBusy(slug)) return;
     router.push(`/admin/products/new?edit=${slug}`);
   };
 
   const handleCopy = async (slug: string) => {
-    if (pendingAction) return;
-    setPendingAction({ type: "copy", slug });
+    if (isRowBusy(slug)) return;
+    setPendingAction(slug, "copy");
 
     try {
       await duplicateProduct(slug);
     } finally {
-      setPendingAction(null);
+      clearPendingAction(slug);
     }
   };
 
   const handleDelete = async (slug: string) => {
-    if (pendingAction) return;
-    setPendingAction({ type: "delete", slug });
+    if (isRowBusy(slug)) return;
+    setPendingAction(slug, "delete");
 
     try {
       await deleteProduct(slug);
     } finally {
-      setPendingAction(null);
+      clearPendingAction(slug);
     }
   };
 
@@ -236,22 +259,15 @@ export default function ProductManagement() {
               <button
                 type="button"
                 onClick={() => handleEdit(product.slug)}
-                disabled={Boolean(pendingAction)}
+                disabled={isRowBusy(product.slug)}
                 className="inline-flex flex-1 cursor-pointer items-center justify-center rounded-xl bg-white/5 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-white/70 hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {isActionBusy("edit", product.slug) ? (
-                  <>
-                    <FiRefreshCw className="mr-2 animate-spin" size={12} />
-                    Opening...
-                  </>
-                ) : (
-                  "Edit"
-                )}
+                Edit
               </button>
               <button
                 type="button"
                 onClick={() => handleCopy(product.slug)}
-                disabled={Boolean(pendingAction)}
+                disabled={isRowBusy(product.slug)}
                 className="inline-flex cursor-pointer items-center justify-center rounded-xl bg-white/5 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-white/50 hover:bg-emerald-500/10 hover:text-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isActionBusy("copy", product.slug) ? (
@@ -266,7 +282,7 @@ export default function ProductManagement() {
               <button
                 type="button"
                 onClick={() => handleDelete(product.slug)}
-                disabled={Boolean(pendingAction)}
+                disabled={isRowBusy(product.slug)}
                 className="inline-flex cursor-pointer items-center justify-center rounded-xl bg-white/5 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-white/50 hover:bg-rose-500/10 hover:text-rose-400 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isActionBusy("delete", product.slug) ? (
@@ -363,20 +379,16 @@ export default function ProductManagement() {
                     <button
                       type="button"
                       onClick={() => handleEdit(product.slug)}
-                      disabled={Boolean(pendingAction)}
+                      disabled={isRowBusy(product.slug)}
                       className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl bg-white/5 text-white/20 transition-all hover:bg-[#D87D4A]/20 hover:text-[#D87D4A] disabled:cursor-not-allowed disabled:opacity-60"
                       aria-label={`Edit ${product.name}`}
                     >
-                      {isActionBusy("edit", product.slug) ? (
-                        <FiRefreshCw size={16} className="animate-spin" />
-                      ) : (
-                        <FiEdit2 size={16} />
-                      )}
+                      <FiEdit2 size={16} />
                     </button>
                     <button
                       type="button"
                       onClick={() => handleCopy(product.slug)}
-                      disabled={Boolean(pendingAction)}
+                      disabled={isRowBusy(product.slug)}
                       className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl bg-white/5 text-white/20 transition-all hover:bg-emerald-500/20 hover:text-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
                       aria-label={`Duplicate ${product.name}`}
                     >
@@ -389,7 +401,7 @@ export default function ProductManagement() {
                     <button
                       type="button"
                       onClick={() => handleDelete(product.slug)}
-                      disabled={Boolean(pendingAction)}
+                      disabled={isRowBusy(product.slug)}
                       className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl bg-white/5 text-white/20 transition-all hover:bg-rose-500/20 hover:text-rose-400 disabled:cursor-not-allowed disabled:opacity-60"
                       aria-label={`Delete ${product.name}`}
                     >

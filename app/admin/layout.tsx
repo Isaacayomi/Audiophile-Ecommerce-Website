@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { useClerk } from "@clerk/nextjs";
 import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
 import {
   FiBell,
   FiBox,
@@ -14,10 +16,10 @@ import {
   FiLogOut,
   FiMenu,
   FiPlusSquare,
-  FiSearch,
   FiSettings,
 } from "react-icons/fi";
 import { AdminCatalogProvider } from "./_components/AdminCatalogProvider";
+import { SignOutConfirmDialog } from "./_components/SignOutConfirmDialog";
 import { useAdminIdentity } from "./_components/useAdminIdentity";
 import { toggleAdminSidebar } from "../store/adminUi/adminUiSlice";
 import { mergeAdminSettings } from "../store/adminCatalog/adminCatalogSlice";
@@ -29,17 +31,39 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const clerk = useClerk();
   const dispatch = useDispatch<AppDispatch>();
   const { displayName, initials, isLoaded } = useAdminIdentity();
   const isSidebarOpen = useSelector(
     (state: RootState) => state.adminUi.sidebar.isOpen,
   );
+  const [isSignOutDialogOpen, setIsSignOutDialogOpen] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   useEffect(() => {
     if (!isLoaded) return;
 
     dispatch(mergeAdminSettings({ adminName: displayName }));
   }, [dispatch, displayName, isLoaded]);
+
+  const openSignOutDialog = () => setIsSignOutDialogOpen(true);
+  const closeSignOutDialog = () => {
+    if (isSigningOut) return;
+    setIsSignOutDialogOpen(false);
+  };
+
+  const confirmSignOut = async () => {
+    if (isSigningOut) return;
+
+    setIsSigningOut(true);
+
+    try {
+      await clerk.signOut({ redirectUrl: "/?auth=signed_out" });
+    } catch {
+      setIsSigningOut(false);
+      toast.error("Unable to sign out right now.");
+    }
+  };
 
   const navItems = [
     { label: "Dashboard", href: "/admin", icon: <FiLayout /> },
@@ -54,7 +78,7 @@ export default function AdminLayout({
 
   return (
     <AdminCatalogProvider>
-      <div className="flex min-h-screen overflow-x-hidden bg-[#0F172A] font-manrope text-white selection:bg-[#D87D4A]/30">
+      <div className="flex min-h-screen overflow-x-hidden bg-[#0F172A] font-sans text-white selection:bg-[#D87D4A]/30">
         <AnimatePresence>
           {isSidebarOpen && (
             <motion.div
@@ -138,13 +162,15 @@ export default function AdminLayout({
                 </span>
                 <span className="ml-3 text-sm font-semibold">Storefront</span>
               </Link>
-              <button className="group flex w-full items-center rounded-xl px-4 py-3 text-rose-400/70 transition-all hover:bg-rose-400/10 hover:text-rose-400">
+              <button
+                type="button"
+                onClick={openSignOutDialog}
+                className="group flex w-full items-center rounded-xl px-4 py-3 text-rose-400/70 transition-all hover:bg-rose-400/10 hover:text-rose-400"
+              >
                 <span className="text-lg transition-transform group-hover:scale-110">
                   <FiLogOut />
                 </span>
-                <Link href="/" className="ml-3 text-sm font-semibold">
-                  Logout
-                </Link>
+                <span className="ml-3 text-sm font-semibold">Sign out</span>
               </button>
             </div>
           </div>
@@ -162,9 +188,22 @@ export default function AdminLayout({
             </div>
 
             <div className="flex items-center gap-3 sm:gap-6">
+              <button className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-white/60 transition-all hover:bg-white/10 hover:text-white">
+                <FiBell size={18} />
+                <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-[#F97316] ring-2 ring-[#0F172A]" />
+              </button>
+
               <div className="hidden h-8 w-px bg-white/5 sm:block" />
 
-              <div className="group flex cursor-pointer items-center gap-3 pl-1">
+              <button
+                type="button"
+                onClick={openSignOutDialog}
+                className="group flex cursor-pointer items-center gap-3 rounded-2xl pl-1 text-left"
+                aria-haspopup="dialog"
+                aria-expanded={isSignOutDialogOpen}
+                aria-label="Open sign out confirmation"
+                title="Sign out"
+              >
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-br from-[#D87D4A] to-[#FBAF85] text-sm font-bold text-white shadow-lg shadow-[rgba(216,125,74,0.2)]">
                   {initials}
                 </div>
@@ -176,7 +215,8 @@ export default function AdminLayout({
                     Store Admin
                   </p>
                 </div>
-              </div>
+                <FiChevronDown className="text-white/30 transition-colors group-hover:text-white" />
+              </button>
             </div>
           </header>
 
@@ -190,6 +230,14 @@ export default function AdminLayout({
             </motion.div>
           </main>
         </div>
+
+        <SignOutConfirmDialog
+          open={isSignOutDialogOpen}
+          isSigningOut={isSigningOut}
+          onClose={closeSignOutDialog}
+          onConfirm={confirmSignOut}
+          avatarText={initials}
+        />
       </div>
     </AdminCatalogProvider>
   );

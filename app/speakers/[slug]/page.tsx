@@ -1,17 +1,8 @@
 import { StorefrontProductView } from "@/app/_components/StorefrontCatalogViews";
-import { getCategoryProducts, getProduct } from "@/app/lib/products.server";
+import { getProduct } from "@/app/lib/products.server";
+import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
-
-// Next.js uses these slugs to pre-render the known product detail routes.
-export const generateStaticParams = async () => {
-  try {
-    const products = await getCategoryProducts("speakers");
-    return products.map((product) => ({ slug: product.slug }));
-  } catch {
-    return [];
-  }
-};
 
 const SpeakersProductPage = async ({
   params,
@@ -22,6 +13,10 @@ const SpeakersProductPage = async ({
 
   // Fetch the exact product for this route and let Next show a 404 if it does not exist.
   const product = await getProduct("speakers", slug).catch(() => null);
+  if (!product) {
+    notFound();
+  }
+
   return <StorefrontProductView slug={slug} product={product} />;
 };
 

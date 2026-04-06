@@ -40,6 +40,7 @@ const ProductDetailLayout = ({ product }: { product: Product }) => {
             desktopSrc={product.productImage.desktop}
             alt={product.name}
             imageClassName="h-81.75 object-cover md:h-120 lg:h-140"
+            imageOverride={product.image}
           />
         </RhythmItem>
 

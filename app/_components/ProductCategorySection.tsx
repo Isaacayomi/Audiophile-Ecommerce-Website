@@ -23,6 +23,7 @@ const ProductCategorySection = ({
           desktopSrc={product.categoryImage.desktop}
           alt={product.name}
           imageClassName="h-88 object-cover lg:h-140"
+          imageOverride={product.image}
         />
       </RhythmItem>
 

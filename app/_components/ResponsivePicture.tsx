@@ -9,13 +9,17 @@ const ResponsivePicture = ({
   desktopSrc,
   className,
   imageClassName,
+  imageOverride,
 }: ResponsivePictureProps) => {
+  const overrideSrc =
+    imageOverride && imageOverride.startsWith("data:") ? imageOverride : "";
+
   return (
     <picture className={className}>
-      <source media="(min-width: 1024px)" srcSet={desktopSrc} />
-      <source media="(min-width: 768px)" srcSet={tabletSrc} />
+      <source media="(min-width: 1024px)" srcSet={overrideSrc || desktopSrc} />
+      <source media="(min-width: 768px)" srcSet={overrideSrc || tabletSrc} />
       <img
-        src={mobileSrc}
+        src={overrideSrc || mobileSrc}
         alt={alt}
         className={`h-auto w-full ${imageClassName ?? ""}`}
       />

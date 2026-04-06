@@ -1,16 +1,9 @@
 import type { Metadata } from "next";
-import { Manrope } from "next/font/google";
 import "./globals.css";
 import Header from "./_components/Header";
 import Footer from "./_components/Footer";
 import Providers from "./_components/Providers";
 import { ClerkProvider } from "@clerk/nextjs";
-
-const manrope = Manrope({
-  variable: "--font-manrope",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-});
 
 export const metadata: Metadata = {
   title: "Audiophile Ecommerce Website",
@@ -25,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${manrope.variable} antialiased`}>
+      <body className="antialiased">
         <ClerkProvider
           signInUrl="/sign-in"
           signUpUrl="/sign-up"

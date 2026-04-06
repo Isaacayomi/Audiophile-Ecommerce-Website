@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Provider } from "react-redux";
 import { Toaster } from "react-hot-toast";
 import { store } from "../store/store";
@@ -59,24 +60,39 @@ function CartPersistence() {
 }
 
 export default function Providers({ children }: { children: React.ReactNode }) {
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            refetchOnWindowFocus: false,
+            retry: 1,
+            staleTime: 60_000,
+          },
+        },
+      }),
+  );
+
   return (
-    <Provider store={store}>
-      <RhythmProvider>
-        <CartPersistence />
-        <AuthToasts />
-        <Toaster
-          position="top-center"
-          toastOptions={{
-            duration: 3000,
-            style: {
-              borderRadius: "0.75rem",
-              background: "#101010",
-              color: "#fafafa",
-            },
-          }}
-        />
-        {children}
-      </RhythmProvider>
-    </Provider>
+    <QueryClientProvider client={queryClient}>
+      <Provider store={store}>
+        <RhythmProvider>
+          <CartPersistence />
+          <AuthToasts />
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              duration: 3000,
+              style: {
+                borderRadius: "0.75rem",
+                background: "#101010",
+                color: "#fafafa",
+              },
+            }}
+          />
+          {children}
+        </RhythmProvider>
+      </Provider>
+    </QueryClientProvider>
   );
 }

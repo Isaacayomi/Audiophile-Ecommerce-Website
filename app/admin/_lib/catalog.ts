@@ -55,7 +55,7 @@ const imageSet = (slug: string, fileName: string) => ({
 
 export const fallbackProducts: AdminProduct[] = [
   {
-    slug: "xx99-mark-two-headphones",
+    slug: "xx99-mark-ii-headphones",
     category: "headphones",
     categoryLabel: "Headphones",
     shortName: "XX99 MK II",
@@ -78,7 +78,7 @@ export const fallbackProducts: AdminProduct[] = [
     status: "Live",
     featured: true,
     image: "/assets/product-xx99-mark-two-headphones/desktop/image-product.jpg",
-    storefrontPath: "/headphones/xx99-mark-two-headphones",
+    storefrontPath: "/headphones/xx99-mark-ii-headphones",
     updatedAt: seedTime,
   },
   {
@@ -109,11 +109,11 @@ export const fallbackProducts: AdminProduct[] = [
     updatedAt: seedTime,
   },
   {
-    slug: "yx1-earphones",
+    slug: "yx1-wireless-earphones",
     category: "earphones",
     categoryLabel: "Earphones",
     shortName: "YX1",
-    name: "YX1 Earphones",
+    name: "YX1 Wireless Earphones",
     isNew: true,
     price: 599,
     description: "Compact earphones tuned for everyday listening.",
@@ -132,7 +132,7 @@ export const fallbackProducts: AdminProduct[] = [
     status: "Live",
     featured: false,
     image: "/assets/product-yx1-earphones/desktop/image-product.jpg",
-    storefrontPath: "/earphones/yx1-earphones",
+    storefrontPath: "/earphones/yx1-wireless-earphones",
     updatedAt: seedTime,
   },
 ];
@@ -204,7 +204,7 @@ const stockForCategory = (category: Category) => {
 };
 
 const imageForProduct = (product: Product) =>
-  product.productImage.desktop || product.categoryImage.desktop || "";
+  product.image || product.productImage.desktop || product.categoryImage.desktop || "";
 
 export const getAdminImageSource = (
   product: Pick<AdminProduct, "image" | "productImage" | "categoryImage">,
@@ -233,6 +233,37 @@ export const mapStorefrontProductToAdmin = (product: Product): AdminProduct => (
   isNew: product.isNew,
   updatedAt: new Date().toISOString(),
 });
+
+export const toStorefrontProduct = (product: AdminProduct): Product => {
+  const {
+    stock: _stock,
+    status: _status,
+    featured: _featured,
+    storefrontPath: _storefrontPath,
+    updatedAt: _updatedAt,
+    ...storefrontProduct
+  } = product;
+
+  return storefrontProduct;
+};
+
+const sanitizeImageValue = (value: string | undefined) => {
+  if (!value) {
+    return value ?? "";
+  }
+
+  return value.startsWith("data:") ? "" : value;
+};
+
+export const sanitizeAdminProductForStorage = (
+  product: AdminProduct,
+): AdminProduct => ({
+  ...product,
+  image: sanitizeImageValue(product.image),
+});
+
+export const sanitizeAdminProductsForStorage = (products: AdminProduct[]) =>
+  products.map(sanitizeAdminProductForStorage);
 
 export const stampAdminProduct = (product: AdminProduct): AdminProduct => ({
   ...product,
