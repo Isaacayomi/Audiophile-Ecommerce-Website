@@ -231,6 +231,7 @@ const syncRemoteProduct = async (
 const deleteRemoteProduct = async (slug: string) => {
   const endpoints = [`/products/${slug}`, `/product/${slug}`];
   let lastError: Error | null = null;
+  let deleted = false;
 
   for (const endpoint of endpoints) {
     const controller = new AbortController();
@@ -242,7 +243,8 @@ const deleteRemoteProduct = async (slug: string) => {
       });
 
       if (res.status === 404 || res.status === 410) {
-        return slug;
+        deleted = true;
+        continue;
       }
 
       const contentType = res.headers.get("content-type") ?? "";
@@ -255,12 +257,16 @@ const deleteRemoteProduct = async (slug: string) => {
         }
       }
 
-      return slug;
+      deleted = true;
     } catch (error) {
       lastError = error instanceof Error ? error : new Error("Unable to delete product");
     } finally {
       window.clearTimeout(timeout);
     }
+  }
+
+  if (deleted) {
+    return slug;
   }
 
   throw lastError ?? new Error("Unable to delete product");
