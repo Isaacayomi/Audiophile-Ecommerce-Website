@@ -204,7 +204,7 @@ const stockForCategory = (category: Category) => {
 };
 
 const imageForProduct = (product: Product) =>
-  product.productImage.desktop || product.categoryImage.desktop || "";
+  product.image || product.productImage.desktop || product.categoryImage.desktop || "";
 
 export const getAdminImageSource = (
   product: Pick<AdminProduct, "image" | "productImage" | "categoryImage">,
@@ -240,7 +240,6 @@ export const toStorefrontProduct = (product: AdminProduct): Product => {
     status: _status,
     featured: _featured,
     storefrontPath: _storefrontPath,
-    image: _image,
     updatedAt: _updatedAt,
     ...storefrontProduct
   } = product;

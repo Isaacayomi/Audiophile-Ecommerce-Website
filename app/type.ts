@@ -61,6 +61,7 @@ export interface ResponsivePictureProps {
   desktopSrc: string;
   className?: string;
   imageClassName?: string;
+  imageOverride?: string;
 }
 
 export type Category = "headphones" | "speakers" | "earphones";

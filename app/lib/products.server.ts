@@ -45,6 +45,20 @@ const categoryLabelFor = (category: Category) =>
   storefrontCategories.find((item) => item.slug === category)?.label ??
   category.charAt(0).toUpperCase() + category.slice(1);
 
+const overlayCachedUploadImage = (product: Product): Product => {
+  const cachedProduct = getStorefrontProductSnapshot(product.slug);
+  const cachedImage = cachedProduct?.image?.trim() ?? "";
+
+  if (cachedImage.startsWith("data:")) {
+    return {
+      ...product,
+      image: cachedImage,
+    };
+  }
+
+  return product;
+};
+
 const normalizeProduct = (product: Partial<Product> & Record<string, unknown>): Product => ({
   slug: product.slug ?? "",
   category: normalizeCategory(product.category),
@@ -63,6 +77,10 @@ const normalizeProduct = (product: Partial<Product> & Record<string, unknown>): 
     : [],
   categoryImage: normalizeImageSet(product.categoryImage as Partial<ResponsiveImageSet>),
   productImage: normalizeImageSet(product.productImage as Partial<ResponsiveImageSet>),
+  image:
+    typeof product.image === "string" && product.image.trim()
+      ? product.image
+      : undefined,
   gallery: {
     first: normalizeImageSet(product.gallery?.first as Partial<ResponsiveImageSet>),
     second: normalizeImageSet(product.gallery?.second as Partial<ResponsiveImageSet>),
@@ -180,7 +198,7 @@ const fetchProductByCategoryAndSlug = async (
     product.category === category &&
     (product.slug === canonicalSlug || product.slug === slug)
   ) {
-    return product;
+    return overlayCachedUploadImage(product);
   }
 
   return null;
@@ -202,7 +220,7 @@ const fetchBackendCatalogProducts = async (): Promise<Product[]> => {
     }
 
     for (const item of result.value) {
-      const product = normalizeProduct(item);
+      const product = overlayCachedUploadImage(normalizeProduct(item));
 
       if (!product.slug) {
         continue;
@@ -246,8 +264,9 @@ export const getProductBySlug = async (slug: string): Promise<Product | null> =>
   ]);
 
   if (product) {
-    upsertStorefrontCatalogProduct(product);
-    return product;
+    const mergedProduct = overlayCachedUploadImage(product);
+    upsertStorefrontCatalogProduct(mergedProduct);
+    return mergedProduct;
   }
 
   try {
