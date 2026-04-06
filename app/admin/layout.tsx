@@ -236,7 +236,6 @@ export default function AdminLayout({
           isSigningOut={isSigningOut}
           onClose={closeSignOutDialog}
           onConfirm={confirmSignOut}
-          avatarText={initials}
         />
       </div>
     </AdminCatalogProvider>

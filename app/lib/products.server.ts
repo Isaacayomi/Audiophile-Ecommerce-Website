@@ -7,6 +7,7 @@ import {
   getStorefrontCatalogSnapshot,
   getStorefrontCategorySnapshot,
   getStorefrontProductSnapshot,
+  isStorefrontProductRemoved,
   replaceStorefrontCatalogCache,
   upsertStorefrontCatalogProduct,
 } from "./storefrontCatalogCache";
@@ -127,9 +128,15 @@ const tryFetchProduct = async (paths: string[], timeoutMs = REQUEST_TIMEOUT_MS) 
         return null;
       }
 
-      return normalizeProduct(
+      const product = normalizeProduct(
         (data as { product: Partial<Product> & Record<string, unknown> }).product,
       );
+
+      if (isStorefrontProductRemoved(product.slug)) {
+        return null;
+      }
+
+      return product;
     }),
   );
 
@@ -167,7 +174,7 @@ const mergeProducts = (...groups: Product[][]) => {
 
   for (const group of groups) {
     for (const product of group) {
-      if (!product.slug) {
+      if (!product.slug || isStorefrontProductRemoved(product.slug)) {
         continue;
       }
 
@@ -198,6 +205,10 @@ const fetchProductByCategoryAndSlug = async (
     product.category === category &&
     (product.slug === canonicalSlug || product.slug === slug)
   ) {
+    if (isStorefrontProductRemoved(product.slug)) {
+      return null;
+    }
+
     return overlayCachedUploadImage(product);
   }
 
@@ -264,6 +275,10 @@ export const getProductBySlug = async (slug: string): Promise<Product | null> =>
   ]);
 
   if (product) {
+    if (isStorefrontProductRemoved(product.slug)) {
+      return null;
+    }
+
     const mergedProduct = overlayCachedUploadImage(product);
     upsertStorefrontCatalogProduct(mergedProduct);
     return mergedProduct;
@@ -296,6 +311,10 @@ export const getProduct = async (
   const product = await fetchProductByCategoryAndSlug(normalizedCategory, slug);
 
   if (product) {
+    if (isStorefrontProductRemoved(product.slug)) {
+      return null;
+    }
+
     upsertStorefrontCatalogProduct(product);
     return product;
   }

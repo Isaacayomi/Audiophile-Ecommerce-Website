@@ -9,7 +9,6 @@ type SignOutConfirmDialogProps = {
   isSigningOut: boolean;
   onClose: () => void;
   onConfirm: () => void;
-  avatarText: string;
 };
 
 export function SignOutConfirmDialog({
@@ -17,7 +16,6 @@ export function SignOutConfirmDialog({
   isSigningOut,
   onClose,
   onConfirm,
-  avatarText,
 }: SignOutConfirmDialogProps) {
   useEffect(() => {
     if (!open) return;
@@ -48,48 +46,56 @@ export function SignOutConfirmDialog({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 12, scale: 0.98 }}
             transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full max-w-sm rounded-3xl border border-black/10 bg-white p-6 text-black shadow-[0_24px_60px_rgba(0,0,0,0.12)]"
+            className="w-full max-w-md overflow-hidden rounded-[28px] border border-black/10 bg-white text-black shadow-[0_28px_80px_rgba(15,23,42,0.18)]"
             style={{ fontFamily: "Manrope, sans-serif" }}
             role="dialog"
             aria-modal="true"
             aria-labelledby="sign-out-title"
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="flex flex-col items-center text-center">
-              <div className="flex items-center justify-center gap-2">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 bg-black/5 text-[11px] font-bold text-black">
-                  {avatarText}
+            <div className="h-1.5 bg-gradient-to-r from-[#D87D4A] via-[#FBAF85] to-[#F97316]" />
+
+            <div className="p-6 sm:p-7">
+              <div className="flex flex-col items-center text-center">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#D87D4A]/10 text-[#D87D4A] ring-1 ring-[#D87D4A]/15">
+                  <FiLogOut className="text-xl" />
                 </div>
-                <FiLogOut className="text-sm text-black/45" />
+
+                <div className="mt-5 space-y-2">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[#D87D4A]">
+                    Confirm sign out
+                  </p>
+                  <h2
+                    id="sign-out-title"
+                    className="text-2xl font-bold tracking-tight"
+                  >
+                    Sign out of Audiophile?
+                  </h2>
+                  <p className="text-sm leading-6 text-black/60">
+                    You&apos;ll need to sign in again to return to the admin
+                    dashboard.
+                  </p>
+                </div>
               </div>
 
-              <div className="mt-4 space-y-2">
-                <h2 id="sign-out-title" className="text-xl font-bold">
-                  Sign out?
-                </h2>
-                <p className="text-sm leading-6 text-black/60">
-                  Are you sure you want to sign out?
-                </p>
+              <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  disabled={isSigningOut}
+                  className="inline-flex min-w-24 cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-950 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  Stay signed in
+                </button>
+                <button
+                  type="button"
+                  onClick={onConfirm}
+                  disabled={isSigningOut}
+                  className="inline-flex min-w-24 cursor-pointer items-center justify-center rounded-xl bg-[#111827] px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isSigningOut ? "Signing out..." : "Sign out"}
+                </button>
               </div>
-            </div>
-
-            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <button
-                type="button"
-                onClick={onClose}
-                disabled={isSigningOut}
-                className="inline-flex min-w-24 items-center justify-center rounded-xl border border-black/10 px-4 py-3 text-sm font-semibold text-black/70 transition hover:bg-black/5 hover:text-black disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                No
-              </button>
-              <button
-                type="button"
-                onClick={onConfirm}
-                disabled={isSigningOut}
-                className="inline-flex min-w-24 items-center justify-center rounded-xl bg-[#111827] px-4 py-3 text-sm font-semibold text-white transition hover:bg-black disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {isSigningOut ? "Signing out..." : "Yes"}
-              </button>
             </div>
           </motion.div>
         </motion.div>
