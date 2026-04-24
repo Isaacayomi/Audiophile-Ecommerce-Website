@@ -102,7 +102,7 @@ export default function AdminDashboard() {
   const lowStockProducts = products.filter((product) => product.stock <= 15);
   const draftProducts = products.filter((product) => product.status === "Draft");
   const catalogValue = products.reduce(
-    (sum, product) => sum + product.price * product.stock,
+    (sum, product) => sum + product.price,
     0,
   );
 
@@ -145,7 +145,7 @@ export default function AdminDashboard() {
         <MetricCard
           title="Catalog Value"
           value={formatCurrency(catalogValue)}
-          detail="Total value of the current admin inventory"
+          detail="Combined price of all products in the catalog"
           icon={<FiDollarSign />}
           delay={0.05}
         />
