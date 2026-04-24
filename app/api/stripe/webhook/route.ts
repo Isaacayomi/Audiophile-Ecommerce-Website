@@ -74,6 +74,7 @@ const verifyStripeWebhook = (
     throw new Error("Invalid Stripe timestamp.");
   }
 
+  // 5-minute window rejects replayed events with a valid but stale signature.
   const toleranceInSeconds = 60 * 5;
   const currentTime = Math.floor(Date.now() / 1000);
   if (Math.abs(currentTime - timestampNumber) > toleranceInSeconds) {
@@ -86,6 +87,7 @@ const verifyStripeWebhook = (
     .digest("hex");
 
   const expectedBuffer = Buffer.from(expectedSignature, "hex");
+  // timingSafeEqual prevents timing-based side-channel attacks on the signature comparison.
   const matches = signatures.some((signature) => {
     const providedBuffer = Buffer.from(signature, "hex");
     if (providedBuffer.length !== expectedBuffer.length) return false;

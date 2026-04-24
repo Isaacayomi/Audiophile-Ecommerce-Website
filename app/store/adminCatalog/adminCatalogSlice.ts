@@ -20,6 +20,7 @@ export type AdminCatalogState = {
   lastSyncedAt: string | null;
 };
 
+// Fallback data ships with the build so the dashboard renders immediately before the remote catalog loads.
 const initialState: AdminCatalogState = {
   products: normalizeAdminProducts(fallbackProducts),
   orders: fallbackOrders,
@@ -40,6 +41,7 @@ export const adminCatalogSlice = createSlice({
       const next = state.products.filter(
         (product) => product.slug !== action.payload.slug,
       );
+      // Prepend before normalizing so the upserted product sorts to the top as most-recently-updated.
       next.unshift(action.payload);
       state.products = normalizeAdminProducts(next);
     },

@@ -20,6 +20,7 @@ const initialState: AdminUiState = {
     query: "",
     category: "all",
   },
+  // settingsDraft is a working copy so edits can be cancelled without mutating the saved settings.
   settingsDraft: defaultSettings,
 };
 

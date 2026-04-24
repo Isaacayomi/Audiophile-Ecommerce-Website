@@ -28,6 +28,7 @@ const CheckoutSuccessClient = () => {
   const [orderItems, setOrderItems] = useState<CartItem[]>([]);
   const [didCaptureOrder, setDidCaptureOrder] = useState(false);
 
+  // Snapshot cart items for display then clear the cart; the flag prevents re-clearing on subsequent renders.
   useEffect(() => {
     if (didCaptureOrder || cartItems.length === 0) return;
     setOrderItems(cartItems);

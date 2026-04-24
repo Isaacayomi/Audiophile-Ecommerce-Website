@@ -25,6 +25,7 @@ const CACHE_FILE_PATH = join(
   "storefront-catalog.json",
 );
 
+// Next.js hot-reloads module scope on each request in dev; globalThis survives those resets.
 const globalCache = globalThis as typeof globalThis & {
   __audiophileStorefrontCatalogCache?: StorefrontCatalogCacheState;
 };
@@ -54,6 +55,7 @@ const readPersistedCache = (): StorefrontCatalogCacheState | null => {
   }
 };
 
+// Writes to disk so the cache survives a full server restart that would wipe globalThis.
 const persistCache = () => {
   try {
     mkdirSync(dirname(CACHE_FILE_PATH), { recursive: true });
@@ -72,6 +74,7 @@ const persistCache = () => {
   }
 };
 
+// Priority: in-memory (HMR-safe) → disk (restart-safe) → empty.
 const cache =
   globalCache.__audiophileStorefrontCatalogCache ??
   readPersistedCache() ??
