@@ -3,11 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { RhythmGroup, RhythmItem } from "@/app/_components/ui/Rhythm";
 import { calculateCheckoutTotals, formatPrice } from "@/app/lib/checkout";
-import { hydrateCartValue } from "@/app/store/uiState/cartValueslice";
-import { RootState } from "@/app/store/store";
+import {
+  CART_STORAGE_KEY,
+  hydrateCartValue,
+} from "@/app/store/uiState/cartValueslice";
 import type { CartItem, cartValueState } from "@/app/type";
 
 const EMPTY_CART: cartValueState = {
@@ -24,16 +26,29 @@ const STATUS_STEPS = [
 
 const CheckoutSuccessClient = () => {
   const dispatch = useDispatch();
-  const cartItems = useSelector((state: RootState) => state.cartValue.items);
   const [orderItems, setOrderItems] = useState<CartItem[]>([]);
-  const [didCaptureOrder, setDidCaptureOrder] = useState(false);
 
+  // Read directly from localStorage rather than waiting for Redux to hydrate — avoids a timing
+  // gap where the effect fires before CartPersistence has dispatched hydrateCartValue.
   useEffect(() => {
-    if (didCaptureOrder || cartItems.length === 0) return;
-    setOrderItems(cartItems);
-    setDidCaptureOrder(true);
-    dispatch(hydrateCartValue(EMPTY_CART));
-  }, [cartItems, didCaptureOrder, dispatch]);
+    try {
+      const raw = window.localStorage.getItem(CART_STORAGE_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as unknown;
+      if (
+        parsed &&
+        typeof parsed === "object" &&
+        "items" in parsed &&
+        Array.isArray((parsed as { items: unknown }).items) &&
+        (parsed as cartValueState).items.length > 0
+      ) {
+        setOrderItems((parsed as cartValueState).items);
+        dispatch(hydrateCartValue(EMPTY_CART));
+      }
+    } catch {
+      // localStorage unavailable or data is corrupt — show fallback
+    }
+  }, [dispatch]);
 
   const hasOrderItems = orderItems.length > 0;
   const totals = hasOrderItems ? calculateCheckoutTotals(orderItems) : null;
