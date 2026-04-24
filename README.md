@@ -179,7 +179,7 @@ Base64 image uploads are stored only in the local cache — the remote API recei
 ### Prerequisites
 
 - Node.js 18+
-- A running [FastAPI backend](https://github.com/Isaacayomi/Audiophile-Ecommerce-Website) for product data and Stripe session creation
+- A running [FastAPI backend](https://github.com/Isaacayomi/Audiophille-database) for product data and Stripe session creation
 - A [Clerk](https://clerk.com) account for authentication
 - A [Stripe](https://stripe.com) account for payments
 - A [Resend](https://resend.com) account for order notification emails
