@@ -23,6 +23,7 @@
 # misc
 .DS_Store
 *.pem
+*.txt
 /.audiophile-cache/
 
 # debug
@@ -44,7 +45,4 @@ next-env.d.ts
 # clerk configuration (can include secrets)
 /.clerk/
 
-# local Stripe documentation notes
-/stripe-integration-notes.txt
-/ADMIN_DASHBOARD_NOTES.txt
-/test-checklist.txt
+
