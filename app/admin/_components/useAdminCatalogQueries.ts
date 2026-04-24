@@ -34,6 +34,7 @@ const apiDelete = async (path: string, init?: RequestInit): Promise<Response> =>
     },
   });
 
+  // 404/410 means the product was already gone — treat as success, not an error.
   if (res.status === 404 || res.status === 410) {
     return res;
   }
@@ -199,6 +200,7 @@ const loadRemoteProducts = async () => {
   return records;
 };
 
+// PUT for existing slugs, POST for new ones; falls back to the alternate endpoint if the first fails.
 const syncRemoteProduct = async (
   product: AdminProduct,
   existingProducts: AdminProduct[],
@@ -340,6 +342,8 @@ export function useAdminCatalogQueries({
       window.setTimeout(resolve, ms);
     });
 
+  // When waitForSlug is set, polls until the newly written product appears in the catalog —
+  // needed because the backend may have eventual consistency after a write.
   const syncCatalog = async (options?: SyncCatalogOptions) => {
     if (!options?.waitForSlug) {
       const result = await remoteProductsQuery.refetch();
