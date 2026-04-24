@@ -116,20 +116,28 @@ const loadProductsFromCatalogEndpoint = async (path: string) => {
 const buildRemoteProductPayload = (product: AdminProduct) => {
   const storefrontPath =
     product.storefrontPath || `/${product.category}/${product.slug}`;
-  const isNew = Boolean(product.isNew ?? product.status === "Live");
 
   return {
-    ...product,
-    short_name: product.shortName,
-    category_label: product.categoryLabel,
-    storefront_path: storefrontPath,
-    category_order: product.categoryOrder,
-    is_new: isNew,
-    updated_at: product.updatedAt,
+    slug: product.slug,
+    category: product.category,
+    categoryLabel: product.categoryLabel,
+    shortName: product.shortName,
+    name: product.name,
+    isNew: Boolean(product.isNew ?? product.status === "Live"),
+    price: product.price,
+    description: product.description,
+    categoryOrder: product.categoryOrder ?? 0,
+    features: product.features ?? [],
+    includes: product.includes ?? [],
     categoryImage: product.categoryImage,
-    category_image: product.categoryImage,
     productImage: product.productImage,
-    product_image: product.productImage,
+    gallery: product.gallery,
+    others: product.others ?? [],
+    stock: product.stock,
+    status: product.status,
+    featured: product.featured,
+    image: product.image,
+    storefrontPath,
   };
 };
 
