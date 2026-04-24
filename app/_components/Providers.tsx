@@ -13,6 +13,7 @@ import {
 } from "../store/uiState/cartValueslice";
 import type { cartValueState } from "../type";
 
+// Hydrates cart from localStorage on mount, then keeps it in sync via Redux store subscription.
 function CartPersistence() {
   useEffect(() => {
     const rawCart = window.localStorage.getItem(CART_STORAGE_KEY);
