@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import {
   removeStorefrontCatalogProduct,
   replaceStorefrontCatalogCache,
@@ -37,6 +38,8 @@ export async function POST(request: Request) {
   } else {
     replaceStorefrontCatalogCache(payload.products);
   }
+
+  revalidateTag("products");
 
   return NextResponse.json({
     ok: true,
