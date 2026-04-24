@@ -5,6 +5,7 @@ import type {
   CatalogInput,
   Category,
   Product,
+  ResponsiveImageSet,
 } from "../../type";
 
 export const ADMIN_CATALOG_STORAGE_KEY = "audiophile-admin-catalog-v1";
@@ -255,11 +256,24 @@ const sanitizeImageValue = (value: string | undefined) => {
   return value.startsWith("data:") ? "" : value;
 };
 
+const sanitizeImageSet = (value: ResponsiveImageSet): ResponsiveImageSet => ({
+  mobile: sanitizeImageValue(value.mobile),
+  tablet: sanitizeImageValue(value.tablet),
+  desktop: sanitizeImageValue(value.desktop),
+});
+
 export const sanitizeAdminProductForStorage = (
   product: AdminProduct,
 ): AdminProduct => ({
   ...product,
   image: sanitizeImageValue(product.image),
+  categoryImage: sanitizeImageSet(product.categoryImage),
+  productImage: sanitizeImageSet(product.productImage),
+  gallery: {
+    first: sanitizeImageSet(product.gallery.first),
+    second: sanitizeImageSet(product.gallery.second),
+    third: sanitizeImageSet(product.gallery.third),
+  },
 });
 
 export const sanitizeAdminProductsForStorage = (products: AdminProduct[]) =>
