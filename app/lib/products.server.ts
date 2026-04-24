@@ -105,7 +105,7 @@ const fetchJson = async <T,>(
   try {
     const res = await fetch(`${API_BASE_URL}${path}`, {
       ...requestInit,
-      cache: "no-store",
+      next: { revalidate: 60, tags: ["products"] },
       signal: controller.signal,
     });
 
@@ -192,7 +192,6 @@ const fetchProductByCategoryAndSlug = async (
   const canonicalSlug = resolveStorefrontSlug(category, slug);
   const product = await tryFetchProduct(
     [
-      `/products/${category}/${canonicalSlug}`,
       `/product/${category}/${canonicalSlug}`,
       `/products/${canonicalSlug}`,
       `/product/${canonicalSlug}`,
@@ -216,27 +215,20 @@ const fetchProductByCategoryAndSlug = async (
 };
 
 const fetchBackendCatalogProducts = async (): Promise<Product[]> => {
-  const settled = await Promise.allSettled(
-    ["/products", "/product"].map(async (path) => {
-      const data = await fetchJson<unknown>(path, CATALOG_REQUEST_TIMEOUT_MS);
-      return extractProductRecords(data);
-    }),
-  );
+  let data: unknown;
+
+  try {
+    data = await fetchJson<unknown>("/products", CATALOG_REQUEST_TIMEOUT_MS);
+  } catch {
+    data = await fetchJson<unknown>("/product", CATALOG_REQUEST_TIMEOUT_MS);
+  }
 
   const merged = new Map<string, Product>();
 
-  for (const result of settled) {
-    if (result.status !== "fulfilled") {
-      continue;
-    }
+  for (const item of extractProductRecords(data)) {
+    const product = overlayCachedUploadImage(normalizeProduct(item));
 
-    for (const item of result.value) {
-      const product = overlayCachedUploadImage(normalizeProduct(item));
-
-      if (!product.slug) {
-        continue;
-      }
-
+    if (product.slug) {
       merged.set(product.slug, product);
     }
   }
