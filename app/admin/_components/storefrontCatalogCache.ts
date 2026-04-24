@@ -8,6 +8,7 @@ type StorefrontCatalogCacheAction =
   | { action: "remove"; slug: string }
   | { action: "replace"; products: AdminProduct[] };
 
+// Strips admin-only fields (stock, status, storefrontPath, updatedAt) before sending to the storefront cache endpoint.
 const toRequestBody = (payload: StorefrontCatalogCacheAction) => {
   if (payload.action === "upsert") {
     return {

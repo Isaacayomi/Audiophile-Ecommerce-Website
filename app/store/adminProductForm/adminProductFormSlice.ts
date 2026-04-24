@@ -9,13 +9,12 @@ const createEmptyAdminProductForm = (): AdminProductFormValues => ({
   name: "",
   shortName: "",
   category: "headphones",
-  price: "2999",
-  stock: "25",
+  price: "",
+  stock: "",
   status: "Live",
   featured: false,
-  description:
-    "Write a concise Audiophile description that highlights sound, design, and build quality.",
-  image: "/assets/product-xx99-mark-two-headphones/desktop/image-product.jpg",
+  description: "",
+  image: "",
 });
 
 const createInitialState = (): AdminProductFormState => ({

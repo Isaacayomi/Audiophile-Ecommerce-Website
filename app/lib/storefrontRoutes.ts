@@ -10,6 +10,7 @@ export const storefrontCategoryProductSlugs: Record<Category, string[]> = {
   earphones: ["yx1-wireless-earphones"],
 };
 
+// Maps old backend slugs to current canonical slugs so legacy URLs and API responses still resolve correctly.
 export const storefrontLegacyProductSlugAliases: Partial<
   Record<Category, Record<string, string>>
 > = {

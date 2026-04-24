@@ -140,6 +140,12 @@ const mergeAdminProducts = (
   return Array.from(merged.values());
 };
 
+const imageSetFromUrl = (url: string) => ({
+  mobile: url,
+  tablet: url,
+  desktop: url,
+});
+
 const getFallbackTemplate = (category: CatalogInput["category"]) =>
   fallbackProducts.find((product) => product.category === category) ??
   fallbackProducts[0];
@@ -150,6 +156,7 @@ const buildLocalProductRecord = (
   existing?: AdminProduct,
 ): AdminProduct => {
   const template = existing ?? getFallbackTemplate(product.category);
+  const imageUrl = product.image || template.image;
 
   return {
     ...template,
@@ -163,7 +170,14 @@ const buildLocalProductRecord = (
     stock: product.stock,
     status: product.status,
     featured: product.featured,
-    image: product.image,
+    image: imageUrl,
+    categoryImage: imageSetFromUrl(imageUrl),
+    productImage: imageSetFromUrl(imageUrl),
+    gallery: {
+      first: imageSetFromUrl(imageUrl),
+      second: imageSetFromUrl(imageUrl),
+      third: imageSetFromUrl(imageUrl),
+    },
     storefrontPath: makeStorefrontPath(
       product.category,
       product.slug,

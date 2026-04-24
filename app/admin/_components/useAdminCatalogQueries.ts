@@ -34,6 +34,7 @@ const apiDelete = async (path: string, init?: RequestInit): Promise<Response> =>
     },
   });
 
+  // 404/410 means the product was already gone — treat as success, not an error.
   if (res.status === 404 || res.status === 410) {
     return res;
   }
@@ -116,20 +117,28 @@ const loadProductsFromCatalogEndpoint = async (path: string) => {
 const buildRemoteProductPayload = (product: AdminProduct) => {
   const storefrontPath =
     product.storefrontPath || `/${product.category}/${product.slug}`;
-  const isNew = Boolean(product.isNew ?? product.status === "Live");
 
   return {
-    ...product,
-    short_name: product.shortName,
-    category_label: product.categoryLabel,
-    storefront_path: storefrontPath,
-    category_order: product.categoryOrder,
-    is_new: isNew,
-    updated_at: product.updatedAt,
+    slug: product.slug,
+    category: product.category,
+    categoryLabel: product.categoryLabel,
+    shortName: product.shortName,
+    name: product.name,
+    isNew: Boolean(product.isNew ?? product.status === "Live"),
+    price: product.price,
+    description: product.description,
+    categoryOrder: product.categoryOrder ?? 0,
+    features: product.features ?? [],
+    includes: product.includes ?? [],
     categoryImage: product.categoryImage,
-    category_image: product.categoryImage,
     productImage: product.productImage,
-    product_image: product.productImage,
+    gallery: product.gallery,
+    others: product.others ?? [],
+    stock: product.stock,
+    status: product.status,
+    featured: product.featured,
+    image: product.image,
+    storefrontPath,
   };
 };
 
@@ -191,6 +200,7 @@ const loadRemoteProducts = async () => {
   return records;
 };
 
+// PUT for existing slugs, POST for new ones; falls back to the alternate endpoint if the first fails.
 const syncRemoteProduct = async (
   product: AdminProduct,
   existingProducts: AdminProduct[],
@@ -332,6 +342,8 @@ export function useAdminCatalogQueries({
       window.setTimeout(resolve, ms);
     });
 
+  // When waitForSlug is set, polls until the newly written product appears in the catalog —
+  // needed because the backend may have eventual consistency after a write.
   const syncCatalog = async (options?: SyncCatalogOptions) => {
     if (!options?.waitForSlug) {
       const result = await remoteProductsQuery.refetch();

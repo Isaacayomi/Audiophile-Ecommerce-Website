@@ -485,6 +485,7 @@ export default function NewProduct() {
                 type="number"
                 value={form.price}
                 onChange={(event) => updateField("price", event.target.value)}
+                placeholder="e.g. 2999"
                 className="rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/20 outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/8"
               />
               {formErrors.price ? (
@@ -497,6 +498,7 @@ export default function NewProduct() {
                 type="number"
                 value={form.stock}
                 onChange={(event) => updateField("stock", event.target.value)}
+                placeholder="e.g. 25"
                 className="rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/20 outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/8"
               />
               {formErrors.stock ? (
@@ -521,6 +523,7 @@ export default function NewProduct() {
               onChange={(event) =>
                 updateField("description", event.target.value)
               }
+              placeholder="A concise description highlighting sound quality, design, and build."
               className="resize-none rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/20 outline-none transition-all focus:border-[#D87D4A]/50 focus:bg-white/8"
             />
             {formErrors.description ? (
