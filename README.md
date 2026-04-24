@@ -50,10 +50,20 @@ NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/checkout?auth=sign_in_success
 
 # Backend API Base URL
 NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+
+# Store-owner email notifications
+ORDER_NOTIFICATION_EMAIL=orders@yourdomain.com
+SMTP_HOST=smtp.yourprovider.com
+SMTP_PORT=587
+SMTP_USER=your_smtp_username
+SMTP_PASS=your_smtp_password
+SMTP_SECURE=false
+MAIL_FROM="Audiophile <no-reply@yourdomain.com>"
 ```
 
 -   **Clerk Variables**: These are essential for user authentication and authorization. You can get these keys from your [Clerk Dashboard](https://dashboard.clerk.com/).
 -   **`NEXT_PUBLIC_API_BASE_URL`**: This frontend communicates with a backend API (assumed to be FastAPI, as mentioned in the project notes) for product data and payment processing. Set this to the URL where your backend API is running. If you're running the provided FastAPI backend locally, it might be `http://localhost:8000`.
+-   **Store-owner email notifications**: Set the SMTP values above, then point your Stripe webhook to `https://your-domain.com/api/stripe/webhook` so the app can email you when a payment completes.
 
 ## Usage
 
