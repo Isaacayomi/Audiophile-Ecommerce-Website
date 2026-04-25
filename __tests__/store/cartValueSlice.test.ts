@@ -44,6 +44,7 @@ const headphones = {
   price: 2999,
   image: "/assets/xx99.jpg",
   quantity: 1,
+  stock: 3,
 };
 
 const earphones = {
@@ -53,6 +54,7 @@ const earphones = {
   price: 599,
   image: "/assets/yx1.jpg",
   quantity: 1,
+  stock: 6,
 };
 
 // ─── quantity picker (the +/- on the product page) ───────────────────────────
@@ -136,6 +138,16 @@ describe("addToCartValue", () => {
     expect(next.items[0].quantity).toBe(3);
     expect(next.value).toBe(3);
   });
+
+  it("caps added quantity at the available stock", () => {
+    const next = reducer(
+      emptyState,
+      addToCartValue({ ...headphones, quantity: 5 }),
+    );
+
+    expect(next.items[0].quantity).toBe(3);
+    expect(next.value).toBe(3);
+  });
 });
 
 // ─── adjusting quantities from inside the cart modal ─────────────────────────
@@ -159,6 +171,20 @@ describe("increaseCartItemQuantity", () => {
     // Guards against corrupted state if an action arrives for a missing item.
     const next = reducer(emptyState, increaseCartItemQuantity("ghost-slug"));
     expect(next).toEqual(emptyState);
+  });
+
+  it("does not increase past the stored stock limit", () => {
+    const withMaxStock = reducer(
+      emptyState,
+      addToCartValue({ ...headphones, quantity: 3 }),
+    );
+    const next = reducer(
+      withMaxStock,
+      increaseCartItemQuantity(headphones.slug),
+    );
+
+    expect(next.items[0].quantity).toBe(3);
+    expect(next.value).toBe(3);
   });
 });
 
