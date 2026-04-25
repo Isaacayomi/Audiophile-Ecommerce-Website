@@ -228,7 +228,7 @@ export const mapStorefrontProductToAdmin = (product: Product): AdminProduct => (
   gallery: product.gallery,
   others: product.others,
   categoryOrder: product.categoryOrder,
-  stock: stockForCategory(product.category),
+  stock: product.stock ?? stockForCategory(product.category),
   status: "Live",
   featured: Boolean(product.isNew),
   image: imageForProduct(product),
@@ -239,7 +239,6 @@ export const mapStorefrontProductToAdmin = (product: Product): AdminProduct => (
 
 export const toStorefrontProduct = (product: AdminProduct): Product => {
   const {
-    stock: _stock,
     status: _status,
     featured: _featured,
     storefrontPath: _storefrontPath,

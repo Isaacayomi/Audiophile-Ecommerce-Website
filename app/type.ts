@@ -30,6 +30,7 @@ export interface CartItem {
   price: number;
   image: string;
   quantity: number;
+  stock?: number;
 }
 
 export interface ModalButtonProps {
@@ -85,6 +86,7 @@ export interface Product {
   name: string;
   isNew?: boolean;
   price: number;
+  stock?: number;
   image?: string;
   description: string;
   features: string[];
