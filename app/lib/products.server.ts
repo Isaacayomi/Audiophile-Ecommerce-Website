@@ -72,6 +72,10 @@ const normalizeProduct = (product: Partial<Product> & Record<string, unknown>): 
   name: product.name ?? "",
   isNew: product.isNew ?? false,
   price: Number(product.price ?? 0),
+  stock:
+    product.stock === undefined || product.stock === null
+      ? undefined
+      : Number(product.stock),
   description: product.description ?? "",
   features: Array.isArray(product.features) ? (product.features as string[]) : [],
   includes: Array.isArray(product.includes)

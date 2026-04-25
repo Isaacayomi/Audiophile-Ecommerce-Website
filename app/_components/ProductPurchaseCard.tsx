@@ -31,6 +31,15 @@ const ProductPurchaseCard = ({ product }: { product: Product }) => {
   const quantity = useSelector(
     (state: RootState) => state.cartValue.selectedValue ?? 1,
   );
+  const cartQuantityForProduct = useSelector(
+    (state: RootState) =>
+      state.cartValue.items.find((item) => item.slug === product.slug)?.quantity ?? 0,
+  );
+  const stock = product.stock;
+  const remainingStock =
+    typeof stock === "number" ? Math.max(0, stock - cartQuantityForProduct) : null;
+  const isLowStock = typeof stock === "number" && stock > 0 && stock < 10;
+  const isOutOfStock = typeof stock === "number" && remainingStock === 0;
 
   return (
     <RhythmGroup
@@ -63,6 +72,22 @@ const ProductPurchaseCard = ({ product }: { product: Product }) => {
         </p>
       </RhythmItem>
 
+      {isLowStock ? (
+        <RhythmItem variant="soft">
+          <div className="mb-6 inline-flex rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-amber-700">
+            Low stock
+          </div>
+        </RhythmItem>
+      ) : null}
+
+      {isOutOfStock ? (
+        <RhythmItem variant="soft">
+          <p className="mb-4 text-copy font-semibold text-rose-600">
+            All available units are already in your cart.
+          </p>
+        </RhythmItem>
+      ) : null}
+
       <RhythmItem variant="pop">
         <div className="flex items-center gap-4">
           <div className="flex h-12 w-30 items-center justify-between bg-surface px-4 text-label font-bold text-black">
@@ -78,7 +103,18 @@ const ProductPurchaseCard = ({ product }: { product: Product }) => {
             <button
               type="button"
               className="cursor-pointer text-black/25 transition-colors hover:text-brand"
-              onClick={() => dispatch(increaseValue())}
+              onClick={() => {
+                if (typeof remainingStock === "number" && quantity >= remainingStock) {
+                  toast.error(
+                    remainingStock <= 0
+                      ? "This item is out of stock."
+                      : `Only ${remainingStock} available to add.`,
+                  );
+                  return;
+                }
+
+                dispatch(increaseValue());
+              }}
             >
               +
             </button>
@@ -86,8 +122,14 @@ const ProductPurchaseCard = ({ product }: { product: Product }) => {
 
           <button
             type="button"
-            className="inline-flex h-12 items-center justify-center bg-brand px-8 text-label font-bold uppercase tracking-copy text-white transition-colors hover:bg-brand-hover"
+            disabled={isOutOfStock}
+            className="inline-flex h-12 items-center justify-center bg-brand px-8 text-label font-bold uppercase tracking-copy text-white transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50"
             onClick={() => {
+              if (typeof remainingStock === "number" && remainingStock <= 0) {
+                toast.error("This item is out of stock.");
+                return;
+              }
+
               // Commit the currently selected quantity into the persisted cart total.
               dispatch(
                 addToCartValue({
@@ -97,10 +139,23 @@ const ProductPurchaseCard = ({ product }: { product: Product }) => {
                   price: product.price,
                   image: getCartImageSource(product),
                   quantity,
+                  stock,
                 }),
               );
-              // Immediate UX feedback for a successful add-to-cart action.
-              toast.success("Added to cart");
+
+              const quantityAdded =
+                typeof remainingStock === "number"
+                  ? Math.min(quantity, remainingStock)
+                  : quantity;
+
+              if (quantityAdded > 0) {
+                // Immediate UX feedback for a successful add-to-cart action.
+                toast.success(
+                  quantityAdded === quantity
+                    ? "Added to cart"
+                    : `Added ${quantityAdded} to cart`,
+                );
+              }
             }}
           >
             Add to cart

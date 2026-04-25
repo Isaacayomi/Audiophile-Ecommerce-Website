@@ -11,6 +11,9 @@ const initialState: cartValueState = {
   items: [],
 };
 
+const getStockLimitMessage = (stock: number) =>
+  stock <= 0 ? "This item is out of stock." : `Only ${stock} left in stock.`;
+
 export const increaseValueSlice = createSlice({
   name: "increaseValue",
   initialState,
@@ -33,19 +36,44 @@ export const increaseValueSlice = createSlice({
         price: number;
         image: string;
         quantity: number;
+        stock?: number;
       }>,
     ) => {
-      const { slug, quantity } = action.payload;
+      const { slug, quantity, stock } = action.payload;
       const existingItem = state.items.find((item) => item.slug === slug);
+      const currentQuantity = existingItem?.quantity ?? 0;
+      const remainingStock =
+        typeof stock === "number" ? Math.max(0, stock - currentQuantity) : quantity;
+      const quantityToAdd =
+        typeof stock === "number" ? Math.min(quantity, remainingStock) : quantity;
 
-      if (existingItem) {
-        existingItem.quantity += quantity;
-      } else {
-        state.items.push(action.payload);
+      if (typeof stock === "number" && quantityToAdd <= 0) {
+        toast.error(getStockLimitMessage(stock));
+        state.selectedValue = 1;
+        return;
       }
 
-      state.value += quantity;
+      if (existingItem) {
+        existingItem.quantity += quantityToAdd;
+        if (typeof stock === "number") {
+          existingItem.stock = stock;
+        }
+      } else {
+        state.items.push({
+          ...action.payload,
+          quantity: quantityToAdd,
+        });
+      }
+
+      state.value += quantityToAdd;
       state.selectedValue = 1;
+
+      if (
+        typeof stock === "number" &&
+        quantityToAdd < quantity
+      ) {
+        toast.error(getStockLimitMessage(stock));
+      }
     },
     hydrateCartValue: (state, action: PayloadAction<cartValueState>) => {
       state.value = action.payload.value;
@@ -56,6 +84,11 @@ export const increaseValueSlice = createSlice({
       // Increment one cart row and keep global badge count in sync.
       const item = state.items.find((entry) => entry.slug === action.payload);
       if (!item) return;
+
+      if (typeof item.stock === "number" && item.quantity >= item.stock) {
+        toast.error(getStockLimitMessage(item.stock));
+        return;
+      }
 
       item.quantity += 1;
       state.value += 1;
