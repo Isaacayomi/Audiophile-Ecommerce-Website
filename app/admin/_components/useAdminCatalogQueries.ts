@@ -9,7 +9,7 @@ import {
   stampAdminProduct,
 } from "../_lib/catalog";
 
-const apiJson = async <T,>(path: string, init?: RequestInit): Promise<T> => {
+const apiJson = async <T>(path: string, init?: RequestInit): Promise<T> => {
   const res = await fetch(`${API_BASE_URL}${path}`, {
     ...init,
     headers: {
@@ -25,7 +25,10 @@ const apiJson = async <T,>(path: string, init?: RequestInit): Promise<T> => {
   return (await res.json()) as T;
 };
 
-const apiDelete = async (path: string, init?: RequestInit): Promise<Response> => {
+const apiDelete = async (
+  path: string,
+  init?: RequestInit,
+): Promise<Response> => {
   const res = await fetch(`${API_BASE_URL}${path}`, {
     ...init,
     method: "DELETE",
@@ -46,7 +49,7 @@ const apiDelete = async (path: string, init?: RequestInit): Promise<Response> =>
   return res;
 };
 
-const fetchWithTimeout = async <T,>(
+const fetchWithTimeout = async <T>(
   task: () => Promise<T>,
   timeoutMs = 30000,
 ) => {
@@ -77,7 +80,10 @@ const extractProductRecords = (data: unknown): unknown[] => {
     return [];
   }
 
-  if ("products" in data && Array.isArray((data as { products: unknown[] }).products)) {
+  if (
+    "products" in data &&
+    Array.isArray((data as { products: unknown[] }).products)
+  ) {
     return (data as { products: unknown[] }).products;
   }
 
@@ -229,7 +235,8 @@ const syncRemoteProduct = async (
 
       return normalizeWrittenProduct(data, product);
     } catch (error) {
-      lastError = error instanceof Error ? error : new Error("Unable to save product");
+      lastError =
+        error instanceof Error ? error : new Error("Unable to save product");
     } finally {
       window.clearTimeout(timeout);
     }
@@ -269,7 +276,8 @@ const deleteRemoteProduct = async (slug: string) => {
 
       deleted = true;
     } catch (error) {
-      lastError = error instanceof Error ? error : new Error("Unable to delete product");
+      lastError =
+        error instanceof Error ? error : new Error("Unable to delete product");
     } finally {
       window.clearTimeout(timeout);
     }
@@ -378,7 +386,10 @@ export function useAdminCatalogQueries({
           }
         }
       } catch (error) {
-        lastError = error instanceof Error ? error : new Error("Unable to refresh catalog");
+        lastError =
+          error instanceof Error
+            ? error
+            : new Error("Unable to refresh catalog");
       }
 
       if (Date.now() > deadline) {
