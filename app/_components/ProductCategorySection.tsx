@@ -4,6 +4,7 @@ import Link from "next/link";
 import ResponsivePicture from "./ResponsivePicture";
 import { ProductCategorySectionProps } from "../type";
 import { RhythmGroup, RhythmItem } from "./ui/Rhythm";
+import { isLowStockProduct } from "./ProductPurchaseCard";
 
 const ProductCategorySection = ({
   product,
@@ -12,7 +13,7 @@ const ProductCategorySection = ({
   return (
     <section className="mx-6 md:mx-10 lg:mx-auto lg:grid lg:max-w-277.5 lg:grid-cols-2 lg:items-center lg:gap-31.25">
       <RhythmItem
-        className={`overflow-hidden rounded-lg ${reverse ? "lg:order-2" : ""}`}
+        className={`relative overflow-hidden rounded-lg ${reverse ? "lg:order-2" : ""}`}
         variant="pop"
       >
         {/* On category pages we show the preview image returned by the
@@ -25,6 +26,11 @@ const ProductCategorySection = ({
           imageClassName="h-88 object-cover lg:h-140"
           imageOverride={product.image}
         />
+        {isLowStockProduct(product.stock) ? (
+          <div className="absolute top-4 left-4 rounded-full border border-amber-200 bg-white/95 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.24em] text-amber-800 shadow-lg">
+            Low stock
+          </div>
+        ) : null}
       </RhythmItem>
 
       <RhythmGroup
