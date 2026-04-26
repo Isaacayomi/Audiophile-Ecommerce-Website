@@ -18,8 +18,13 @@ export const increaseValueSlice = createSlice({
   name: "increaseValue",
   initialState,
   reducers: {
-    // Increases the temporary quantity picker value.
-    increaseValue: (state) => {
+    // Increases the temporary quantity picker value, up to an optional max.
+    increaseValue: (
+      state,
+      action: PayloadAction<{ max?: number } | undefined>,
+    ) => {
+      const max = action.payload?.max;
+      if (typeof max === "number" && state.selectedValue >= max) return;
       state.selectedValue += 1;
     },
     // Decreases picker value but never goes below one.
@@ -43,9 +48,13 @@ export const increaseValueSlice = createSlice({
       const existingItem = state.items.find((item) => item.slug === slug);
       const currentQuantity = existingItem?.quantity ?? 0;
       const remainingStock =
-        typeof stock === "number" ? Math.max(0, stock - currentQuantity) : quantity;
+        typeof stock === "number"
+          ? Math.max(0, stock - currentQuantity)
+          : quantity;
       const quantityToAdd =
-        typeof stock === "number" ? Math.min(quantity, remainingStock) : quantity;
+        typeof stock === "number"
+          ? Math.min(quantity, remainingStock)
+          : quantity;
 
       if (typeof stock === "number" && quantityToAdd <= 0) {
         toast.error(getStockLimitMessage(stock));
@@ -68,10 +77,7 @@ export const increaseValueSlice = createSlice({
       state.value += quantityToAdd;
       state.selectedValue = 1;
 
-      if (
-        typeof stock === "number" &&
-        quantityToAdd < quantity
-      ) {
+      if (typeof stock === "number" && quantityToAdd < quantity) {
         toast.error(getStockLimitMessage(stock));
       }
     },

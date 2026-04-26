@@ -11,8 +11,10 @@ import {
   calculateCheckoutTotals,
   CheckoutFormValues,
   formatPrice,
+  getCartStockViolationMessage,
   normalizeCheckoutFormValues,
 } from "../lib/checkout";
+import { fetchLiveStockBySlug } from "../lib/liveCatalogStock";
 
 const getInputClassName = (hasError: boolean) =>
   `h-14 rounded-lg border px-6 text-overline outline-none transition-colors ${
@@ -63,6 +65,18 @@ const CheckoutForm = () => {
     setIsRedirectingToCheckout(true);
 
     try {
+      const liveStockBySlug = await fetchLiveStockBySlug();
+      const stockViolationMessage = getCartStockViolationMessage(
+        cartItems,
+        liveStockBySlug,
+      );
+
+      if (stockViolationMessage) {
+        toast.error(stockViolationMessage);
+        setIsRedirectingToCheckout(false);
+        return;
+      }
+
       const customer = normalizeCheckoutFormValues(values);
 
       const response = await fetch("/api/checkout-session", {

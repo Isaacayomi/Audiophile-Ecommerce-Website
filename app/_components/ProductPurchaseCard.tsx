@@ -25,6 +25,9 @@ const formatPrice = (price: number) =>
     maximumFractionDigits: 0,
   }).format(price);
 
+export const isLowStockProduct = (stock?: number) =>
+  typeof stock === "number" && stock > 0 && stock <= 10;
+
 const ProductPurchaseCard = ({ product }: { product: Product }) => {
   const dispatch = useDispatch<AppDispatch>();
   // Read the "picker" quantity from Redux; fallback keeps UI stable during slice transitions.
@@ -33,12 +36,15 @@ const ProductPurchaseCard = ({ product }: { product: Product }) => {
   );
   const cartQuantityForProduct = useSelector(
     (state: RootState) =>
-      state.cartValue.items.find((item) => item.slug === product.slug)?.quantity ?? 0,
+      state.cartValue.items.find((item) => item.slug === product.slug)
+        ?.quantity ?? 0,
   );
   const stock = product.stock;
   const remainingStock =
-    typeof stock === "number" ? Math.max(0, stock - cartQuantityForProduct) : null;
-  const isLowStock = typeof stock === "number" && stock > 0 && stock < 10;
+    typeof stock === "number"
+      ? Math.max(0, stock - cartQuantityForProduct)
+      : null;
+  const isLowStock = isLowStockProduct(stock);
   const isOutOfStock = typeof stock === "number" && remainingStock === 0;
 
   return (
@@ -102,19 +108,13 @@ const ProductPurchaseCard = ({ product }: { product: Product }) => {
             <span>{quantity}</span>
             <button
               type="button"
-              className="cursor-pointer text-black/25 transition-colors hover:text-brand"
+              className="cursor-pointer text-black/25 transition-colors hover:text-brand disabled:cursor-not-allowed disabled:opacity-30"
               onClick={() => {
-                if (typeof remainingStock === "number" && quantity >= remainingStock) {
-                  toast.error(
-                    remainingStock <= 0
-                      ? "This item is out of stock."
-                      : `Only ${remainingStock} available to add.`,
-                  );
-                  return;
+                if (remainingStock === null || quantity < remainingStock) {
+                  dispatch(increaseValue({ max: remainingStock ?? undefined }));
                 }
-
-                dispatch(increaseValue());
               }}
+              disabled={remainingStock !== null && quantity >= remainingStock}
             >
               +
             </button>
@@ -122,7 +122,10 @@ const ProductPurchaseCard = ({ product }: { product: Product }) => {
 
           <button
             type="button"
-            disabled={isOutOfStock}
+            disabled={
+              isOutOfStock ||
+              (remainingStock !== null && quantity > remainingStock)
+            }
             className="inline-flex h-12 items-center justify-center bg-brand px-8 text-label font-bold uppercase tracking-copy text-white transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50"
             onClick={() => {
               if (typeof remainingStock === "number" && remainingStock <= 0) {

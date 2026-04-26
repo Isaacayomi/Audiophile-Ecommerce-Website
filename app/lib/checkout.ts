@@ -38,6 +38,41 @@ export const calculateCheckoutTotals = (cartItems: CartItem[]) => {
   };
 };
 
+export const getCartStockViolationMessage = (
+  cartItems: CartItem[],
+  stockBySlug?: Record<string, number | undefined>,
+) => {
+  const violatingItem = cartItems.find(
+    (item) => {
+      const liveStock = stockBySlug?.[item.slug];
+      const resolvedStock =
+        typeof liveStock === "number" && Number.isFinite(liveStock)
+          ? liveStock
+          : item.stock;
+
+      return typeof resolvedStock === "number" && item.quantity > resolvedStock;
+    },
+  );
+
+  if (!violatingItem) {
+    return null;
+  }
+
+  const liveStock = stockBySlug?.[violatingItem.slug];
+  const resolvedStock =
+    typeof liveStock === "number" && Number.isFinite(liveStock)
+      ? liveStock
+      : violatingItem.stock;
+
+  if (typeof resolvedStock !== "number") {
+    return null;
+  }
+
+  const stockLabel = resolvedStock === 1 ? "unit" : "units";
+
+  return `${violatingItem.shortName} has only ${resolvedStock} ${stockLabel} in stock. Reduce your quantity to ${resolvedStock} or less.`;
+};
+
 // Lightweight trimming keeps payload values predictable before validation or Stripe metadata storage.
 export const normalizeCheckoutFormValues = (
   values: CheckoutFormValues,
