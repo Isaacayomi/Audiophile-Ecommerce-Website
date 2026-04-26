@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
 import { closeCart } from "../../store/uiState/cartSlice";
 import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 import ModalBackdrop from "./ModalBackdrop";
 import { RhythmGroup, RhythmItem } from "./Rhythm";
 import { AppDispatch, RootState } from "@/app/store/store";
@@ -13,6 +14,8 @@ import {
   removeCartItem,
   removeAllCartItems,
 } from "@/app/store/uiState/cartValueslice";
+import { getCartStockViolationMessage } from "@/app/lib/checkout";
+import { fetchLiveStockBySlug } from "@/app/lib/liveCatalogStock";
 import { FiTrash2, FiX } from "react-icons/fi";
 
 const formatPrice = (price: number) =>
@@ -147,9 +150,28 @@ const Cart = () => {
           <button
             type="button"
             disabled={cartItems.length === 0}
-            onClick={() => {
-              dispatch(closeCart());
-              router.push("/checkout");
+            onClick={async () => {
+              try {
+                const liveStockBySlug = await fetchLiveStockBySlug();
+                const liveViolationMessage = getCartStockViolationMessage(
+                  cartItems,
+                  liveStockBySlug,
+                );
+
+                if (liveViolationMessage) {
+                  toast.error(liveViolationMessage);
+                  return;
+                }
+
+                dispatch(closeCart());
+                router.push("/checkout");
+              } catch (error) {
+                toast.error(
+                  error instanceof Error
+                    ? error.message
+                    : "Unable to verify stock right now.",
+                );
+              }
             }}
             className="inline-flex h-12 w-full items-center justify-center bg-brand text-label font-bold uppercase tracking-copy text-white transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50"
           >
